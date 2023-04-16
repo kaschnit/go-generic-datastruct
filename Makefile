@@ -9,7 +9,8 @@ TOOL_FILE := ./tools/tools.go
 .PHONY: unittest
 unittest: TARGET=./...
 unittest:
-	go test -cover ./...
+	go test -coverpkg=$(TARGET) -coverprofile=.profile.cov $(TARGET)
+	go tool cover -func .profile.cov
 
 .PHONY: download
 download:

@@ -1,36 +1,36 @@
-package arraystack_test
+package linkedstack_test
 
 import (
 	"testing"
 
 	"github.com/kaschnit/go-ds/stack"
-	"github.com/kaschnit/go-ds/stack/arraystack"
+	"github.com/kaschnit/go-ds/stack/linkedstack"
 	"github.com/stretchr/testify/assert"
 )
 
-// Ensure that ArrayStack implements Stack
-var _ stack.Stack[int] = &arraystack.ArrayStack[int]{}
+// Ensure that LinkedStack implements Stack
+var _ stack.Stack[int] = &linkedstack.LinkedStack[int]{}
 
 func TestString(t *testing.T) {
 	tests := []struct {
 		name     string
-		stack    *arraystack.ArrayStack[int]
+		stack    *linkedstack.LinkedStack[int]
 		expected string
 	}{
 		{
 			name:     "empty stack",
-			stack:    arraystack.New[int](),
-			expected: "ArrayStack\n",
+			stack:    linkedstack.New[int](),
+			expected: "LinkedStack\n",
 		},
 		{
 			name:     "stack with 1 item",
-			stack:    arraystack.New(987654321),
-			expected: "ArrayStack\n987654321",
+			stack:    linkedstack.New(987654321),
+			expected: "LinkedStack\n987654321",
 		},
 		{
 			name:     "stack with a few items",
-			stack:    arraystack.New(100, 1145, -202, 5, 6, 7),
-			expected: "ArrayStack\n100,1145,-202,5,6,7",
+			stack:    linkedstack.New(100, 1145, -202, 5, 6, 7),
+			expected: "LinkedStack\n100,1145,-202,5,6,7",
 		},
 	}
 	for _, testCase := range tests {

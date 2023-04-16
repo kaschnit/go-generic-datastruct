@@ -32,9 +32,9 @@ func (s *ArrayStack[T]) Clear() {
 func (s *ArrayStack[T]) String() string {
 	sb := strings.Builder{}
 	sb.WriteString("ArrayStack\n")
-	strs := []string{}
-	for _, value := range s.values {
-		strs = append(strs, fmt.Sprintf("%v", value))
+	strs := make([]string, s.Size())
+	for i, value := range s.values {
+		strs[i] = fmt.Sprintf("%v", value)
 	}
 	sb.WriteString(strings.Join(strs, ","))
 	return sb.String()
