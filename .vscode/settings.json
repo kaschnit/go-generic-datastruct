@@ -1,0 +1,6 @@
+{
+    "go.lintTool": "golangci-lint",
+    "go.lintFlags": [
+        "--fast" // Remove for slower but more complete vscode integration
+    ]
+}
