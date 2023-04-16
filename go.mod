@@ -2,7 +2,10 @@ module github.com/kaschnit/go-ds
 
 go 1.20
 
-require github.com/golangci/golangci-lint v1.52.2
+require (
+	github.com/golangci/golangci-lint v1.52.2
+	github.com/stretchr/testify v1.8.2
+)
 
 require (
 	4d63.com/gocheckcompilerdirectives v1.2.1 // indirect
@@ -141,7 +144,6 @@ require (
 	github.com/ssgreg/nlreturn/v2 v2.2.1 // indirect
 	github.com/stbenjam/no-sprintf-host-port v0.1.1 // indirect
 	github.com/stretchr/objx v0.5.0 // indirect
-	github.com/stretchr/testify v1.8.2 // indirect
 	github.com/subosito/gotenv v1.4.1 // indirect
 	github.com/t-yuki/gocover-cobertura v0.0.0-20180217150009-aaee18c8195c // indirect
 	github.com/tdakkota/asciicheck v0.2.0 // indirect
