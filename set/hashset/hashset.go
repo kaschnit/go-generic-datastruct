@@ -3,6 +3,8 @@ package hashset
 import (
 	"fmt"
 	"strings"
+
+	"github.com/kaschnit/go-ds/enumerable"
 )
 
 var itemExists = struct{}{}
@@ -42,6 +44,76 @@ func (s *HashSet[T]) String() string {
 	}
 	sb.WriteString(strings.Join(strs, ","))
 	return sb.String()
+}
+
+func (s *HashSet[T]) ForEach(op enumerable.Op[T, T]) {
+	for value := range s.values {
+		op(value, value)
+	}
+}
+
+func (s *HashSet[T]) Any(predicate enumerable.Predicate[T, T]) bool {
+	for value := range s.values {
+		if predicate(value, value) {
+			return true
+		}
+	}
+	return false
+}
+
+func (s *HashSet[T]) All(predicate enumerable.Predicate[T, T]) bool {
+	for value := range s.values {
+		if !predicate(value, value) {
+			return false
+		}
+	}
+	return true
+}
+
+func (s *HashSet[T]) Find(predicate enumerable.Predicate[T, T]) (key T, value T, ok bool) {
+	for value := range s.values {
+		if predicate(value, value) {
+			return value, value, true
+		}
+	}
+	return *new(T), *new(T), false
+}
+
+func (s *HashSet[T]) Keys(abort <-chan struct{}) <-chan T {
+	return s.Values(abort)
+}
+
+func (s *HashSet[T]) Values(abort <-chan struct{}) <-chan T {
+	ch := make(chan T, 1)
+	go func() {
+		defer close(ch)
+		for value := range s.values {
+			select {
+			case ch <- value:
+			case <-abort:
+				return
+			}
+		}
+	}()
+	return ch
+}
+
+func (s *HashSet[T]) Items(abort <-chan struct{}) <-chan enumerable.KeyValue[T, T] {
+	ch := make(chan enumerable.KeyValue[T, T], 1)
+	go func() {
+		defer close(ch)
+		for value := range s.values {
+			select {
+			case ch <- enumerable.KeyValue[T, T]{
+				Key:   value,
+				Value: value,
+			}:
+			case <-abort:
+				return
+			}
+		}
+	}()
+	return ch
 }
 
 func (s *HashSet[T]) Add(value T) {

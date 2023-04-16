@@ -25,15 +25,17 @@ func TestEmptyFalse(t *testing.T) {
 		},
 	}
 	for _, testCase := range tests {
-		stacks := []stack.Stack[string]{
-			arraystack.New(testCase.initial...),
-			linkedstack.New(testCase.initial...),
-		}
-		for _, s := range stacks {
-			t.Run(fmt.Sprintf("%T %s", s, testCase.name), func(t *testing.T) {
-				assert.False(t, s.Empty())
-			})
-		}
+		t.Run(testCase.name, func(t *testing.T) {
+			stacks := []stack.Stack[string]{
+				arraystack.New(testCase.initial...),
+				linkedstack.New(testCase.initial...),
+			}
+			for _, s := range stacks {
+				t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
+					assert.False(t, s.Empty())
+				})
+			}
+		})
 	}
 }
 
@@ -43,13 +45,15 @@ func TestEmptyTrue(t *testing.T) {
 		linkedstack.New[int](),
 	}
 	for _, s := range stacks {
-		assert.True(t, s.Empty())
+		t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
+			assert.True(t, s.Empty())
 
-		s.Push(1)
-		assert.False(t, s.Empty())
+			s.Push(1)
+			assert.False(t, s.Empty())
 
-		s.Pop()
-		assert.True(t, s.Empty())
+			s.Pop()
+			assert.True(t, s.Empty())
+		})
 	}
 }
 
@@ -81,16 +85,18 @@ func TestSize(t *testing.T) {
 		},
 	}
 	for _, testCase := range tests {
-		stacks := []stack.Stack[float64]{
-			arraystack.New(testCase.initial...),
-			linkedstack.New(testCase.initial...),
-		}
-		for _, s := range stacks {
-			t.Run(fmt.Sprintf("%T %s", s, testCase.name), func(t *testing.T) {
-				assert.Equal(t, testCase.expected, s.Size())
-				assert.Equal(t, len(testCase.initial), s.Size())
-			})
-		}
+		t.Run(testCase.name, func(t *testing.T) {
+			stacks := []stack.Stack[float64]{
+				arraystack.New(testCase.initial...),
+				linkedstack.New(testCase.initial...),
+			}
+			for _, s := range stacks {
+				t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
+					assert.Equal(t, testCase.expected, s.Size())
+					assert.Equal(t, len(testCase.initial), s.Size())
+				})
+			}
+		})
 	}
 }
 
@@ -113,27 +119,29 @@ func TestClearNonEmpty(t *testing.T) {
 		},
 	}
 	for _, testCase := range tests {
-		stacks := []stack.Stack[float64]{
-			arraystack.New(testCase.initial...),
-			linkedstack.New(testCase.initial...),
-		}
-		for _, s := range stacks {
-			t.Run(fmt.Sprintf("%T %s", s, testCase.name), func(t *testing.T) {
-				assert.False(t, s.Empty())
+		t.Run(testCase.name, func(t *testing.T) {
+			stacks := []stack.Stack[float64]{
+				arraystack.New(testCase.initial...),
+				linkedstack.New(testCase.initial...),
+			}
+			for _, s := range stacks {
+				t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
+					assert.False(t, s.Empty())
 
-				s.Clear()
-				assert.True(t, s.Empty())
+					s.Clear()
+					assert.True(t, s.Empty())
 
-				s.Clear()
-				assert.True(t, s.Empty())
+					s.Clear()
+					assert.True(t, s.Empty())
 
-				s.Push(1.2345)
-				assert.False(t, s.Empty())
+					s.Push(1.2345)
+					assert.False(t, s.Empty())
 
-				s.Clear()
-				assert.True(t, s.Empty())
-			})
-		}
+					s.Clear()
+					assert.True(t, s.Empty())
+				})
+			}
+		})
 	}
 }
 
@@ -188,21 +196,23 @@ func TestPush(t *testing.T) {
 	}
 
 	for _, testCase := range tests {
-		stacks := []stack.Stack[string]{
-			arraystack.New(testCase.initial...),
-			linkedstack.New(testCase.initial...),
-		}
-		for _, s := range stacks {
-			t.Run(fmt.Sprintf("%T %s", s, testCase.name), func(t *testing.T) {
-				prevSize := s.Size()
-				s.Push(testCase.pushItem)
-				assert.Equal(t, prevSize+1, s.Size())
+		t.Run(testCase.name, func(t *testing.T) {
+			stacks := []stack.Stack[string]{
+				arraystack.New(testCase.initial...),
+				linkedstack.New(testCase.initial...),
+			}
+			for _, s := range stacks {
+				t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
+					prevSize := s.Size()
+					s.Push(testCase.pushItem)
+					assert.Equal(t, prevSize+1, s.Size())
 
-				actual, ok := s.Peek()
-				assert.True(t, ok)
-				assert.Equal(t, testCase.pushItem, actual)
-			})
-		}
+					actual, ok := s.Peek()
+					assert.True(t, ok)
+					assert.Equal(t, testCase.pushItem, actual)
+				})
+			}
+		})
 	}
 }
 
@@ -245,21 +255,23 @@ func TestPushAll(t *testing.T) {
 		},
 	}
 	for _, testCase := range tests {
-		stacks := []stack.Stack[int]{
-			arraystack.New(testCase.initial...),
-			linkedstack.New(testCase.initial...),
-		}
-		for _, s := range stacks {
-			t.Run(fmt.Sprintf("%T %s", s, testCase.name), func(t *testing.T) {
-				prevSize := s.Size()
-				s.PushAll(testCase.pushItems...)
-				assert.Equal(t, prevSize+len(testCase.pushItems), s.Size())
+		t.Run(testCase.name, func(t *testing.T) {
+			stacks := []stack.Stack[int]{
+				arraystack.New(testCase.initial...),
+				linkedstack.New(testCase.initial...),
+			}
+			for _, s := range stacks {
+				t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
+					prevSize := s.Size()
+					s.PushAll(testCase.pushItems...)
+					assert.Equal(t, prevSize+len(testCase.pushItems), s.Size())
 
-				actual, ok := s.Peek()
-				assert.True(t, ok)
-				assert.Equal(t, testCase.expectedPeek, actual)
-			})
-		}
+					actual, ok := s.Peek()
+					assert.True(t, ok)
+					assert.Equal(t, testCase.expectedPeek, actual)
+				})
+			}
+		})
 	}
 }
 

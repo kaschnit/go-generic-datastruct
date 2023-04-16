@@ -1,9 +1,13 @@
 package set
 
-import "github.com/kaschnit/go-ds/container"
+import (
+	"github.com/kaschnit/go-ds/container"
+	"github.com/kaschnit/go-ds/enumerable"
+)
 
 type Set[T any] interface {
 	container.Container[T]
+	enumerable.Enumerable[T, T]
 
 	Add(value T)
 	AddAll(values ...T)

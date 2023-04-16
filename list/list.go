@@ -1,7 +1,25 @@
 package list
 
-import "github.com/kaschnit/go-ds/container"
+import (
+	"github.com/kaschnit/go-ds/container"
+	"github.com/kaschnit/go-ds/enumerable"
+	"github.com/kaschnit/go-ds/iterator"
+)
 
 type List[T any] interface {
 	container.Container[T]
+	enumerable.Enumerable[int, T]
+	iterator.ForwardIterable[int, T]
+
+	Append(value T)
+	AppendAll(values ...T)
+	Prepend(value T)
+	PrependAll(values ...T)
+	Insert(index int, value T) (ok bool)
+	InsertAll(index int, values ...T) (ok bool)
+	PopBack() (value T, ok bool)
+	PopFront() (value T, ok bool)
+	GetFront() (value T, ok bool)
+	GetBack() (value T, ok bool)
+	Get(index int) (value T, ok bool)
 }
