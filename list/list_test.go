@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/kaschnit/go-ds/enumerable"
 	"github.com/kaschnit/go-ds/list"
 	"github.com/kaschnit/go-ds/list/arraylist"
 	"github.com/stretchr/testify/assert"
@@ -24,7 +25,7 @@ func TestEmptyFalse(t *testing.T) {
 		},
 	}
 	for _, testCase := range tests {
-		t.Run(fmt.Sprintf(testCase.name), func(t *testing.T) {
+		t.Run(testCase.name, func(t *testing.T) {
 			lists := []list.List[string]{
 				arraylist.New(testCase.initial...),
 			}
@@ -80,7 +81,7 @@ func TestSize(t *testing.T) {
 		},
 	}
 	for _, testCase := range tests {
-		t.Run(fmt.Sprintf(testCase.name), func(t *testing.T) {
+		t.Run(testCase.name, func(t *testing.T) {
 			lists := []list.List[float64]{
 				arraylist.New(testCase.initial...),
 			}
@@ -113,7 +114,7 @@ func TestClearNonEmpty(t *testing.T) {
 		},
 	}
 	for _, testCase := range tests {
-		t.Run(fmt.Sprintf(testCase.name), func(t *testing.T) {
+		t.Run(testCase.name, func(t *testing.T) {
 			lists := []list.List[float64]{
 				arraylist.New(testCase.initial...),
 			}
@@ -188,7 +189,7 @@ func TestAppend(t *testing.T) {
 	}
 
 	for _, testCase := range tests {
-		t.Run(fmt.Sprintf(testCase.name), func(t *testing.T) {
+		t.Run(testCase.name, func(t *testing.T) {
 			lists := []list.List[string]{
 				arraylist.New(testCase.initial...),
 			}
@@ -246,7 +247,7 @@ func TestAppendAll(t *testing.T) {
 		},
 	}
 	for _, testCase := range tests {
-		t.Run(fmt.Sprintf(testCase.name), func(t *testing.T) {
+		t.Run(testCase.name, func(t *testing.T) {
 			lists := []list.List[int]{
 				arraylist.New(testCase.initial...),
 			}
@@ -294,7 +295,7 @@ func TestPrepend(t *testing.T) {
 	}
 
 	for _, testCase := range tests {
-		t.Run(fmt.Sprintf(testCase.name), func(t *testing.T) {
+		t.Run(testCase.name, func(t *testing.T) {
 			lists := []list.List[string]{
 				arraylist.New(testCase.initial...),
 			}
@@ -352,7 +353,7 @@ func TestPrependAll(t *testing.T) {
 		},
 	}
 	for _, testCase := range tests {
-		t.Run(fmt.Sprintf(testCase.name), func(t *testing.T) {
+		t.Run(testCase.name, func(t *testing.T) {
 			lists := []list.List[int]{
 				arraylist.New(testCase.initial...),
 			}
@@ -423,7 +424,7 @@ func TestInsertOk(t *testing.T) {
 	}
 
 	for _, testCase := range tests {
-		t.Run(fmt.Sprintf(testCase.name), func(t *testing.T) {
+		t.Run(testCase.name, func(t *testing.T) {
 			lists := []list.List[string]{
 				arraylist.New(testCase.initial...),
 			}
@@ -513,7 +514,7 @@ func TestInsertNotOk(t *testing.T) {
 	}
 
 	for _, testCase := range tests {
-		t.Run(fmt.Sprintf(testCase.name), func(t *testing.T) {
+		t.Run(testCase.name, func(t *testing.T) {
 			lists := []list.List[string]{
 				arraylist.New(testCase.initial...),
 			}
@@ -596,7 +597,7 @@ func TestInsertAllOk(t *testing.T) {
 	}
 
 	for _, testCase := range tests {
-		t.Run(fmt.Sprintf(testCase.name), func(t *testing.T) {
+		t.Run(testCase.name, func(t *testing.T) {
 			lists := []list.List[string]{
 				arraylist.New(testCase.initial...),
 			}
@@ -658,7 +659,7 @@ func TestInsertAllNotOk(t *testing.T) {
 	}
 
 	for _, testCase := range tests {
-		t.Run(fmt.Sprintf(testCase.name), func(t *testing.T) {
+		t.Run(testCase.name, func(t *testing.T) {
 			lists := []list.List[string]{
 				arraylist.New(testCase.initial...),
 			}
@@ -763,7 +764,7 @@ func TestGetNotOk(t *testing.T) {
 		},
 	}
 	for _, testCase := range tests {
-		t.Run(fmt.Sprintf(testCase.name), func(t *testing.T) {
+		t.Run(testCase.name, func(t *testing.T) {
 			lists := []list.List[string]{
 				arraylist.New(testCase.initial...),
 			}
@@ -804,7 +805,7 @@ func TestForEach(t *testing.T) {
 		},
 	}
 	for _, testCase := range tests {
-		t.Run(fmt.Sprintf(testCase.name), func(t *testing.T) {
+		t.Run(testCase.name, func(t *testing.T) {
 			lists := []list.List[int]{
 				arraylist.New(testCase.initial...),
 			}
@@ -835,7 +836,7 @@ func TestAnyAll(t *testing.T) {
 			expectedAll: true,
 		},
 		{
-			name:        "no negative values",
+			name:        "no negative values with 1 item",
 			initial:     []int{12},
 			expectedAny: false,
 			expectedAll: false,
@@ -859,7 +860,7 @@ func TestAnyAll(t *testing.T) {
 			expectedAll: false,
 		},
 		{
-			name:        "no negatives",
+			name:        "no negative values with 3 items",
 			initial:     []int{100, 300, 57},
 			expectedAny: false,
 			expectedAll: false,
@@ -873,7 +874,7 @@ func TestAnyAll(t *testing.T) {
 	}
 
 	for _, testCase := range tests {
-		t.Run(fmt.Sprintf(testCase.name), func(t *testing.T) {
+		t.Run(testCase.name, func(t *testing.T) {
 			lists := []list.List[int]{
 				arraylist.New(testCase.initial...),
 			}
@@ -888,6 +889,392 @@ func TestAnyAll(t *testing.T) {
 					t.Run("All", func(t *testing.T) {
 						assert.Equal(t, testCase.expectedAll, l.All(isNegative))
 					})
+				})
+			}
+		})
+	}
+}
+
+func TestFindOk(t *testing.T) {
+	tests := []struct {
+		name          string
+		initial       []int
+		expectedIndex int
+		expectedValue int
+	}{
+		{
+			name:          "negative at index 0",
+			initial:       []int{-100, 300, 57},
+			expectedIndex: 0,
+			expectedValue: -100,
+		},
+		{
+			name:          "negative at index 1",
+			initial:       []int{100, -300, 57},
+			expectedIndex: 1,
+			expectedValue: -300,
+		},
+		{
+			name:          "negative at index 2",
+			initial:       []int{100, 300, -57},
+			expectedIndex: 2,
+			expectedValue: -57,
+		},
+		{
+			name:          "negative at index 2 and 3",
+			initial:       []int{100, -300, -57},
+			expectedIndex: 1,
+			expectedValue: -300,
+		},
+		{
+			name:          "negative at index 1 and 3",
+			initial:       []int{-100, 300, -100},
+			expectedIndex: 0,
+			expectedValue: -100,
+		},
+		{
+			name:          "all negatives",
+			initial:       []int{-100, -300, -57},
+			expectedIndex: 0,
+			expectedValue: -100,
+		},
+	}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			lists := []list.List[int]{
+				arraylist.New(testCase.initial...),
+			}
+			for _, l := range lists {
+				isNegative := func(_ int, value int) bool {
+					return value < 0
+				}
+				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
+					idx, val, ok := l.Find(isNegative)
+					assert.True(t, ok)
+					assert.Equal(t, testCase.expectedIndex, idx)
+					assert.Equal(t, testCase.expectedValue, val)
+				})
+			}
+		})
+	}
+}
+
+func TestFindNotOk(t *testing.T) {
+	tests := []struct {
+		name    string
+		initial []int
+	}{
+		{
+			name:    "no values",
+			initial: []int{},
+		},
+		{
+			name:    "no negative values with 1 item",
+			initial: []int{12},
+		},
+		{
+			name:    "no negatives with 3 items",
+			initial: []int{100, 300, 57},
+		},
+	}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			lists := []list.List[int]{
+				arraylist.New(testCase.initial...),
+			}
+			for _, l := range lists {
+				isNegative := func(_ int, value int) bool {
+					return value < 0
+				}
+				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
+					_, _, ok := l.Find(isNegative)
+					assert.False(t, ok)
+				})
+			}
+		})
+	}
+}
+
+func TestKeys(t *testing.T) {
+	tests := []struct {
+		name         string
+		initial      []int
+		expectedKeys []int
+	}{
+		{
+			name:         "no values",
+			initial:      []int{},
+			expectedKeys: []int{},
+		},
+		{
+			name:         "1 item",
+			initial:      []int{12},
+			expectedKeys: []int{0},
+		},
+		{
+			name:         "3 items",
+			initial:      []int{100, 300, 57},
+			expectedKeys: []int{0, 1, 2},
+		},
+	}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			lists := []list.List[int]{
+				arraylist.New(testCase.initial...),
+			}
+			for _, l := range lists {
+				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
+					result := []int{}
+					for index := range l.Keys(nil) {
+						result = append(result, index)
+					}
+					assert.Equal(t, testCase.expectedKeys, result)
+				})
+			}
+		})
+	}
+}
+
+func TestKeysAbort(t *testing.T) {
+	tests := []struct {
+		name         string
+		initial      []int
+		abortAtIndex int
+		expectedKeys []int
+	}{
+		{
+			name:         "abort at index 0",
+			initial:      []int{100, 200, 500},
+			abortAtIndex: 0,
+			expectedKeys: []int{0},
+		},
+		{
+			name:         "abort at index 1",
+			initial:      []int{7, 8, -20, 3, 7},
+			abortAtIndex: 1,
+			expectedKeys: []int{0, 1},
+		},
+		{
+			name:         "abort at index 2",
+			initial:      []int{100, 200, 500, 700},
+			abortAtIndex: 2,
+			expectedKeys: []int{0, 1, 2},
+		},
+	}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			lists := []list.List[int]{
+				arraylist.New(testCase.initial...),
+			}
+			for _, l := range lists {
+				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
+					result := []int{}
+					aborter := make(chan struct{})
+					for index := range l.Keys(aborter) {
+						result = append(result, index)
+						if index == testCase.abortAtIndex {
+							close(aborter)
+							break
+						}
+					}
+					assert.Equal(t, testCase.expectedKeys, result)
+				})
+			}
+		})
+	}
+}
+
+func TestValues(t *testing.T) {
+	tests := []struct {
+		name           string
+		initial        []int
+		expectedValues []int
+	}{
+		{
+			name:           "no values",
+			initial:        []int{},
+			expectedValues: []int{},
+		},
+		{
+			name:           "1 item",
+			initial:        []int{12},
+			expectedValues: []int{12},
+		},
+		{
+			name:           "3 items",
+			initial:        []int{100, 300, 57},
+			expectedValues: []int{100, 300, 57},
+		},
+	}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			lists := []list.List[int]{
+				arraylist.New(testCase.initial...),
+			}
+			for _, l := range lists {
+				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
+					result := []int{}
+					for value := range l.Values(nil) {
+						result = append(result, value)
+					}
+					assert.Equal(t, testCase.expectedValues, result)
+				})
+			}
+		})
+	}
+}
+
+func TestValuesAbort(t *testing.T) {
+	tests := []struct {
+		name           string
+		initial        []int
+		abortAtIndex   int
+		expectedValues []int
+	}{
+		{
+			name:           "abort at index 0",
+			initial:        []int{100, 200, 500},
+			abortAtIndex:   0,
+			expectedValues: []int{100},
+		},
+		{
+			name:           "abort at index 1",
+			initial:        []int{7, 8, -20, 3, 7},
+			abortAtIndex:   1,
+			expectedValues: []int{7, 8},
+		},
+		{
+			name:           "abort at index 2",
+			initial:        []int{100, 200, 500, 700},
+			abortAtIndex:   2,
+			expectedValues: []int{100, 200, 500},
+		},
+	}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			lists := []list.List[int]{
+				arraylist.New(testCase.initial...),
+			}
+			for _, l := range lists {
+				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
+					result := []int{}
+					aborter := make(chan struct{})
+					i := 0
+					for value := range l.Values(aborter) {
+						result = append(result, value)
+						if i == testCase.abortAtIndex {
+							close(aborter)
+							break
+						}
+						i += 1
+					}
+					assert.Equal(t, testCase.expectedValues, result)
+				})
+			}
+		})
+	}
+}
+
+func TestItems(t *testing.T) {
+	tests := []struct {
+		name          string
+		initial       []int
+		expectedItems []enumerable.KeyValue[int, int]
+	}{
+		{
+			name:          "no values",
+			initial:       []int{},
+			expectedItems: []enumerable.KeyValue[int, int]{},
+		},
+		{
+			name:    "1 item",
+			initial: []int{12},
+			expectedItems: []enumerable.KeyValue[int, int]{
+				{Key: 0, Value: 12},
+			},
+		},
+		{
+			name:    "3 items",
+			initial: []int{100, 300, 57},
+			expectedItems: []enumerable.KeyValue[int, int]{
+				{Key: 0, Value: 100},
+				{Key: 1, Value: 300},
+				{Key: 2, Value: 57},
+			},
+		},
+	}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			lists := []list.List[int]{
+				arraylist.New(testCase.initial...),
+			}
+			for _, l := range lists {
+				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
+					result := []enumerable.KeyValue[int, int]{}
+					for item := range l.Items(nil) {
+						result = append(result, item)
+					}
+					assert.Equal(t, testCase.expectedItems, result)
+				})
+			}
+		})
+	}
+}
+
+func TestItemsAbort(t *testing.T) {
+	tests := []struct {
+		name          string
+		initial       []int
+		abortAtIndex  int
+		expectedItems []enumerable.KeyValue[int, int]
+	}{
+		{
+			name:         "abort at index 0",
+			initial:      []int{100, 200, 500},
+			abortAtIndex: 0,
+			expectedItems: []enumerable.KeyValue[int, int]{
+				{Key: 0, Value: 100},
+			},
+		},
+		{
+			name:         "abort at index 1",
+			initial:      []int{7, 8, -20, 3, 7},
+			abortAtIndex: 1,
+			expectedItems: []enumerable.KeyValue[int, int]{
+				{Key: 0, Value: 7},
+				{Key: 1, Value: 8},
+			},
+		},
+		{
+			name:         "abort at index 2",
+			initial:      []int{100, 200, 500, 700},
+			abortAtIndex: 2,
+			expectedItems: []enumerable.KeyValue[int, int]{
+				{Key: 0, Value: 100},
+				{Key: 1, Value: 200},
+				{Key: 2, Value: 500},
+			},
+		},
+	}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			lists := []list.List[int]{
+				arraylist.New(testCase.initial...),
+			}
+			for _, l := range lists {
+				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
+					result := []enumerable.KeyValue[int, int]{}
+					aborter := make(chan struct{})
+					i := 0
+					for item := range l.Items(aborter) {
+						result = append(result, item)
+						if i == testCase.abortAtIndex {
+							close(aborter)
+							break
+						}
+						i += 1
+					}
+					assert.Equal(t, testCase.expectedItems, result)
 				})
 			}
 		})

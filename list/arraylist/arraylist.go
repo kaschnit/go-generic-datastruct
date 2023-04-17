@@ -105,7 +105,7 @@ func (l *ArrayList[T]) Find(predicate enumerable.Predicate[int, T]) (key int, va
 }
 
 func (l *ArrayList[T]) Keys(abort <-chan struct{}) <-chan int {
-	ch := make(chan int, 1)
+	ch := make(chan int)
 	go func() {
 		defer close(ch)
 		for i := range l.values {
@@ -120,7 +120,7 @@ func (l *ArrayList[T]) Keys(abort <-chan struct{}) <-chan int {
 }
 
 func (l *ArrayList[T]) Values(abort <-chan struct{}) <-chan T {
-	ch := make(chan T, 1)
+	ch := make(chan T)
 	go func() {
 		defer close(ch)
 		for _, value := range l.values {
@@ -135,7 +135,7 @@ func (l *ArrayList[T]) Values(abort <-chan struct{}) <-chan T {
 }
 
 func (l *ArrayList[T]) Items(abort <-chan struct{}) <-chan enumerable.KeyValue[int, T] {
-	ch := make(chan enumerable.KeyValue[int, T], 1)
+	ch := make(chan enumerable.KeyValue[int, T])
 	go func() {
 		defer close(ch)
 		for i, value := range l.values {
