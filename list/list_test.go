@@ -1280,3 +1280,72 @@ func TestItemsAbort(t *testing.T) {
 		})
 	}
 }
+
+func TestIteration(t *testing.T) {
+	values := []int{100, 200, 500}
+	lists := []list.List[int]{
+		arraylist.New(values...),
+	}
+	for _, l := range lists {
+		t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
+			// Iterator to element 0
+			itr, ok := l.Iterator()
+			assert.True(t, ok)
+			assert.True(t, itr.HasNext())
+
+			key, ok := itr.Key()
+			assert.True(t, ok)
+			assert.Equal(t, 0, key)
+
+			val, ok := itr.Value()
+			assert.True(t, ok)
+			assert.Equal(t, 100, val)
+
+			// Iterator to element 1
+			itr, ok = itr.Next()
+			assert.True(t, ok)
+			assert.True(t, itr.HasNext())
+
+			key, ok = itr.Key()
+			assert.True(t, ok)
+			assert.Equal(t, 1, key)
+
+			val, ok = itr.Value()
+			assert.True(t, ok)
+			assert.Equal(t, 200, val)
+
+			// Iterator to element 2
+			itr, ok = itr.Next()
+			assert.True(t, ok)
+			assert.False(t, itr.HasNext())
+
+			key, ok = itr.Key()
+			assert.True(t, ok)
+			assert.Equal(t, 2, key)
+
+			val, ok = itr.Value()
+			assert.True(t, ok)
+			assert.Equal(t, 500, val)
+
+			// Invalid iterator
+			_, ok = itr.Next()
+			assert.False(t, ok)
+		})
+	}
+}
+
+func TestIteration_Empty(t *testing.T) {
+	lists := []list.List[int]{
+		arraylist.New[int](),
+	}
+	for _, l := range lists {
+		t.Run(fmt.Sprintf("%T - Iterator()", l), func(t *testing.T) {
+			_, ok := l.Iterator()
+			assert.False(t, ok)
+		})
+		t.Run(fmt.Sprintf("%T - IteratorReverse()", l), func(t *testing.T) {
+			_, ok := l.IteratorReverse()
+			assert.False(t, ok)
+		})
+	}
+}

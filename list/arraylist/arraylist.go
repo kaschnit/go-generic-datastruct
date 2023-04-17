@@ -15,7 +15,7 @@ type arrayListIterator[T any] struct {
 }
 
 func (a *arrayListIterator[T]) Key() (key int, ok bool) {
-	return a.index, a.index > 0 && a.index < a.arr.Size()
+	return a.index, a.index >= 0 && a.index < a.arr.Size()
 }
 
 func (a *arrayListIterator[T]) Value() (value T, ok bool) {
@@ -27,13 +27,14 @@ func (a *arrayListIterator[T]) Next() (next iterator.ForwardIterator[int, T], ok
 		return nil, false
 	}
 	return &arrayListIterator[T]{
-		index: a.nextOp(a.index),
-		arr:   a.arr,
+		index:  a.nextOp(a.index),
+		arr:    a.arr,
+		nextOp: a.nextOp,
 	}, true
 }
 
-func (a *arrayListIterator[T]) HasNext() (ok bool) {
-	return a.index >= a.arr.Size()-1
+func (a *arrayListIterator[T]) HasNext() bool {
+	return a.index >= 0 && a.index < a.arr.Size()-1
 }
 
 type ArrayList[T any] struct {
