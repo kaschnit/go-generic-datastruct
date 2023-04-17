@@ -221,6 +221,9 @@ func (l *DoubleLinkedList[T]) Insert(index int, value T) (ok bool) {
 	} else if index == 0 {
 		l.Prepend(value)
 		return true
+	} else if index == l.Size() {
+		l.Append(value)
+		return true
 	}
 
 	// Find the nodes between which the new node will be placed
@@ -242,6 +245,8 @@ func (l *DoubleLinkedList[T]) Insert(index int, value T) (ok bool) {
 		nextNode.prev = newNode
 	}
 
+	l.size++
+
 	return true
 }
 
@@ -252,6 +257,9 @@ func (l *DoubleLinkedList[T]) InsertAll(index int, values ...T) (ok bool) {
 		return false
 	} else if index == 0 {
 		l.PrependAll(values...)
+		return true
+	} else if index == l.Size() {
+		l.AppendAll(values...)
 		return true
 	}
 
@@ -272,6 +280,8 @@ func (l *DoubleLinkedList[T]) InsertAll(index int, values ...T) (ok bool) {
 		subList.tail.next = nextNode
 		nextNode.prev = subList.tail
 	}
+
+	l.size += subList.Size()
 
 	return true
 }

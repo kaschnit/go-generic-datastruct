@@ -216,6 +216,9 @@ func (l *SingleLinkedList[T]) Insert(index int, value T) (ok bool) {
 	} else if index == 0 {
 		l.Prepend(value)
 		return true
+	} else if index == l.Size() {
+		l.Append(value)
+		return true
 	}
 
 	// Find the nodes between which the new node will be placed
@@ -243,6 +246,9 @@ func (l *SingleLinkedList[T]) InsertAll(index int, values ...T) (ok bool) {
 		return false
 	} else if index == 0 {
 		l.PrependAll(values...)
+		return true
+	} else if index == l.Size() {
+		l.AppendAll(values...)
 		return true
 	}
 

@@ -15,8 +15,7 @@ func getListsForTest[T any](values ...T) []list.List[T] {
 	return []list.List[T]{
 		arraylist.New(values...),
 		linkedlist.NewSingleLinked(values...),
-		// TODO enable
-		// linkedlist.NewDoubleLinked(values...),
+		linkedlist.NewDoubleLinked(values...),
 	}
 }
 
@@ -372,31 +371,31 @@ func TestInsertOk(t *testing.T) {
 		index   int
 	}{
 		{
-			name:    "insert into an empty ArrayList",
+			name:    "insert into an empty list",
 			initial: []string{},
 			item:    "foo",
 			index:   0,
 		},
 		{
-			name:    "insert at the beginning of a 1-item ArrayList",
+			name:    "insert at the beginning of a 1-item list",
 			initial: []string{"bar"},
 			item:    "foo",
 			index:   0,
 		},
 		{
-			name:    "insert at the end of a 1-item ArrayList",
+			name:    "insert at the end of a 1-item list",
 			initial: []string{"bar"},
 			item:    "foo",
 			index:   1,
 		},
 		{
-			name:    "insert at the beginning of a 3-item ArrayList",
+			name:    "insert at the beginning of a 3-item list",
 			initial: []string{"foo", "bar", "baz"},
 			item:    "hello",
 			index:   0,
 		},
 		{
-			name:    "insert at index 1 of a 3-item ArrayList",
+			name:    "insert at index 1 of a 3-item list",
 			initial: []string{"foo", "bar", "baz"},
 			item:    "hello",
 			index:   1,
@@ -527,42 +526,42 @@ func TestInsertAllOk(t *testing.T) {
 		expected []string
 	}{
 		{
-			name:     "insert into an empty ArrayList",
+			name:     "insert into an empty list",
 			initial:  []string{},
 			items:    []string{"foo"},
 			index:    0,
 			expected: []string{"foo"},
 		},
 		{
-			name:     "insert at the beginning of a 1-item ArrayList",
+			name:     "insert at the beginning of a 1-item list",
 			initial:  []string{"bar"},
 			items:    []string{"foo"},
 			index:    0,
 			expected: []string{"foo", "bar"},
 		},
 		{
-			name:     "insert at the end of a 1-item ArrayList",
+			name:     "insert at the end of a 1-item list",
 			initial:  []string{"bar"},
 			items:    []string{"foo"},
 			index:    1,
 			expected: []string{"bar", "foo"},
 		},
 		{
-			name:     "insert at the beginning of a 3-item ArrayList",
+			name:     "insert at the beginning of a 3-item list",
 			initial:  []string{"foo", "bar", "baz"},
 			items:    []string{"hello", "goodbye"},
 			index:    0,
 			expected: []string{"hello", "goodbye", "foo", "bar", "baz"},
 		},
 		{
-			name:     "insert at index 1 of a 3-item ArrayList",
+			name:     "insert at index 1 of a 3-item list",
 			initial:  []string{"foo", "bar", "baz"},
 			items:    []string{"hello", "goodbye", "no"},
 			index:    1,
 			expected: []string{"foo", "hello", "goodbye", "no", "bar", "baz"},
 		},
 		{
-			name:     "insert at index 2 of a 3-item ArrayList",
+			name:     "insert at index 2 of a 3-item list",
 			initial:  []string{"foo", "bar", "baz"},
 			items:    []string{"hello", "goodbye", "no", "yes"},
 			index:    2,
@@ -576,7 +575,7 @@ func TestInsertAllOk(t *testing.T) {
 			expected: []string{"foo", "bar", "hello", "baz"},
 		},
 		{
-			name:     "insert at the end of a 3-item ArrayList",
+			name:     "insert at the end of a 3-item list",
 			initial:  []string{"foo", "bar", "baz"},
 			items:    []string{"hello", "goodbye", "no", "yes"},
 			index:    3,
