@@ -1,6 +1,6 @@
 package container
 
-type Container[T any] interface {
+type Container interface {
 	Empty() bool
 	Size() int
 	Clear()

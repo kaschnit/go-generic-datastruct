@@ -7,7 +7,7 @@ import (
 )
 
 type List[T any] interface {
-	container.Container[T]
+	container.Container
 	enumerable.Enumerable[int, T]
 	iterator.ForwardIterable[int, T]
 

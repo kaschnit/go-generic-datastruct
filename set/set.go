@@ -6,7 +6,7 @@ import (
 )
 
 type Set[T any] interface {
-	container.Container[T]
+	container.Container
 	enumerable.Enumerable[T, T]
 
 	Add(value T)

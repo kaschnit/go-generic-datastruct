@@ -3,7 +3,7 @@ package stack
 import "github.com/kaschnit/go-ds/container"
 
 type Stack[T any] interface {
-	container.Container[T]
+	container.Container
 
 	Push(value T)
 	PushAll(values ...T)
