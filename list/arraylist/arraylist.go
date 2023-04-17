@@ -172,7 +172,7 @@ func (l *ArrayList[T]) IteratorReverse() (iter iterator.ForwardIterator[int, T],
 		return nil, false
 	}
 	return &arrayListIterator[T]{
-		index: len(l.values) - 1,
+		index: l.Size() - 1,
 		arr:   l,
 		nextOp: func(index int) int {
 			return index - 1
@@ -197,7 +197,7 @@ func (l *ArrayList[T]) PrependAll(values ...T) {
 }
 
 func (l *ArrayList[T]) Insert(index int, value T) (ok bool) {
-	if index < 0 || index > len(l.values) {
+	if index < 0 || index > l.Size() {
 		return false
 	}
 	l.values = append(l.values[:index], append([]T{value}, l.values[index:]...)...)
@@ -205,7 +205,7 @@ func (l *ArrayList[T]) Insert(index int, value T) (ok bool) {
 }
 
 func (l *ArrayList[T]) InsertAll(index int, values ...T) (ok bool) {
-	if index < 0 || index > len(l.values) {
+	if index < 0 || index > l.Size() {
 		return false
 	}
 	l.values = append(l.values[:index], append(values, l.values[index:]...)...)
@@ -243,7 +243,7 @@ func (l *ArrayList[T]) GetBack() (value T, ok bool) {
 }
 
 func (l *ArrayList[T]) Get(index int) (value T, ok bool) {
-	if index < 0 || index >= len(l.values) {
+	if index < 0 || index >= l.Size() {
 		return *new(T), false
 	}
 	return l.values[index], true

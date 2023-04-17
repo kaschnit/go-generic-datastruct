@@ -42,9 +42,8 @@ func (s *LinkedStack[T]) String() string {
 	sb.WriteString("LinkedStack\n")
 	strs := make([]string, s.Size())
 	i := s.Size() - 1
-	for head := s.head; head != nil; {
-		strs[i] = fmt.Sprintf("%v", head.value)
-		head = head.prev
+	for node := s.head; node != nil; node = node.prev {
+		strs[i] = fmt.Sprintf("%v", node.value)
 		i--
 	}
 	sb.WriteString(strings.Join(strs, ","))

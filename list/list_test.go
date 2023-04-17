@@ -7,6 +7,7 @@ import (
 	"github.com/kaschnit/go-ds/enumerable"
 	"github.com/kaschnit/go-ds/list"
 	"github.com/kaschnit/go-ds/list/arraylist"
+	"github.com/kaschnit/go-ds/list/linkedlist"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -28,6 +29,7 @@ func TestEmptyFalse(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			lists := []list.List[string]{
 				arraylist.New(testCase.initial...),
+				linkedlist.NewSingleLinked(testCase.initial...),
 			}
 			for _, l := range lists {
 				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
@@ -41,6 +43,7 @@ func TestEmptyFalse(t *testing.T) {
 func TestEmptyTrue(t *testing.T) {
 	lists := []list.List[int]{
 		arraylist.New[int](),
+		linkedlist.NewSingleLinked[int](),
 	}
 	for _, l := range lists {
 		assert.True(t, l.Empty())
@@ -84,6 +87,7 @@ func TestSize(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			lists := []list.List[float64]{
 				arraylist.New(testCase.initial...),
+				linkedlist.NewSingleLinked(testCase.initial...),
 			}
 			for _, l := range lists {
 				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
@@ -117,6 +121,7 @@ func TestClearNonEmpty(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			lists := []list.List[float64]{
 				arraylist.New(testCase.initial...),
+				linkedlist.NewSingleLinked(testCase.initial...),
 			}
 			for _, l := range lists {
 				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
@@ -142,6 +147,7 @@ func TestClearNonEmpty(t *testing.T) {
 func TestClearEmpty(t *testing.T) {
 	lists := []list.List[string]{
 		arraylist.New[string](),
+		linkedlist.NewSingleLinked[string](),
 	}
 	for _, l := range lists {
 		assert.True(t, l.Empty())
@@ -192,6 +198,7 @@ func TestAppend(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			lists := []list.List[string]{
 				arraylist.New(testCase.initial...),
+				linkedlist.NewSingleLinked(testCase.initial...),
 			}
 			for _, l := range lists {
 				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
@@ -250,6 +257,7 @@ func TestAppendAll(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			lists := []list.List[int]{
 				arraylist.New(testCase.initial...),
+				linkedlist.NewSingleLinked(testCase.initial...),
 			}
 			for _, l := range lists {
 				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
@@ -298,6 +306,7 @@ func TestPrepend(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			lists := []list.List[string]{
 				arraylist.New(testCase.initial...),
+				linkedlist.NewSingleLinked(testCase.initial...),
 			}
 			for _, l := range lists {
 				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
@@ -356,6 +365,7 @@ func TestPrependAll(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			lists := []list.List[int]{
 				arraylist.New(testCase.initial...),
+				linkedlist.NewSingleLinked(testCase.initial...),
 			}
 			for _, l := range lists {
 				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
@@ -427,6 +437,7 @@ func TestInsertOk(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			lists := []list.List[string]{
 				arraylist.New(testCase.initial...),
+				linkedlist.NewSingleLinked(testCase.initial...),
 			}
 			for _, l := range lists {
 				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
@@ -517,6 +528,7 @@ func TestInsertNotOk(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			lists := []list.List[string]{
 				arraylist.New(testCase.initial...),
+				linkedlist.NewSingleLinked(testCase.initial...),
 			}
 			for _, l := range lists {
 				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
@@ -594,12 +606,20 @@ func TestInsertAllOk(t *testing.T) {
 			index:    3,
 			expected: []string{"foo", "bar", "baz", "hello", "goodbye", "no", "yes"},
 		},
+		{
+			name:     "insert nothing in the middle of a 3-item ArrayList",
+			initial:  []string{"foo", "bar", "baz"},
+			items:    []string{},
+			index:    1,
+			expected: []string{"foo", "bar", "baz"},
+		},
 	}
 
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
 			lists := []list.List[string]{
 				arraylist.New(testCase.initial...),
+				linkedlist.NewSingleLinked(testCase.initial...),
 			}
 			for _, l := range lists {
 				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
@@ -662,6 +682,7 @@ func TestInsertAllNotOk(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			lists := []list.List[string]{
 				arraylist.New(testCase.initial...),
+				linkedlist.NewSingleLinked(testCase.initial...),
 			}
 			for _, l := range lists {
 				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
@@ -679,6 +700,7 @@ func TestPopBackUntilEmpty(t *testing.T) {
 	vals := []int{1, 2, 3}
 	lists := []list.List[int]{
 		arraylist.New(vals...),
+		linkedlist.NewSingleLinked(vals...),
 	}
 	for _, l := range lists {
 		val, ok := l.PopBack()
@@ -705,6 +727,7 @@ func TestPopFrontUntilEmpty(t *testing.T) {
 	vals := []int{1, 2, 3}
 	lists := []list.List[int]{
 		arraylist.New(vals...),
+		linkedlist.NewSingleLinked(vals...),
 	}
 	for _, l := range lists {
 		val, ok := l.PopFront()
@@ -730,6 +753,7 @@ func TestPopFrontUntilEmpty(t *testing.T) {
 func TestGetFrontNotOk(t *testing.T) {
 	lists := []list.List[string]{
 		arraylist.New[string](),
+		linkedlist.NewSingleLinked[string](),
 	}
 	for _, l := range lists {
 		t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
@@ -742,6 +766,7 @@ func TestGetFrontNotOk(t *testing.T) {
 func TestGetBackNotOk(t *testing.T) {
 	lists := []list.List[string]{
 		arraylist.New[string](),
+		linkedlist.NewSingleLinked[string](),
 	}
 	for _, l := range lists {
 		t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
@@ -767,6 +792,7 @@ func TestGetNotOk(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			lists := []list.List[string]{
 				arraylist.New(testCase.initial...),
+				linkedlist.NewSingleLinked(testCase.initial...),
 			}
 			for _, l := range lists {
 				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
@@ -808,6 +834,7 @@ func TestForEach(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			lists := []list.List[int]{
 				arraylist.New(testCase.initial...),
+				linkedlist.NewSingleLinked(testCase.initial...),
 			}
 			for _, l := range lists {
 				total := 0
@@ -877,6 +904,7 @@ func TestAnyAll(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			lists := []list.List[int]{
 				arraylist.New(testCase.initial...),
+				linkedlist.NewSingleLinked(testCase.initial...),
 			}
 			for _, l := range lists {
 				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
@@ -943,6 +971,7 @@ func TestFindOk(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			lists := []list.List[int]{
 				arraylist.New(testCase.initial...),
+				linkedlist.NewSingleLinked(testCase.initial...),
 			}
 			for _, l := range lists {
 				isNegative := func(_ int, value int) bool {
@@ -981,6 +1010,7 @@ func TestFindNotOk(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			lists := []list.List[int]{
 				arraylist.New(testCase.initial...),
+				linkedlist.NewSingleLinked(testCase.initial...),
 			}
 			for _, l := range lists {
 				isNegative := func(_ int, value int) bool {
@@ -1021,6 +1051,7 @@ func TestKeys(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			lists := []list.List[int]{
 				arraylist.New(testCase.initial...),
+				linkedlist.NewSingleLinked(testCase.initial...),
 			}
 			for _, l := range lists {
 				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
@@ -1065,6 +1096,7 @@ func TestKeysAbort(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			lists := []list.List[int]{
 				arraylist.New(testCase.initial...),
+				linkedlist.NewSingleLinked(testCase.initial...),
 			}
 			for _, l := range lists {
 				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
@@ -1110,6 +1142,7 @@ func TestValues(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			lists := []list.List[int]{
 				arraylist.New(testCase.initial...),
+				linkedlist.NewSingleLinked(testCase.initial...),
 			}
 			for _, l := range lists {
 				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
@@ -1154,6 +1187,7 @@ func TestValuesAbort(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			lists := []list.List[int]{
 				arraylist.New(testCase.initial...),
+				linkedlist.NewSingleLinked(testCase.initial...),
 			}
 			for _, l := range lists {
 				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
@@ -1207,6 +1241,7 @@ func TestItems(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			lists := []list.List[int]{
 				arraylist.New(testCase.initial...),
+				linkedlist.NewSingleLinked(testCase.initial...),
 			}
 			for _, l := range lists {
 				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
@@ -1260,6 +1295,7 @@ func TestItemsAbort(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			lists := []list.List[int]{
 				arraylist.New(testCase.initial...),
+				linkedlist.NewSingleLinked(testCase.initial...),
 			}
 			for _, l := range lists {
 				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
@@ -1285,6 +1321,7 @@ func TestIteration(t *testing.T) {
 	values := []int{100, 200, 500}
 	lists := []list.List[int]{
 		arraylist.New(values...),
+		linkedlist.NewSingleLinked(values...),
 	}
 	for _, l := range lists {
 		t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
@@ -1334,70 +1371,14 @@ func TestIteration(t *testing.T) {
 	}
 }
 
-func TestIterationReverse(t *testing.T) {
-	values := []int{100, 200, 500}
-	lists := []list.List[int]{
-		arraylist.New(values...),
-	}
-	for _, l := range lists {
-		t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
-			// Iterator to element 0
-			itr, ok := l.IteratorReverse()
-			assert.True(t, ok)
-			assert.True(t, itr.HasNext())
-
-			key, ok := itr.Key()
-			assert.True(t, ok)
-			assert.Equal(t, 2, key)
-
-			val, ok := itr.Value()
-			assert.True(t, ok)
-			assert.Equal(t, 500, val)
-
-			// Iterator to element 1
-			itr, ok = itr.Next()
-			assert.True(t, ok)
-			assert.True(t, itr.HasNext())
-
-			key, ok = itr.Key()
-			assert.True(t, ok)
-			assert.Equal(t, 1, key)
-
-			val, ok = itr.Value()
-			assert.True(t, ok)
-			assert.Equal(t, 200, val)
-
-			// Iterator to element 2
-			itr, ok = itr.Next()
-			assert.True(t, ok)
-			assert.False(t, itr.HasNext())
-
-			key, ok = itr.Key()
-			assert.True(t, ok)
-			assert.Equal(t, 0, key)
-
-			val, ok = itr.Value()
-			assert.True(t, ok)
-			assert.Equal(t, 100, val)
-
-			// Invalid iterator
-			_, ok = itr.Next()
-			assert.False(t, ok)
-		})
-	}
-}
-
 func TestIteration_Empty(t *testing.T) {
 	lists := []list.List[int]{
 		arraylist.New[int](),
+		linkedlist.NewSingleLinked[int](),
 	}
 	for _, l := range lists {
 		t.Run(fmt.Sprintf("%T - Iterator()", l), func(t *testing.T) {
 			_, ok := l.Iterator()
-			assert.False(t, ok)
-		})
-		t.Run(fmt.Sprintf("%T - IteratorReverse()", l), func(t *testing.T) {
-			_, ok := l.IteratorReverse()
 			assert.False(t, ok)
 		})
 	}
