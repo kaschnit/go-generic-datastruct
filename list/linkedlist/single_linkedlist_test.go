@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// Ensure that SingleLinkedList implements List
 var _ list.List[int] = &linkedlist.SingleLinkedList[int]{}
 
 func TestString(t *testing.T) {

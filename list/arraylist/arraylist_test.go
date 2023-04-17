@@ -3,12 +3,17 @@ package arraylist_test
 import (
 	"testing"
 
+	"github.com/kaschnit/go-ds/iterator"
 	"github.com/kaschnit/go-ds/list"
 	"github.com/kaschnit/go-ds/list/arraylist"
 	"github.com/stretchr/testify/assert"
 )
 
+// Ensure that ArrayList implements List
 var _ list.List[int] = &arraylist.ArrayList[int]{}
+
+// Ensure that ArrayList implements ReverseIterable
+var _ iterator.ReverseIterable[int, string] = &arraylist.ArrayList[string]{}
 
 func TestString(t *testing.T) {
 	tests := []struct {
