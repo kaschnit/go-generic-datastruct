@@ -726,6 +726,30 @@ func TestPopFrontUntilEmpty(t *testing.T) {
 	}
 }
 
+func TestGetFrontNotOk(t *testing.T) {
+	lists := []list.List[string]{
+		arraylist.New[string](),
+	}
+	for _, l := range lists {
+		t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
+			_, ok := l.GetFront()
+			assert.False(t, ok)
+		})
+	}
+}
+
+func TestGetBackNotOk(t *testing.T) {
+	lists := []list.List[string]{
+		arraylist.New[string](),
+	}
+	for _, l := range lists {
+		t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
+			_, ok := l.GetBack()
+			assert.False(t, ok)
+		})
+	}
+}
+
 func TestGetNotOk(t *testing.T) {
 	tests := []struct {
 		name         string
@@ -751,6 +775,119 @@ func TestGetNotOk(t *testing.T) {
 							assert.False(t, ok)
 						})
 					}
+				})
+			}
+		})
+	}
+}
+
+func TestForEach(t *testing.T) {
+	tests := []struct {
+		name     string
+		initial  []int
+		expected int
+	}{
+		{
+			name:     "sum nothing",
+			initial:  []int{},
+			expected: 0,
+		},
+		{
+			name:     "sum a single number",
+			initial:  []int{12},
+			expected: 12,
+		},
+		{
+			name:     "sum a few numbers",
+			initial:  []int{-100, 300, 57},
+			expected: 257,
+		},
+	}
+	for _, testCase := range tests {
+		t.Run(fmt.Sprintf(testCase.name), func(t *testing.T) {
+			lists := []list.List[int]{
+				arraylist.New(testCase.initial...),
+			}
+			for _, l := range lists {
+				total := 0
+				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
+					l.ForEach(func(key int, value int) {
+						total += value
+					})
+					assert.Equal(t, testCase.expected, total)
+				})
+			}
+		})
+	}
+}
+
+func TestAnyAll(t *testing.T) {
+	tests := []struct {
+		name        string
+		initial     []int
+		expectedAny bool
+		expectedAll bool
+	}{
+		{
+			name:        "no values",
+			initial:     []int{},
+			expectedAny: false,
+			expectedAll: true,
+		},
+		{
+			name:        "no negative values",
+			initial:     []int{12},
+			expectedAny: false,
+			expectedAll: false,
+		},
+		{
+			name:        "negative at index 0",
+			initial:     []int{-100, 300, 57},
+			expectedAny: true,
+			expectedAll: false,
+		},
+		{
+			name:        "negative at index 1",
+			initial:     []int{100, -300, 57},
+			expectedAny: true,
+			expectedAll: false,
+		},
+		{
+			name:        "negative at index 2",
+			initial:     []int{100, 300, -57},
+			expectedAny: true,
+			expectedAll: false,
+		},
+		{
+			name:        "no negatives",
+			initial:     []int{100, 300, 57},
+			expectedAny: false,
+			expectedAll: false,
+		},
+		{
+			name:        "all negatives",
+			initial:     []int{-100, -300, -57},
+			expectedAny: true,
+			expectedAll: true,
+		},
+	}
+
+	for _, testCase := range tests {
+		t.Run(fmt.Sprintf(testCase.name), func(t *testing.T) {
+			lists := []list.List[int]{
+				arraylist.New(testCase.initial...),
+			}
+			for _, l := range lists {
+				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
+					isNegative := func(_ int, value int) bool {
+						return value < 0
+					}
+					t.Run("Any", func(t *testing.T) {
+						assert.Equal(t, testCase.expectedAny, l.Any(isNegative))
+					})
+					t.Run("All", func(t *testing.T) {
+						assert.Equal(t, testCase.expectedAll, l.All(isNegative))
+					})
 				})
 			}
 		})
