@@ -10,6 +10,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func getStacksForTest[T any](values ...T) []stack.Stack[T] {
+	return []stack.Stack[T]{
+		arraystack.New(values...),
+		linkedstack.New(values...),
+	}
+}
+
 func TestEmptyFalse(t *testing.T) {
 	tests := []struct {
 		name    string
@@ -26,10 +33,7 @@ func TestEmptyFalse(t *testing.T) {
 	}
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
-			stacks := []stack.Stack[string]{
-				arraystack.New(testCase.initial...),
-				linkedstack.New(testCase.initial...),
-			}
+			stacks := getStacksForTest(testCase.initial...)
 			for _, s := range stacks {
 				t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
 					assert.False(t, s.Empty())
@@ -40,10 +44,7 @@ func TestEmptyFalse(t *testing.T) {
 }
 
 func TestEmptyTrue(t *testing.T) {
-	stacks := []stack.Stack[int]{
-		arraystack.New[int](),
-		linkedstack.New[int](),
-	}
+	stacks := getStacksForTest[int]()
 	for _, s := range stacks {
 		t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
 			assert.True(t, s.Empty())
@@ -86,10 +87,7 @@ func TestSize(t *testing.T) {
 	}
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
-			stacks := []stack.Stack[float64]{
-				arraystack.New(testCase.initial...),
-				linkedstack.New(testCase.initial...),
-			}
+			stacks := getStacksForTest(testCase.initial...)
 			for _, s := range stacks {
 				t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
 					assert.Equal(t, testCase.expected, s.Size())
@@ -120,10 +118,7 @@ func TestClearNonEmpty(t *testing.T) {
 	}
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
-			stacks := []stack.Stack[float64]{
-				arraystack.New(testCase.initial...),
-				linkedstack.New(testCase.initial...),
-			}
+			stacks := getStacksForTest(testCase.initial...)
 			for _, s := range stacks {
 				t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
 					assert.False(t, s.Empty())
@@ -146,10 +141,7 @@ func TestClearNonEmpty(t *testing.T) {
 }
 
 func TestClearEmpty(t *testing.T) {
-	stacks := []stack.Stack[string]{
-		arraystack.New[string](),
-		linkedstack.New[string](),
-	}
+	stacks := getStacksForTest[string]()
 	for _, s := range stacks {
 		assert.True(t, s.Empty())
 
@@ -197,10 +189,7 @@ func TestPush(t *testing.T) {
 
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
-			stacks := []stack.Stack[string]{
-				arraystack.New(testCase.initial...),
-				linkedstack.New(testCase.initial...),
-			}
+			stacks := getStacksForTest(testCase.initial...)
 			for _, s := range stacks {
 				t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
 					prevSize := s.Size()
@@ -256,10 +245,7 @@ func TestPushAll(t *testing.T) {
 	}
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
-			stacks := []stack.Stack[int]{
-				arraystack.New(testCase.initial...),
-				linkedstack.New(testCase.initial...),
-			}
+			stacks := getStacksForTest(testCase.initial...)
 			for _, s := range stacks {
 				t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
 					prevSize := s.Size()
@@ -277,10 +263,7 @@ func TestPushAll(t *testing.T) {
 
 func TestPopUntilEmpty(t *testing.T) {
 	vals := []int{1, 2, 3}
-	stacks := []stack.Stack[int]{
-		arraystack.New(vals...),
-		linkedstack.New(vals...),
-	}
+	stacks := getStacksForTest(vals...)
 	for _, s := range stacks {
 		val, ok := s.Pop()
 		assert.True(t, ok)
