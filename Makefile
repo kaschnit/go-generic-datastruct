@@ -5,12 +5,17 @@ SHELL := /bin/bash
 GOVERSION := $(shell ./scripts/go-version-utils.sh goModVersion)
 GOBIN := $(shell go env GOPATH)/bin
 TOOL_FILE := ./tools/tools.go
+COVERAGE_PROFILE := .profile.cov
 
 .PHONY: unittest
 unittest: TARGET=./...
 unittest:
-	go test -coverpkg=$(TARGET) -coverprofile=.profile.cov $(TARGET)
-	go tool cover -func .profile.cov
+	@go test -coverpkg=$(TARGET) -coverprofile=$(COVERAGE_PROFILE) $(TARGET)
+	@go tool cover -func=$(COVERAGE_PROFILE)
+
+.PHONY: coverage-html
+coverage-html:
+	@go tool cover -html=$(COVERAGE_PROFILE)
 
 .PHONY: download
 download:
