@@ -1334,6 +1334,59 @@ func TestIteration(t *testing.T) {
 	}
 }
 
+func TestIterationReverse(t *testing.T) {
+	values := []int{100, 200, 500}
+	lists := []list.List[int]{
+		arraylist.New(values...),
+	}
+	for _, l := range lists {
+		t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
+			// Iterator to element 0
+			itr, ok := l.IteratorReverse()
+			assert.True(t, ok)
+			assert.True(t, itr.HasNext())
+
+			key, ok := itr.Key()
+			assert.True(t, ok)
+			assert.Equal(t, 2, key)
+
+			val, ok := itr.Value()
+			assert.True(t, ok)
+			assert.Equal(t, 500, val)
+
+			// Iterator to element 1
+			itr, ok = itr.Next()
+			assert.True(t, ok)
+			assert.True(t, itr.HasNext())
+
+			key, ok = itr.Key()
+			assert.True(t, ok)
+			assert.Equal(t, 1, key)
+
+			val, ok = itr.Value()
+			assert.True(t, ok)
+			assert.Equal(t, 200, val)
+
+			// Iterator to element 2
+			itr, ok = itr.Next()
+			assert.True(t, ok)
+			assert.False(t, itr.HasNext())
+
+			key, ok = itr.Key()
+			assert.True(t, ok)
+			assert.Equal(t, 0, key)
+
+			val, ok = itr.Value()
+			assert.True(t, ok)
+			assert.Equal(t, 100, val)
+
+			// Invalid iterator
+			_, ok = itr.Next()
+			assert.False(t, ok)
+		})
+	}
+}
+
 func TestIteration_Empty(t *testing.T) {
 	lists := []list.List[int]{
 		arraylist.New[int](),

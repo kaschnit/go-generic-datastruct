@@ -34,7 +34,8 @@ func (a *arrayListIterator[T]) Next() (next iterator.ForwardIterator[int, T], ok
 }
 
 func (a *arrayListIterator[T]) HasNext() bool {
-	return a.index >= 0 && a.index < a.arr.Size()-1
+	nextIndex := a.nextOp(a.index)
+	return nextIndex >= 0 && nextIndex < a.arr.Size()
 }
 
 type ArrayList[T any] struct {
