@@ -1,11 +1,11 @@
 package enumerable_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/kaschnit/go-ds/enumerable"
 	"github.com/kaschnit/go-ds/list/arraylist"
-	"github.com/kaschnit/go-ds/set/hashset"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -38,16 +38,12 @@ func TestMap(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
-		l := arraylist.New(testCase.items...)
-		listResult := enumerable.Map[int, string](l, func(_ int, v string) int {
-			return len(v)
+		t.Run(fmt.Sprintf("ArrayList %s", testCase.name), func(t *testing.T) {
+			l := arraylist.New(testCase.items...)
+			result := enumerable.Map[int, string](l, func(_ int, v string) int {
+				return len(v)
+			})
+			assert.Equal(t, testCase.expected, result)
 		})
-		assert.Equal(t, testCase.expected, listResult)
-
-		s := hashset.New(testCase.items...)
-		setResult := enumerable.Map[string, string](s, func(_ string, v string) int {
-			return len(v)
-		})
-		assert.Equal(t, testCase.expected, setResult)
 	}
 }

@@ -216,23 +216,21 @@ func (l *SingleLinkedList[T]) Insert(index int, value T) (ok bool) {
 	} else if index == 0 {
 		l.Prepend(value)
 		return true
-	} else if index == l.Size() {
-		l.Append(value)
-		return true
 	}
 
-	// Find the node that the new node will be inserted after
-	node := l.head
-	for i := 1; i < index; i++ {
-		node = node.next
+	// Find the nodes between which the new node will be placed
+	prevNode := l.getNode(index - 1)
+	nextNode := prevNode.next
+
+	// Create the new node
+	newNode := &singleLinkedNode[T]{
+		value: value,
+		next:  nextNode,
 	}
 
 	// Insert the new node at the insertion point
-	newNode := &singleLinkedNode[T]{
-		value: value,
-		next:  node.next,
-	}
-	node.next = newNode
+	prevNode.next = newNode
+
 	l.size++
 
 	return true
@@ -241,27 +239,24 @@ func (l *SingleLinkedList[T]) Insert(index int, value T) (ok bool) {
 func (l *SingleLinkedList[T]) InsertAll(index int, values ...T) (ok bool) {
 	if len(values) == 0 {
 		return true
-	}
-	if index < 0 || index > l.Size() {
+	} else if index < 0 || index > l.Size() {
 		return false
 	} else if index == 0 {
 		l.PrependAll(values...)
 		return true
-	} else if index == l.Size() {
-		l.AppendAll(values...)
-		return true
 	}
 
-	// Find the node that the new nodes will be inserted after
-	node := l.head
-	for i := 1; i < index; i++ {
-		node = node.next
-	}
+	// Find the nodes between which the new node will be placed
+	prevNode := l.getNode(index - 1)
+	nextNode := prevNode.next
 
-	// Insert another list at the insertion point
+	// Create a sub list
 	subList := NewSingleLinked(values...)
-	subList.tail.next = node.next
-	node.next = subList.head
+
+	// Insert the sub list at the insertion point
+	subList.tail.next = nextNode
+	prevNode.next = subList.head
+
 	l.size += subList.Size()
 
 	return true
@@ -316,9 +311,14 @@ func (l *SingleLinkedList[T]) Get(index int) (value T, ok bool) {
 	if index < 0 || index >= l.Size() {
 		return *new(T), false
 	}
+	node := l.getNode(index)
+	return node.value, true
+}
+
+func (l *SingleLinkedList[T]) getNode(index int) *singleLinkedNode[T] {
 	node := l.head
 	for i := 0; i < index; i++ {
 		node = node.next
 	}
-	return node.value, true
+	return node
 }

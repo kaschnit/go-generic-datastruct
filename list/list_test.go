@@ -15,6 +15,8 @@ func getListsForTest[T any](values ...T) []list.List[T] {
 	return []list.List[T]{
 		arraylist.New(values...),
 		linkedlist.NewSingleLinked(values...),
+		// TODO enable
+		// linkedlist.NewDoubleLinked(values...),
 	}
 }
 

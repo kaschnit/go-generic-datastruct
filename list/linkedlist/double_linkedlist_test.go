@@ -8,29 +8,29 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// Ensure that SingleLinkedList implements List
-var _ list.List[int] = &linkedlist.SingleLinkedList[int]{}
+// Ensure that DoubleLinkedList implements List
+var _ list.List[int] = &linkedlist.DoubleLinkedList[int]{}
 
-func TestSingleLinkedString(t *testing.T) {
+func TestDoubleLinkedString(t *testing.T) {
 	tests := []struct {
 		name     string
-		list     *linkedlist.SingleLinkedList[int]
+		list     *linkedlist.DoubleLinkedList[int]
 		expected string
 	}{
 		{
 			name:     "empty list",
-			list:     linkedlist.NewSingleLinked[int](),
-			expected: "SingleLinkedList\n",
+			list:     linkedlist.NewDoubleLinked[int](),
+			expected: "DoubleLinkedList\n",
 		},
 		{
 			name:     "list with 1 item",
-			list:     linkedlist.NewSingleLinked(987654321),
-			expected: "SingleLinkedList\n987654321",
+			list:     linkedlist.NewDoubleLinked(987654321),
+			expected: "DoubleLinkedList\n987654321",
 		},
 		{
 			name:     "list with a few items",
-			list:     linkedlist.NewSingleLinked(100, 1145, -202, 5, 6, 7),
-			expected: "SingleLinkedList\n100,1145,-202,5,6,7",
+			list:     linkedlist.NewDoubleLinked(100, 1145, -202, 5, 6, 7),
+			expected: "DoubleLinkedList\n100,1145,-202,5,6,7",
 		},
 	}
 	for _, testCase := range tests {
