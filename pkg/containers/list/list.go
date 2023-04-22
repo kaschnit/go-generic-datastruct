@@ -3,13 +3,13 @@ package list
 import (
 	"github.com/kaschnit/go-ds/pkg/containers/container"
 	"github.com/kaschnit/go-ds/pkg/containers/enumerable"
-	"github.com/kaschnit/go-ds/pkg/containers/iterator"
+	"github.com/kaschnit/go-ds/pkg/containers/iterable"
 )
 
 type List[T any] interface {
 	container.Container
 	enumerable.Enumerable[int, T]
-	iterator.ForwardIterable[int, T]
+	iterable.ForwardIterable[int, T]
 
 	Append(value T)
 	AppendAll(values ...T)

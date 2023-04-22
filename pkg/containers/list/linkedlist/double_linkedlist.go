@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/kaschnit/go-ds/pkg/containers/enumerable"
-	"github.com/kaschnit/go-ds/pkg/containers/iterator"
+	"github.com/kaschnit/go-ds/pkg/iterator"
 )
 
 type doubleLinkedListIterator[T any] struct {
