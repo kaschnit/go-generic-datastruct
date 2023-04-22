@@ -2,7 +2,13 @@
 SHELL := /bin/bash
 .ONESHELL:
 
-GOVERSION := $(shell ./scripts/go-version-utils.sh goModVersion)
+GOMINVERSION := $(shell ./scripts/go-version-utils.sh goModVersion)
+GOVERSION := $(shell which go > /dev/null && go env GOVERSION || echo 0)
+
+ifeq (lt, $(shell ./scripts/go-version-utils.sh compare $(GOVERSION) $(GOMINVERSION)))
+$(error "Must have go >= $(GOMINVERSION) (found $(GOVERSION))")
+endif
+
 GOBIN := $(shell go env GOPATH)/bin
 TOOL_FILE := ./tools/tools.go
 COVERAGE_PROFILE := .profile.cov
@@ -10,6 +16,7 @@ COVERAGE_PROFILE := .profile.cov
 .PHONY: unittest
 unittest: TARGET=./...
 unittest:
+	echo $(FOO)
 	@go test -coverpkg=$(TARGET) -coverprofile=$(COVERAGE_PROFILE) $(TARGET)
 	@go tool cover -func=$(COVERAGE_PROFILE)
 
