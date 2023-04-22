@@ -16,7 +16,6 @@ COVERAGE_PROFILE := .profile.cov
 .PHONY: unittest
 unittest: TARGET=./...
 unittest:
-	echo $(FOO)
 	@go test -coverpkg=$(TARGET) -coverprofile=$(COVERAGE_PROFILE) $(TARGET)
 	@go tool cover -func=$(COVERAGE_PROFILE)
 
