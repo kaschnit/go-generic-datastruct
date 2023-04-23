@@ -64,7 +64,7 @@ func TestMapMap(t *testing.T) {
 			expected: map[string]int{},
 		},
 		{
-			name:     "one items",
+			name:     "one item",
 			items:    []string{"123456789"},
 			expected: map[string]int{"123456789": 9},
 		},

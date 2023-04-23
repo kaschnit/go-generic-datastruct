@@ -56,7 +56,7 @@ func Map[V any, R any](slice []V, mapper Mapper[V, R]) []R {
 	return result
 }
 
-func MapMap[K comparable, V any, KR comparable, VR comparable](slice []V, mapper MapMapper[V, KR, VR]) map[KR]VR {
+func MapMap[V any, KR comparable, VR comparable](slice []V, mapper MapMapper[V, KR, VR]) map[KR]VR {
 	result := make(map[KR]VR, 0)
 	for index, value := range slice {
 		mappedKey, mappedValue := mapper(index, value)
