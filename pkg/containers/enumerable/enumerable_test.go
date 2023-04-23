@@ -47,3 +47,51 @@ func TestMap(t *testing.T) {
 		})
 	}
 }
+
+func TestMapMap(t *testing.T) {
+	testCases := []struct {
+		name     string
+		items    []string
+		expected map[string]int
+	}{
+		{
+			name:     "no items",
+			items:    []string{},
+			expected: map[string]int{},
+		},
+		{
+			name:     "one items",
+			items:    []string{"123456789"},
+			expected: map[string]int{"123456789": 9},
+		},
+		{
+			name:  "a few items",
+			items: []string{"54321", "", "222444666888"},
+			expected: map[string]int{
+				"54321":        5,
+				"":             0,
+				"222444666888": 12,
+			},
+		},
+		{
+			name:  "a few more items",
+			items: []string{"a", "foo", "bar", "abcdefg"},
+			expected: map[string]int{
+				"a":       1,
+				"foo":     3,
+				"bar":     3,
+				"abcdefg": 7,
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(fmt.Sprintf("ArrayList %s", testCase.name), func(t *testing.T) {
+			l := arraylist.New(testCase.items...)
+			result := enumerable.MapMap[int, string](l, func(_ int, v string) (string, int) {
+				return v, len(v)
+			})
+			assert.Equal(t, testCase.expected, result)
+		})
+	}
+}
