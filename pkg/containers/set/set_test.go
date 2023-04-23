@@ -165,3 +165,208 @@ func TestClearEmpty(t *testing.T) {
 		assert.True(t, s.Empty())
 	}
 }
+
+func TestAddNewItem(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name     string
+		initial  []string
+		pushItem string
+	}{
+		{
+			name:     "3 items pushing a string",
+			initial:  []string{"1", "two", "3"},
+			pushItem: "foo",
+		},
+		{
+			name:     "3 items pushing an empty string",
+			initial:  []string{"1", "two", "3"},
+			pushItem: "",
+		},
+		{
+			name:     "0 items pushing a string",
+			initial:  []string{},
+			pushItem: "hello",
+		},
+		{
+			name:     "0 items pushing an empty string",
+			initial:  []string{},
+			pushItem: "",
+		},
+	}
+
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			sets := getSetsForTest(testCase.initial...)
+			for _, s := range sets {
+				t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
+					contains := s.Contains(testCase.pushItem)
+					assert.False(t, contains)
+
+					prevSize := s.Size()
+					s.Add(testCase.pushItem)
+					assert.Equal(t, prevSize+1, s.Size())
+
+					contains = s.Contains(testCase.pushItem)
+					assert.True(t, contains)
+				})
+			}
+		})
+	}
+}
+
+func TestAddExistingItem(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name    string
+		initial []string
+		addItem string
+	}{
+		{
+			name:    "1 items pushing a string",
+			initial: []string{"abc"},
+			addItem: "abc",
+		},
+		{
+			name:    "3 items pushing a string",
+			initial: []string{"1", "two", "3"},
+			addItem: "3",
+		},
+		{
+			name:    "3 items pushing an empty string",
+			initial: []string{"1", "", "3"},
+			addItem: "",
+		},
+	}
+
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			sets := getSetsForTest(testCase.initial...)
+			for _, s := range sets {
+				t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
+					contains := s.Contains(testCase.addItem)
+					assert.True(t, contains)
+
+					prevSize := s.Size()
+					s.Add(testCase.addItem)
+					assert.Equal(t, prevSize, s.Size())
+
+					contains = s.Contains(testCase.addItem)
+					assert.True(t, contains)
+				})
+			}
+		})
+	}
+}
+
+func TestAddAll(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name         string
+		initial      []int
+		addItems     []int
+		expectedSize int
+	}{
+		{
+			name:         "adding no items",
+			initial:      []int{9, 8, 7},
+			addItems:     []int{},
+			expectedSize: 3,
+		},
+		{
+			name:         "adding one item",
+			initial:      []int{9, 8, 7},
+			addItems:     []int{1},
+			expectedSize: 4,
+		},
+		{
+			name:         "adding some items that don't exist",
+			initial:      []int{9, 8, 7},
+			addItems:     []int{500, 1000},
+			expectedSize: 5,
+		},
+		{
+			name:         "adding some items that exist and don't exist",
+			initial:      []int{9, 8, 7},
+			addItems:     []int{9, 1000},
+			expectedSize: 4,
+		},
+		{
+			name:         "adding some items that already exist",
+			initial:      []int{9, 8, 7},
+			addItems:     []int{9, 7},
+			expectedSize: 3,
+		},
+		{
+			name:         "adding one item to an empty list",
+			initial:      []int{},
+			addItems:     []int{-52},
+			expectedSize: 1,
+		},
+		{
+			name:         "addding some items to an empty set",
+			initial:      []int{},
+			addItems:     []int{1, 2, 3},
+			expectedSize: 3,
+		},
+	}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			sets := getSetsForTest(testCase.initial...)
+			for _, s := range sets {
+				t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
+					s.AddAll(testCase.addItems...)
+					assert.Equal(t, testCase.expectedSize, s.Size())
+					assert.True(t, s.ContainsAll(testCase.initial...))
+					assert.True(t, s.ContainsAll(testCase.addItems...))
+				})
+			}
+		})
+	}
+}
+
+func TestRemoveUntilEmpty(t *testing.T) {
+	t.Parallel()
+
+	vals := []int{1, 2, 3}
+	sets := getSetsForTest(vals...)
+	for _, s := range sets {
+		assert.Equal(t, 3, s.Size())
+		assert.True(t, s.Contains(1))
+
+		ok := s.Remove(1)
+		assert.True(t, ok)
+		assert.False(t, s.Contains(1))
+
+		ok = s.Remove(1)
+		assert.False(t, ok)
+		assert.False(t, s.Contains(1))
+
+		assert.Equal(t, 2, s.Size())
+		assert.True(t, s.Contains(2))
+
+		ok = s.Remove(2)
+		assert.True(t, ok)
+		assert.False(t, s.Contains(2))
+
+		ok = s.Remove(2)
+		assert.False(t, ok)
+		assert.False(t, s.Contains(2))
+
+		assert.Equal(t, 1, s.Size())
+		assert.True(t, s.Contains(3))
+
+		ok = s.Remove(3)
+		assert.True(t, ok)
+		assert.False(t, s.Contains(3))
+
+		ok = s.Remove(3)
+		assert.False(t, ok)
+		assert.False(t, s.Contains(3))
+
+		assert.Equal(t, 0, s.Size())
+	}
+}
