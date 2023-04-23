@@ -616,3 +616,130 @@ func TestAnyAll(t *testing.T) {
 		})
 	}
 }
+
+func TestContainsAnyKeyContainsAllKeys(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name        string
+		initial     []entry.Entry[string, int]
+		keys        []string
+		expectedAny bool
+		expectedAll bool
+	}{
+		{
+			name:        "no values",
+			initial:     []entry.Entry[string, int]{},
+			keys:        []string{},
+			expectedAny: false,
+			expectedAll: true,
+		},
+		{
+			name:        "no values with attempted match",
+			initial:     []entry.Entry[string, int]{},
+			keys:        []string{"foo", "bar", "baz"},
+			expectedAny: false,
+			expectedAll: false,
+		},
+		{
+			name:        "no values match with 1 item",
+			initial:     []entry.Entry[string, int]{entry.New("twelve", 12)},
+			keys:        []string{},
+			expectedAny: false,
+			expectedAll: true,
+		},
+		{
+			name: "no values with 3 items",
+			initial: []entry.Entry[string, int]{
+				entry.New("hundred", 100),
+				entry.New("negative", -300),
+				entry.New("fiftyseven", 57),
+			},
+			keys:        []string{},
+			expectedAny: false,
+			expectedAll: true,
+		},
+		{
+			name: "one match with 3 items",
+			initial: []entry.Entry[string, int]{
+				entry.New("hundred", 100),
+				entry.New("threehundred", 300),
+				entry.New("fiftyseven", -57),
+			},
+			keys:        []string{"f", "a", "threeh", "fiftyseven"},
+			expectedAny: true,
+			expectedAll: false,
+		},
+		{
+			name: "no matches values with 3 items",
+			initial: []entry.Entry[string, int]{
+				entry.New("hundred", 100),
+				entry.New("threehundred", 300),
+				entry.New("fiftyseven", 57),
+			},
+			keys:        []string{"fivehundred", "sevenhundred"},
+			expectedAny: false,
+			expectedAll: false,
+		},
+		{
+			name: "1 of 3 values match",
+			initial: []entry.Entry[string, int]{
+				entry.New("hundred", -100),
+				entry.New("threehundred", -300),
+				entry.New("fiftyseven", -57),
+			},
+			keys:        []string{"threehundred", "fivehundred"},
+			expectedAny: true,
+			expectedAll: false,
+		},
+		{
+			name: "1 of 3 values all match",
+			initial: []entry.Entry[string, int]{
+				entry.New("hundred", -100),
+				entry.New("threehundred", -300),
+				entry.New("fiftyseven", -57),
+			},
+			keys:        []string{"hundred"},
+			expectedAny: true,
+			expectedAll: true,
+		},
+		{
+			name: "2 of 3 values all match",
+			initial: []entry.Entry[string, int]{
+				entry.New("hundred", -100),
+				entry.New("threehundred", -300),
+				entry.New("fiftyseven", -57),
+			},
+			keys:        []string{"hundred", "threehundred"},
+			expectedAny: true,
+			expectedAll: true,
+		},
+		{
+			name: "all values match",
+			initial: []entry.Entry[string, int]{
+				entry.New("hundred", -100),
+				entry.New("threehundred", -300),
+				entry.New("fiftyseven", -57),
+			},
+			keys:        []string{"hundred", "threehundred", "fiftyseven"},
+			expectedAny: true,
+			expectedAll: true,
+		},
+	}
+
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			maps := getMapsForTest(testCase.initial...)
+			for _, m := range maps {
+				t.Run(fmt.Sprintf("%T", m), func(t *testing.T) {
+					t.Run("ContainsAny", func(t *testing.T) {
+						assert.Equal(t, testCase.expectedAny, m.ContainsAnyKey(testCase.keys...))
+					})
+					t.Run("ContainsAll", func(t *testing.T) {
+						assert.Equal(t, testCase.expectedAll, m.ContainsAllKeys(testCase.keys...))
+					})
+				})
+			}
+		})
+	}
+}
