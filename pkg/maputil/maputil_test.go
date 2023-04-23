@@ -1,6 +1,7 @@
 package maputil_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/kaschnit/go-ds/pkg/maputil"
@@ -350,6 +351,64 @@ func TestMap(t *testing.T) {
 				return len(key)
 			})
 			assert.ElementsMatch(t, testCase.expected, result)
+		})
+	}
+}
+
+func TestMapMap(t *testing.T) {
+	t.Parallel()
+
+	testCases := []struct {
+		name     string
+		mapping  map[string]string
+		expected map[string]int
+	}{
+		{
+			name:     "no items",
+			mapping:  map[string]string{},
+			expected: map[string]int{},
+		},
+		{
+			name:     "one item",
+			mapping:  map[string]string{"123456789": "f"},
+			expected: map[string]int{"123456789-f": 9},
+		},
+		{
+			name: "a few items",
+			mapping: map[string]string{
+				"54321":        "aaaa",
+				"":             "eeee",
+				"222444666888": "",
+			},
+			expected: map[string]int{
+				"54321-aaaa":    5,
+				"-eeee":         0,
+				"222444666888-": 12,
+			},
+		},
+		{
+			name: "a few more items",
+			mapping: map[string]string{
+				"a":       "eeee",
+				"foo":     "",
+				"bar":     "",
+				"abcdefg": "p",
+			},
+			expected: map[string]int{
+				"a-eeee":    1,
+				"foo-":      3,
+				"bar-":      3,
+				"abcdefg-p": 7,
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			result := maputil.MapMap(testCase.mapping, func(k string, v string) (string, int) {
+				return fmt.Sprintf("%s-%s", k, v), len(k)
+			})
+			assert.Equal(t, testCase.expected, result)
 		})
 	}
 }
