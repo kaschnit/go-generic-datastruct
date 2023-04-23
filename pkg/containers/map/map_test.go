@@ -420,3 +420,199 @@ func TestAddAll(t *testing.T) {
 		})
 	}
 }
+
+func TestRemoveKeyUntilEmpty(t *testing.T) {
+	t.Parallel()
+
+	vals := []entry.Entry[string, int]{
+		entry.New("me", 1),
+		entry.New("you", 2),
+		entry.New("them", 3),
+	}
+	maps := getMapsForTest(vals...)
+	for _, m := range maps {
+		t.Run(fmt.Sprintf("%T", m), func(t *testing.T) {
+			assert.Equal(t, 3, m.Size())
+			assert.False(t, m.Empty())
+			assert.True(t, m.ContainsKey("me"))
+			assert.True(t, m.ContainsKey("you"))
+			assert.True(t, m.ContainsKey("them"))
+
+			ok := m.RemoveKey("me")
+			assert.True(t, ok)
+			assert.False(t, m.ContainsKey("me"))
+			assert.Equal(t, 2, m.Size())
+
+			ok = m.RemoveKey("me")
+			assert.False(t, ok)
+			assert.False(t, m.ContainsKey("me"))
+
+			assert.Equal(t, 2, m.Size())
+			assert.True(t, m.ContainsKey("you"))
+
+			ok = m.RemoveKey("you")
+			assert.True(t, ok)
+			assert.False(t, m.ContainsKey("you"))
+			assert.Equal(t, 1, m.Size())
+
+			ok = m.RemoveKey("you")
+			assert.False(t, ok)
+			assert.False(t, m.ContainsKey("you"))
+
+			assert.Equal(t, 1, m.Size())
+			assert.True(t, m.ContainsKey("them"))
+
+			ok = m.RemoveKey("them")
+			assert.True(t, ok)
+			assert.False(t, m.ContainsKey("them"))
+			assert.Equal(t, 0, m.Size())
+
+			ok = m.RemoveKey("them")
+			assert.False(t, ok)
+			assert.False(t, m.ContainsKey("them"))
+
+			assert.Equal(t, 0, m.Size())
+			assert.True(t, m.Empty())
+		})
+	}
+}
+
+func TestRemoveAllKeys(t *testing.T) {
+	t.Parallel()
+
+	vals := []entry.Entry[string, int]{
+		entry.New("me", 1),
+		entry.New("you", 2),
+		entry.New("them", 3),
+	}
+	maps := getMapsForTest(vals...)
+	for _, m := range maps {
+		t.Run(fmt.Sprintf("%T", m), func(t *testing.T) {
+			assert.Equal(t, 3, m.Size())
+			assert.True(t, m.ContainsAllKeys("me", "you", "them"))
+
+			removed := m.RemoveAllKeys("me", "you", "them", "we", "us")
+			assert.Equal(t, 0, m.Size())
+			assert.Equal(t, 3, removed)
+
+			removed = m.RemoveAllKeys("me", "you", "them", "we", "us")
+			assert.Equal(t, 0, m.Size())
+			assert.Equal(t, 0, removed)
+
+			m.Put("person", -77)
+			assert.Equal(t, 1, m.Size())
+
+			removed = m.RemoveAllKeys()
+			assert.Equal(t, 1, m.Size())
+			assert.Equal(t, 0, removed)
+
+			removed = m.RemoveAllKeys("person")
+			assert.Equal(t, 0, m.Size())
+			assert.Equal(t, 1, removed)
+
+			m.PutAll(entry.New("me", 20), entry.New("you", 10))
+			assert.Equal(t, 2, m.Size())
+
+			removed = m.RemoveAllKeys("me", "them")
+			assert.Equal(t, 1, m.Size())
+			assert.Equal(t, 1, removed)
+
+			removed = m.RemoveAllKeys("me", "you", "them")
+			assert.Equal(t, 0, m.Size())
+			assert.Equal(t, 1, removed)
+		})
+	}
+}
+
+func TestAnyAll(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name        string
+		initial     []entry.Entry[string, int]
+		expectedAny bool
+		expectedAll bool
+	}{
+		{
+			name:        "no values",
+			initial:     []entry.Entry[string, int]{},
+			expectedAny: false,
+			expectedAll: true,
+		},
+		{
+			name:        "no negative values with 1 item",
+			initial:     []entry.Entry[string, int]{entry.New("foo", 12)},
+			expectedAny: false,
+			expectedAll: false,
+		},
+		{
+			name: "negative at index 0",
+			initial: []entry.Entry[string, int]{
+				entry.New("x", -100),
+				entry.New("y", 300),
+				entry.New("z", 57),
+			},
+			expectedAny: true,
+			expectedAll: false,
+		},
+		{
+			name: "negative at index 1",
+			initial: []entry.Entry[string, int]{
+				entry.New("x", 100),
+				entry.New("y", -300),
+				entry.New("z", 57),
+			},
+			expectedAny: true,
+			expectedAll: false,
+		},
+		{
+			name: "negative at index 2",
+			initial: []entry.Entry[string, int]{
+				entry.New("x", 100),
+				entry.New("y", 300),
+				entry.New("z", -57),
+			},
+			expectedAny: true,
+			expectedAll: false,
+		},
+		{
+			name: "no negative values with 3 items",
+			initial: []entry.Entry[string, int]{
+				entry.New("x", 100),
+				entry.New("y", 300),
+				entry.New("z", 57),
+			},
+			expectedAny: false,
+			expectedAll: false,
+		},
+		{
+			name: "all negatives",
+			initial: []entry.Entry[string, int]{
+				entry.New("x", -100),
+				entry.New("y", -300),
+				entry.New("z", -57),
+			},
+			expectedAny: true,
+			expectedAll: true,
+		},
+	}
+
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			maps := getMapsForTest(testCase.initial...)
+			for _, m := range maps {
+				t.Run(fmt.Sprintf("%T", m), func(t *testing.T) {
+					isValueNegative := func(_ string, value int) bool {
+						return value < 0
+					}
+					t.Run("Any", func(t *testing.T) {
+						assert.Equal(t, testCase.expectedAny, m.Any(isValueNegative))
+					})
+					t.Run("All", func(t *testing.T) {
+						assert.Equal(t, testCase.expectedAll, m.All(isValueNegative))
+					})
+				})
+			}
+		})
+	}
+}

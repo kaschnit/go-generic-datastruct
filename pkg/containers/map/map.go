@@ -14,7 +14,7 @@ type Map[K any, V any] interface {
 	Put(key K, value V)
 	PutAll(entries ...entry.Entry[K, V])
 	RemoveKey(key K) bool
-	RemoveAllKeys(keys ...K) bool
+	RemoveAllKeys(keys ...K) int
 	ContainsKey(key K) bool
 	ContainsAllKeys(keys ...K) bool
 	ContainsAnyKey(keys ...K) bool

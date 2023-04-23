@@ -4,6 +4,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/kaschnit/go-ds/pkg/compare"
 	mapp "github.com/kaschnit/go-ds/pkg/containers/map"
 	"github.com/kaschnit/go-ds/pkg/containers/map/entry"
 	"github.com/kaschnit/go-ds/pkg/containers/map/hashmap"
@@ -12,6 +13,32 @@ import (
 
 // Ensure that HashMap implements Map
 var _ mapp.Map[string, int] = &hashmap.HashMap[string, string, int]{}
+
+func TestBuilderPut(t *testing.T) {
+	t.Parallel()
+
+	m := hashmap.NewBuilder[int, int, string](compare.IdentityHashKey[int]).
+		Put(1, "a").
+		Put(2, "c").
+		Put(3, "e").
+		Build()
+	assert.Equal(t, 3, m.Size())
+
+	val, ok := m.Get(2)
+	assert.True(t, ok)
+	assert.Equal(t, "c", val)
+
+	val, ok = m.Get(1)
+	assert.True(t, ok)
+	assert.Equal(t, "a", val)
+
+	val, ok = m.Get(3)
+	assert.True(t, ok)
+	assert.Equal(t, "e", val)
+
+	_, ok = m.Get(12345)
+	assert.False(t, ok)
+}
 
 func TestHashMapString(t *testing.T) {
 	t.Parallel()

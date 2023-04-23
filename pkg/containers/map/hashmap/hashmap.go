@@ -181,12 +181,14 @@ func (m *HashMap[K, HK, V]) RemoveKey(key K) bool {
 	return contained
 }
 
-func (m *HashMap[K, HK, V]) RemoveAllKeys(keys ...K) bool {
-	contained := true
+func (m *HashMap[K, HK, V]) RemoveAllKeys(keys ...K) int {
+	removed := 0
 	for _, key := range keys {
-		contained = contained && m.RemoveKey(key)
+		if m.RemoveKey(key) {
+			removed++
+		}
 	}
-	return contained
+	return removed
 }
 
 func (m *HashMap[K, HK, V]) ContainsKey(key K) bool {
