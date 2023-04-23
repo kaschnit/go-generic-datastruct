@@ -13,7 +13,7 @@ import (
 // Ensure that HashMap implements Map
 var _ mapp.Map[string, int] = &hashmap.HashMap[string, string, int]{}
 
-func TestHashMaPString(t *testing.T) {
+func TestHashMapString(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {

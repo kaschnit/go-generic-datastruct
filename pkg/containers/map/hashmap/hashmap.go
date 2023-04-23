@@ -156,6 +156,14 @@ func (m *HashMap[K, HK, V]) Items(abort <-chan struct{}) <-chan enumerable.KeyVa
 	return ch
 }
 
+func (m *HashMap[K, HK, V]) Get(key K) (V, bool) {
+	entry, ok := m.entries[m.hashkey(key)]
+	if !ok {
+		return *new(V), false
+	}
+	return entry.Value(), true
+}
+
 func (m *HashMap[K, HK, V]) Put(key K, value V) {
 	m.entries[m.hashkey(key)] = entry.New(key, value)
 }

@@ -10,6 +10,7 @@ type Map[K any, V any] interface {
 	container.Container
 	enumerable.Enumerable[K, V]
 
+	Get(key K) (V, bool)
 	Put(key K, value V)
 	PutAll(entries ...entry.Entry[K, V])
 	RemoveKey(key K) bool

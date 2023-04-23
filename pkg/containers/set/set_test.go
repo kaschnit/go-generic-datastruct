@@ -178,22 +178,22 @@ func TestAddNewItem(t *testing.T) {
 		pushItem string
 	}{
 		{
-			name:     "3 items pushing a string",
+			name:     "3 items adding a string",
 			initial:  []string{"1", "two", "3"},
 			pushItem: "foo",
 		},
 		{
-			name:     "3 items pushing an empty string",
+			name:     "3 items adding an empty string",
 			initial:  []string{"1", "two", "3"},
 			pushItem: "",
 		},
 		{
-			name:     "0 items pushing a string",
+			name:     "0 items adding a string",
 			initial:  []string{},
 			pushItem: "hello",
 		},
 		{
-			name:     "0 items pushing an empty string",
+			name:     "0 items adding an empty string",
 			initial:  []string{},
 			pushItem: "",
 		},
