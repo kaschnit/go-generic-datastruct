@@ -13,8 +13,9 @@ type LinkedQueue[T any] struct {
 
 func New[T any](values ...T) *LinkedQueue[T] {
 	q := LinkedQueue[T]{
-		linkedList: linkedlist.NewDoubleLinked(values...),
+		linkedList: linkedlist.NewDoubleLinked[T](),
 	}
+	q.PushAll(values...)
 	return &q
 }
 
@@ -47,7 +48,9 @@ func (q *LinkedQueue[T]) Push(value T) {
 }
 
 func (q *LinkedQueue[T]) PushAll(values ...T) {
-	q.linkedList.PrependAll(values...)
+	for _, value := range values {
+		q.Push(value)
+	}
 }
 
 func (q *LinkedQueue[T]) Pop() (value T, ok bool) {

@@ -213,31 +213,31 @@ func TestAppendAll(t *testing.T) {
 		expectedBack int
 	}{
 		{
-			name:         "pushing no items",
+			name:         "appending no items",
 			initial:      []int{9, 8, 7},
 			pushItems:    []int{},
 			expectedBack: 7,
 		},
 		{
-			name:         "pushing one item",
+			name:         "appending one item",
 			initial:      []int{9, 8, 7},
 			pushItems:    []int{1},
 			expectedBack: 1,
 		},
 		{
-			name:         "pushing some items",
+			name:         "appending some items",
 			initial:      []int{9, 8, 7},
 			pushItems:    []int{500, 1000},
 			expectedBack: 1000,
 		},
 		{
-			name:         "pushing one item onto an empty stack",
+			name:         "appending one item onto an empty list",
 			initial:      []int{},
 			pushItems:    []int{-52},
 			expectedBack: -52,
 		},
 		{
-			name:         "pushing some items onto an empty stack",
+			name:         "appending some items onto an empty list",
 			initial:      []int{},
 			pushItems:    []int{1, 2, 3},
 			expectedBack: 3,
@@ -315,31 +315,31 @@ func TestPrependAll(t *testing.T) {
 		expectedFront int
 	}{
 		{
-			name:          "pushing no items",
+			name:          "appending no items",
 			initial:       []int{9, 8, 7},
 			pushItems:     []int{},
 			expectedFront: 9,
 		},
 		{
-			name:          "pushing one item",
+			name:          "appending one item",
 			initial:       []int{9, 8, 7},
 			pushItems:     []int{1},
 			expectedFront: 1,
 		},
 		{
-			name:          "pushing some items",
+			name:          "appending some items",
 			initial:       []int{9, 8, 7},
 			pushItems:     []int{500, 1000},
 			expectedFront: 500,
 		},
 		{
-			name:          "pushing one item onto an empty stack",
+			name:          "appending one item onto an empty list",
 			initial:       []int{},
 			pushItems:     []int{-52},
 			expectedFront: -52,
 		},
 		{
-			name:          "pushing some items onto an empty stack",
+			name:          "appending some items onto an empty list",
 			initial:       []int{},
 			pushItems:     []int{1, 2, 3},
 			expectedFront: 1,
