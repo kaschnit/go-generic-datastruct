@@ -282,3 +282,141 @@ func TestPutNewKey(t *testing.T) {
 		})
 	}
 }
+
+func TestPutExistingKey(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name    string
+		initial []entry.Entry[string, int]
+		putItem entry.Entry[string, int]
+	}{
+		{
+			name: "3 items adding a new value",
+			initial: []entry.Entry[string, int]{
+				entry.New("1", 1),
+				entry.New("two", 9),
+				entry.New("3", 0),
+			},
+			putItem: entry.New("two", 3),
+		},
+		{
+			name: "3 items adding the same value",
+			initial: []entry.Entry[string, int]{
+				entry.New("1", 1),
+				entry.New("two", 9),
+				entry.New("3", 0),
+			},
+			putItem: entry.New("two", 9),
+		},
+	}
+
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			maps := getMapsForTest(testCase.initial...)
+			for _, m := range maps {
+				t.Run(fmt.Sprintf("%T", m), func(t *testing.T) {
+					contains := m.ContainsKey(testCase.putItem.Key())
+					assert.True(t, contains)
+
+					prevSize := m.Size()
+					m.Put(testCase.putItem.Key(), testCase.putItem.Value())
+					assert.Equal(t, prevSize, m.Size())
+
+					contains = m.ContainsKey(testCase.putItem.Key())
+					assert.True(t, contains)
+
+					value, ok := m.Get(testCase.putItem.Key())
+					assert.True(t, ok)
+					assert.Equal(t, testCase.putItem.Value(), value)
+
+					prevSize = m.Size()
+					newValue := 847348962737
+					m.Put(testCase.putItem.Key(), newValue)
+					assert.Equal(t, prevSize, m.Size())
+
+					contains = m.ContainsKey(testCase.putItem.Key())
+					assert.True(t, contains)
+
+					value, ok = m.Get(testCase.putItem.Key())
+					assert.True(t, ok)
+					assert.Equal(t, newValue, value)
+				})
+			}
+		})
+	}
+}
+
+func TestAddAll(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name         string
+		initial      []entry.Entry[int, string]
+		putItems     []entry.Entry[int, string]
+		expectedSize int
+	}{
+		{
+			name: "adding no items",
+			initial: []entry.Entry[int, string]{
+				entry.New(9, "foo"),
+				entry.New(8, "bar"),
+				entry.New(7, "baz"),
+			},
+			putItems:     []entry.Entry[int, string]{},
+			expectedSize: 3,
+		},
+		{
+			name: "adding one item",
+			initial: []entry.Entry[int, string]{
+				entry.New(9, "foo"),
+				entry.New(8, "bar"),
+				entry.New(7, "baz"),
+			},
+			putItems:     []entry.Entry[int, string]{entry.New(1, "hello")},
+			expectedSize: 4,
+		},
+		{
+			name: "adding some items that don't exist",
+			initial: []entry.Entry[int, string]{
+				entry.New(9, "foo"),
+				entry.New(8, "bar"),
+				entry.New(7, "baz"),
+			},
+			putItems: []entry.Entry[int, string]{
+				entry.New(500, "hello"),
+				entry.New(1000, "goodbye"),
+			},
+			expectedSize: 5,
+		},
+	}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			maps := getMapsForTest(testCase.initial...)
+			for _, m := range maps {
+				t.Run(fmt.Sprintf("%T", m), func(t *testing.T) {
+					m.PutAll(testCase.putItems...)
+					assert.Equal(t, testCase.expectedSize, m.Size())
+
+					initialKeys := make([]int, 0)
+					for _, entry := range testCase.initial {
+						assert.True(t, m.ContainsKey(entry.Key()))
+						initialKeys = append(initialKeys, entry.Key())
+					}
+
+					putItemKeys := make([]int, 0)
+					for _, entry := range testCase.putItems {
+						assert.True(t, m.ContainsKey(entry.Key()))
+						putItemKeys = append(putItemKeys, entry.Key())
+					}
+
+					assert.Len(t, initialKeys, len(testCase.initial))
+					assert.True(t, m.ContainsAllKeys(initialKeys...))
+
+					assert.Len(t, putItemKeys, len(testCase.putItems))
+					assert.True(t, m.ContainsAllKeys(putItemKeys...))
+				})
+			}
+		})
+	}
+}
