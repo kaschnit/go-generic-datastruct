@@ -743,3 +743,58 @@ func TestContainsAnyKeyContainsAllKeys(t *testing.T) {
 		})
 	}
 }
+
+func TestKeysValues(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name           string
+		entries        []entry.Entry[string, int]
+		expectedKeys   []string
+		expectedValues []int
+	}{
+		{
+			name:           "no values",
+			entries:        []entry.Entry[string, int]{},
+			expectedKeys:   []string{},
+			expectedValues: []int{},
+		},
+		{
+			name:           "1 item",
+			entries:        []entry.Entry[string, int]{entry.New("foo", 12)},
+			expectedKeys:   []string{"foo"},
+			expectedValues: []int{12},
+		},
+		{
+			name: "3 items",
+			entries: []entry.Entry[string, int]{
+				entry.New("foo", 100),
+				entry.New("bar", 300),
+				entry.New("baz", 57),
+			},
+			expectedKeys:   []string{"foo", "bar", "baz"},
+			expectedValues: []int{100, 300, 57},
+		},
+	}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			maps := getMapsForTest(testCase.entries...)
+			for _, m := range maps {
+				t.Run(fmt.Sprintf("%T Keys", m), func(t *testing.T) {
+					result := []string{}
+					for key := range m.Keys(nil) {
+						result = append(result, key)
+					}
+					assert.ElementsMatch(t, testCase.expectedKeys, result)
+				})
+				t.Run(fmt.Sprintf("%T Values", m), func(t *testing.T) {
+					result := []int{}
+					for value := range m.Values(nil) {
+						result = append(result, value)
+					}
+					assert.ElementsMatch(t, testCase.expectedValues, result)
+				})
+			}
+		})
+	}
+}
