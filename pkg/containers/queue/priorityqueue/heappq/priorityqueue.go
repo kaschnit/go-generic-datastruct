@@ -3,24 +3,16 @@ package heappq
 import (
 	"fmt"
 	"strings"
+
+	compare "github.com/kaschnit/go-ds/pkg/compare"
 )
-
-type Priority int
-
-const (
-	PriorityRightHigher Priority = -1
-	PriorityEqual       Priority = 0
-	PriorityLeftHigher  Priority = 1
-)
-
-type PriorityComparator[T any] func(left T, right T) Priority
 
 type HeapPQ[T any] struct {
-	comparator PriorityComparator[T]
+	comparator compare.Comparator[T]
 	items      []T
 }
 
-func New[T any](comparator PriorityComparator[T], values ...T) *HeapPQ[T] {
+func New[T any](comparator compare.Comparator[T], values ...T) *HeapPQ[T] {
 	q := HeapPQ[T]{
 		comparator: comparator,
 		items:      make([]T, 1),
@@ -61,7 +53,7 @@ func (q *HeapPQ[T]) Push(value T) {
 		parentIndex := parent(fixIndex)
 
 		// Check whether the parent is higher priority
-		isParentInPlace := q.comparator(q.items[fixIndex], q.items[parentIndex]) != PriorityLeftHigher
+		isParentInPlace := q.comparator(q.items[fixIndex], q.items[parentIndex]) != compare.PriorityLeftHigher
 
 		// If the parent priority is higher, we're done percolating up.
 		if isParentInPlace {
@@ -98,7 +90,7 @@ func (q *HeapPQ[T]) Pop() (value T, ok bool) {
 		leftIndex := leftChild(fixIndex)
 		if leftIndex < len(q.items) {
 			// Child is in place if it's not higher priority than the parent.
-			isChildInPlace := q.comparator(q.items[leftIndex], q.items[fixIndex]) != PriorityLeftHigher
+			isChildInPlace := q.comparator(q.items[leftIndex], q.items[fixIndex]) != compare.PriorityLeftHigher
 
 			// Swap with the child if the child is not in place.
 			if !isChildInPlace {
@@ -112,7 +104,7 @@ func (q *HeapPQ[T]) Pop() (value T, ok bool) {
 		rightIndex := rightChild(fixIndex)
 		if rightIndex < len(q.items) {
 			// Child is in place if it's not higher priority than the parent.
-			isChildInPlace := q.comparator(q.items[rightIndex], q.items[fixIndex]) != PriorityLeftHigher
+			isChildInPlace := q.comparator(q.items[rightIndex], q.items[fixIndex]) != compare.PriorityLeftHigher
 
 			// Swap with the child if the child is not in place.
 			if !isChildInPlace {
