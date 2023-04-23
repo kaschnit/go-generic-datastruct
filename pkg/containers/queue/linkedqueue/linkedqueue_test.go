@@ -12,6 +12,35 @@ import (
 // Ensure that LinkedQueue implements Queue
 var _ queue.Queue[int] = &linkedqueue.LinkedQueue[int]{}
 
+func TestLinkedQueueString(t *testing.T) {
+	tests := []struct {
+		name     string
+		queue    *linkedqueue.LinkedQueue[int]
+		expected string
+	}{
+		{
+			name:     "empty queue",
+			queue:    linkedqueue.New[int](),
+			expected: "LinkedQueue\n",
+		},
+		{
+			name:     "queue with 1 item",
+			queue:    linkedqueue.New(987654321),
+			expected: "LinkedQueue\n987654321",
+		},
+		{
+			name:     "queue with a few items",
+			queue:    linkedqueue.New(100, 1145, -202, 5, 6, 7),
+			expected: "LinkedQueue\n7,6,5,-202,1145,100",
+		},
+	}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			assert.Equal(t, testCase.expected, testCase.queue.String())
+		})
+	}
+}
+
 func TestPush(t *testing.T) {
 	tests := []struct {
 		name         string
