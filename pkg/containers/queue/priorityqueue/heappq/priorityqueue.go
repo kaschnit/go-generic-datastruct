@@ -34,11 +34,12 @@ func (q *HeapPQ[T]) Clear() {
 }
 
 func (q *HeapPQ[T]) String() string {
+	qCpy := q.Copy()
 	sb := strings.Builder{}
 	sb.WriteString("HeapPQ\n")
-	strs := make([]string, 0, q.Size())
-	for i := 1; i < len(q.items); i++ {
-		strs = append(strs, fmt.Sprintf("%v", q.items[i]))
+	strs := make([]string, 0, qCpy.Size())
+	for item, ok := qCpy.Pop(); ok; item, ok = qCpy.Pop() {
+		strs = append(strs, fmt.Sprintf("%v", item))
 	}
 	sb.WriteString(strings.Join(strs, ","))
 	return sb.String()
@@ -48,6 +49,48 @@ func (q *HeapPQ[T]) Push(value T) {
 	// Push onto the end
 	q.items = append(q.items, value)
 
+	// Fix the heap invariant
+	q.percolateUp()
+}
+
+func (q *HeapPQ[T]) PushAll(values ...T) {
+	for _, value := range values {
+		q.Push(value)
+	}
+}
+
+func (q *HeapPQ[T]) Pop() (value T, ok bool) {
+	value, ok = q.Peek()
+	if !ok {
+		return value, false
+	}
+
+	// Move the last item to the root
+	q.items[1], q.items[len(q.items)-1] = q.items[len(q.items)-1], q.items[1]
+
+	// Remove the last item, which was the root
+	q.items = q.items[:len(q.items)-1]
+
+	// Fix the heap invariant
+	q.percolateDown()
+
+	return value, true
+}
+
+func (q *HeapPQ[T]) Peek() (value T, ok bool) {
+	if q.Empty() {
+		return *new(T), false
+	}
+	return q.items[1], true
+}
+
+func (q *HeapPQ[T]) Copy() *HeapPQ[T] {
+	itemsCpy := make([]T, len(q.items)-1)
+	copy(itemsCpy, q.items[1:])
+	return New(q.comparator, itemsCpy...)
+}
+
+func (q *HeapPQ[T]) percolateUp() {
 	// Percolate up to maintain heap invariant
 	for fixIndex := len(q.items) - 1; fixIndex != 1; {
 		parentIndex := parent(fixIndex)
@@ -66,50 +109,34 @@ func (q *HeapPQ[T]) Push(value T) {
 	}
 }
 
-func (q *HeapPQ[T]) PushAll(values ...T) {
-	for _, value := range values {
-		q.Push(value)
-	}
-}
-
-func (q *HeapPQ[T]) Pop() (value T, ok bool) {
-	value, ok = q.Peek()
-	if ok {
-		return value, ok
-	}
-
-	// Move the last item to the root
-	q.items[1], q.items[len(q.items)-1] = q.items[len(q.items)-1], q.items[1]
-
-	// Remove the last item, which was the root
-	q.items = q.items[:len(q.items)-1]
-
+func (q *HeapPQ[T]) percolateDown() {
 	// Percolate down to maintain the heap invariant
 	for fixIndex := 1; fixIndex != len(q.items)-1; {
-		// Check whether the left child is higher priority
-		leftIndex := leftChild(fixIndex)
-		if leftIndex < len(q.items) {
-			// Child is in place if it's not higher priority than the parent.
-			isChildInPlace := q.comparator(q.items[leftIndex], q.items[fixIndex]) != compare.PriorityLeftHigher
 
-			// Swap with the child if the child is not in place.
-			if !isChildInPlace {
-				q.items[fixIndex], q.items[leftIndex] = q.items[leftIndex], q.items[fixIndex]
-				fixIndex = leftIndex
-				continue
+		leftIndex := leftChild(fixIndex)
+		rightIndex := rightChild(fixIndex)
+
+		childIndex := -1
+		if leftIndex < len(q.items) && rightIndex < len(q.items) {
+			cmp := q.comparator(q.items[leftIndex], q.items[rightIndex])
+			if cmp == compare.PriorityLeftHigher {
+				childIndex = leftIndex
+			} else {
+				childIndex = rightIndex
 			}
+		} else if leftIndex < len(q.items) {
+			childIndex = leftIndex
+		} else if rightIndex < len(q.items) {
+			childIndex = rightIndex
 		}
 
-		// Check whether the right child is higher priority
-		rightIndex := rightChild(fixIndex)
-		if rightIndex < len(q.items) {
-			// Child is in place if it's not higher priority than the parent.
-			isChildInPlace := q.comparator(q.items[rightIndex], q.items[fixIndex]) != compare.PriorityLeftHigher
+		if childIndex >= 0 {
+			childInPlace := q.comparator(q.items[childIndex], q.items[fixIndex]) != compare.PriorityLeftHigher
 
 			// Swap with the child if the child is not in place.
-			if !isChildInPlace {
-				q.items[fixIndex], q.items[rightIndex] = q.items[rightIndex], q.items[fixIndex]
-				fixIndex = rightIndex
+			if !childInPlace {
+				q.items[fixIndex], q.items[childIndex] = q.items[childIndex], q.items[fixIndex]
+				fixIndex = childIndex
 				continue
 			}
 		}
@@ -117,15 +144,6 @@ func (q *HeapPQ[T]) Pop() (value T, ok bool) {
 		// Node is in place, done.
 		break
 	}
-
-	return value, ok
-}
-
-func (q *HeapPQ[T]) Peek() (value T, ok bool) {
-	if q.Empty() {
-		return *new(T), false
-	}
-	return q.items[1], true
 }
 
 func parent(index int) int {
