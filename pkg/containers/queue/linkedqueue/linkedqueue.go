@@ -15,7 +15,6 @@ func New[T any](values ...T) *LinkedQueue[T] {
 	q := LinkedQueue[T]{
 		linkedList: linkedlist.NewDoubleLinked(values...),
 	}
-	q.PushAll(values...)
 	return &q
 }
 
