@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/kaschnit/go-ds/pkg/compare"
 	"github.com/kaschnit/go-ds/pkg/containers/queue"
 	"github.com/kaschnit/go-ds/pkg/containers/queue/linkedqueue"
 	"github.com/kaschnit/go-ds/pkg/containers/queue/priorityqueue/heappq"
@@ -14,7 +13,7 @@ import (
 
 func getQueuesForTest[T constraints.Ordered](values ...T) []queue.Queue[T] {
 	return []queue.Queue[T]{
-		heappq.New(compare.OrderedComparator[T], values...),
+		heappq.New(values...),
 		linkedqueue.New(values...),
 	}
 }

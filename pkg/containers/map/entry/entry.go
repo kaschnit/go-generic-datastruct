@@ -5,7 +5,14 @@ type Entry[K any, V any] struct {
 	value V
 }
 
-func New[K any, V any](key K, value V) *Entry[K, V] {
+func New[K any, V any](key K, value V) Entry[K, V] {
+	return Entry[K, V]{
+		key:   key,
+		value: value,
+	}
+}
+
+func NewRef[K any, V any](key K, value V) *Entry[K, V] {
 	return &Entry[K, V]{
 		key:   key,
 		value: value,

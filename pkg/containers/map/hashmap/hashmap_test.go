@@ -6,4 +6,4 @@ import (
 )
 
 // Ensure that HashMap implements Map
-var _ mapp.Map[string, int] = &hashmap.HashMap[string, int]{}
+var _ mapp.Map[string, int] = &hashmap.HashMap[string, string, int]{}

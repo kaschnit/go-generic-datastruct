@@ -5,20 +5,42 @@ import (
 	"strings"
 
 	compare "github.com/kaschnit/go-ds/pkg/compare"
+	"golang.org/x/exp/constraints"
 )
+
+type HeapPQBuilder[T any] struct {
+	comparator compare.Comparator[T]
+	items      []T
+}
+
+func NewBuilder[T any](comparator compare.Comparator[T]) *HeapPQBuilder[T] {
+	return &HeapPQBuilder[T]{
+		comparator: comparator,
+	}
+}
+
+func (b *HeapPQBuilder[T]) AddItems(items ...T) *HeapPQBuilder[T] {
+	b.items = append(b.items, items...)
+
+	return b
+}
+
+func (b *HeapPQBuilder[T]) Build() *HeapPQ[T] {
+	q := HeapPQ[T]{
+		comparator: b.comparator,
+		items:      make([]T, 1),
+	}
+	q.PushAll(b.items...)
+	return &q
+}
 
 type HeapPQ[T any] struct {
 	comparator compare.Comparator[T]
 	items      []T
 }
 
-func New[T any](comparator compare.Comparator[T], values ...T) *HeapPQ[T] {
-	q := HeapPQ[T]{
-		comparator: comparator,
-		items:      make([]T, 1),
-	}
-	q.PushAll(values...)
-	return &q
+func New[T constraints.Ordered](values ...T) *HeapPQ[T] {
+	return NewBuilder(compare.OrderedComparator[T]).AddItems(values...).Build()
 }
 
 func (q *HeapPQ[T]) Empty() bool {
@@ -85,9 +107,7 @@ func (q *HeapPQ[T]) Peek() (value T, ok bool) {
 }
 
 func (q *HeapPQ[T]) Copy() *HeapPQ[T] {
-	itemsCpy := make([]T, len(q.items)-1)
-	copy(itemsCpy, q.items[1:])
-	return New(q.comparator, itemsCpy...)
+	return NewBuilder(q.comparator).AddItems(q.items[1:]...).Build()
 }
 
 func (q *HeapPQ[T]) percolateUp() {
