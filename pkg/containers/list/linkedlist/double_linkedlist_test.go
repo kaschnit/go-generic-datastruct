@@ -3,6 +3,7 @@ package linkedlist_test
 import (
 	"testing"
 
+	"github.com/kaschnit/go-ds/pkg/containers/iterable"
 	"github.com/kaschnit/go-ds/pkg/containers/list"
 	"github.com/kaschnit/go-ds/pkg/containers/list/linkedlist"
 	"github.com/stretchr/testify/assert"
@@ -10,6 +11,9 @@ import (
 
 // Ensure that DoubleLinkedList implements List
 var _ list.List[int] = &linkedlist.DoubleLinkedList[int]{}
+
+// Ensure that ArrayList implements ReverseIterable
+var _ iterable.ReverseIterable[int, string] = &linkedlist.DoubleLinkedList[string]{}
 
 func TestDoubleLinkedString(t *testing.T) {
 	t.Parallel()

@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/kaschnit/go-ds/pkg/containers/enumerable"
+	"github.com/kaschnit/go-ds/pkg/containers/iterable"
 	"github.com/kaschnit/go-ds/pkg/containers/list"
 	"github.com/kaschnit/go-ds/pkg/containers/list/arraylist"
 	"github.com/kaschnit/go-ds/pkg/containers/list/linkedlist"
@@ -15,6 +16,13 @@ func getListsForTest[T any](values ...T) []list.List[T] {
 	return []list.List[T]{
 		arraylist.New(values...),
 		linkedlist.NewSingleLinked(values...),
+		linkedlist.NewDoubleLinked(values...),
+	}
+}
+
+func getReversibleListsForTest[T any](values ...T) []iterable.ReverseIterable[int, T] {
+	return []iterable.ReverseIterable[int, T]{
+		arraylist.New(values...),
 		linkedlist.NewDoubleLinked(values...),
 	}
 }
@@ -1359,6 +1367,71 @@ func TestIteration_Empty(t *testing.T) {
 	for _, l := range lists {
 		t.Run(fmt.Sprintf("%T - Iterator()", l), func(t *testing.T) {
 			_, ok := l.Iterator()
+			assert.False(t, ok)
+		})
+	}
+}
+
+func TestIterationReverse(t *testing.T) {
+	t.Parallel()
+
+	values := []int{100, 200, 500}
+	lists := getReversibleListsForTest(values...)
+	for _, l := range lists {
+		t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
+			// Iterator to element 0
+			itr, ok := l.IteratorReverse()
+			assert.True(t, ok)
+			assert.True(t, itr.HasNext())
+
+			key, ok := itr.Key()
+			assert.True(t, ok)
+			assert.Equal(t, 2, key)
+
+			val, ok := itr.Value()
+			assert.True(t, ok)
+			assert.Equal(t, 500, val)
+
+			// Iterator to element 1
+			itr, ok = itr.Next()
+			assert.True(t, ok)
+			assert.True(t, itr.HasNext())
+
+			key, ok = itr.Key()
+			assert.True(t, ok)
+			assert.Equal(t, 1, key)
+
+			val, ok = itr.Value()
+			assert.True(t, ok)
+			assert.Equal(t, 200, val)
+
+			// Iterator to element 2
+			itr, ok = itr.Next()
+			assert.True(t, ok)
+			assert.False(t, itr.HasNext())
+
+			key, ok = itr.Key()
+			assert.True(t, ok)
+			assert.Equal(t, 0, key)
+
+			val, ok = itr.Value()
+			assert.True(t, ok)
+			assert.Equal(t, 100, val)
+
+			// Invalid iterator
+			_, ok = itr.Next()
+			assert.False(t, ok)
+		})
+	}
+}
+
+func TestIterationReverse_Empty(t *testing.T) {
+	t.Parallel()
+
+	lists := getReversibleListsForTest[int]()
+	for _, l := range lists {
+		t.Run(fmt.Sprintf("%T - Iterator()", l), func(t *testing.T) {
+			_, ok := l.IteratorReverse()
 			assert.False(t, ok)
 		})
 	}

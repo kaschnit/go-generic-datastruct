@@ -9,8 +9,9 @@ import (
 )
 
 type doubleLinkedListIterator[T any] struct {
-	index int
-	node  *doubleLinkedNode[T]
+	index  int
+	node   *doubleLinkedNode[T]
+	nextOp func(index int, node *doubleLinkedNode[T]) (int, *doubleLinkedNode[T])
 }
 
 func (a *doubleLinkedListIterator[T]) Key() (key int, ok bool) {
@@ -25,14 +26,17 @@ func (a *doubleLinkedListIterator[T]) Next() (next iterator.ForwardIterator[int,
 	if !a.HasNext() {
 		return nil, false
 	}
+	nextIndex, nextNode := a.nextOp(a.index, a.node)
 	return &doubleLinkedListIterator[T]{
-		index: a.index + 1,
-		node:  a.node.next,
+		index:  nextIndex,
+		node:   nextNode,
+		nextOp: a.nextOp,
 	}, true
 }
 
 func (a *doubleLinkedListIterator[T]) HasNext() bool {
-	return a.node.next != nil
+	_, nextNode := a.nextOp(a.index, a.node)
+	return nextNode != nil
 }
 
 type doubleLinkedNode[T any] struct {
@@ -170,6 +174,22 @@ func (l *DoubleLinkedList[T]) Iterator() (iter iterator.ForwardIterator[int, T],
 	return &doubleLinkedListIterator[T]{
 		index: 0,
 		node:  l.head,
+		nextOp: func(index int, node *doubleLinkedNode[T]) (int, *doubleLinkedNode[T]) {
+			return index + 1, node.next
+		},
+	}, true
+}
+
+func (l *DoubleLinkedList[T]) IteratorReverse() (iter iterator.ForwardIterator[int, T], ok bool) {
+	if l.Empty() {
+		return nil, false
+	}
+	return &doubleLinkedListIterator[T]{
+		index: l.Size() - 1,
+		node:  l.tail,
+		nextOp: func(index int, node *doubleLinkedNode[T]) (int, *doubleLinkedNode[T]) {
+			return index - 1, node.prev
+		},
 	}, true
 }
 
