@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/kaschnit/go-ds/pkg/containers/enumerable"
 	mapp "github.com/kaschnit/go-ds/pkg/containers/map"
 	"github.com/kaschnit/go-ds/pkg/containers/map/entry"
 	"github.com/kaschnit/go-ds/pkg/containers/map/hashmap"
@@ -793,6 +794,56 @@ func TestKeysValues(t *testing.T) {
 						result = append(result, value)
 					}
 					assert.ElementsMatch(t, testCase.expectedValues, result)
+				})
+			}
+		})
+	}
+}
+
+func TestItems(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name          string
+		entries       []entry.Entry[string, int]
+		expectedItems []enumerable.KeyValue[string, int]
+	}{
+		{
+			name:          "no values",
+			entries:       []entry.Entry[string, int]{},
+			expectedItems: []enumerable.KeyValue[string, int]{},
+		},
+		{
+			name:    "1 item",
+			entries: []entry.Entry[string, int]{entry.New("foo", 12)},
+			expectedItems: []enumerable.KeyValue[string, int]{
+				{Key: "foo", Value: 12},
+			},
+		},
+		{
+			name: "3 items",
+			entries: []entry.Entry[string, int]{
+				entry.New("abc", 100),
+				entry.New("def", 300),
+				entry.New("ghi", 57),
+			},
+			expectedItems: []enumerable.KeyValue[string, int]{
+				{Key: "abc", Value: 100},
+				{Key: "def", Value: 300},
+				{Key: "ghi", Value: 57},
+			},
+		},
+	}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			maps := getMapsForTest(testCase.entries...)
+			for _, m := range maps {
+				t.Run(fmt.Sprintf("%T", m), func(t *testing.T) {
+					result := []enumerable.KeyValue[string, int]{}
+					for item := range m.Items(nil) {
+						result = append(result, item)
+					}
+					assert.ElementsMatch(t, testCase.expectedItems, result)
 				})
 			}
 		})
