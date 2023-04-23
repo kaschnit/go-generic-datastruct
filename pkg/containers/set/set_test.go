@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/kaschnit/go-ds/pkg/containers/enumerable"
 	"github.com/kaschnit/go-ds/pkg/containers/set"
 	"github.com/kaschnit/go-ds/pkg/containers/set/hashset"
 	"github.com/stretchr/testify/assert"
@@ -368,5 +369,249 @@ func TestRemoveUntilEmpty(t *testing.T) {
 		assert.False(t, s.Contains(3))
 
 		assert.Equal(t, 0, s.Size())
+	}
+}
+
+func TestAnyAll(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name        string
+		initial     []int
+		expectedAny bool
+		expectedAll bool
+	}{
+		{
+			name:        "no values",
+			initial:     []int{},
+			expectedAny: false,
+			expectedAll: true,
+		},
+		{
+			name:        "no negative values with 1 item",
+			initial:     []int{12},
+			expectedAny: false,
+			expectedAll: false,
+		},
+		{
+			name:        "negative at index 0",
+			initial:     []int{-100, 300, 57},
+			expectedAny: true,
+			expectedAll: false,
+		},
+		{
+			name:        "negative at index 1",
+			initial:     []int{100, -300, 57},
+			expectedAny: true,
+			expectedAll: false,
+		},
+		{
+			name:        "negative at index 2",
+			initial:     []int{100, 300, -57},
+			expectedAny: true,
+			expectedAll: false,
+		},
+		{
+			name:        "no negative values with 3 items",
+			initial:     []int{100, 300, 57},
+			expectedAny: false,
+			expectedAll: false,
+		},
+		{
+			name:        "all negatives",
+			initial:     []int{-100, -300, -57},
+			expectedAny: true,
+			expectedAll: true,
+		},
+	}
+
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			sets := getSetsForTest(testCase.initial...)
+			for _, s := range sets {
+				t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
+					isNegative := func(_ int, value int) bool {
+						return value < 0
+					}
+					t.Run("Any", func(t *testing.T) {
+						assert.Equal(t, testCase.expectedAny, s.Any(isNegative))
+					})
+					t.Run("All", func(t *testing.T) {
+						assert.Equal(t, testCase.expectedAll, s.All(isNegative))
+					})
+				})
+			}
+		})
+	}
+}
+
+func TestFindOk(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name          string
+		values        []int
+		expectedValue int
+	}{
+		{
+			name:          "negative at index 0",
+			values:        []int{-100, 300, 57},
+			expectedValue: -100,
+		},
+		{
+			name:          "negative at index 1",
+			values:        []int{100, -300, 57},
+			expectedValue: -300,
+		},
+		{
+			name:          "negative at index 2",
+			values:        []int{100, 300, -57},
+			expectedValue: -57,
+		},
+	}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			sets := getSetsForTest(testCase.values...)
+			for _, s := range sets {
+				isNegative := func(_ int, value int) bool {
+					return value < 0
+				}
+				t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
+					key, val, ok := s.Find(isNegative)
+					assert.True(t, ok)
+					assert.Equal(t, key, val)
+					assert.Equal(t, testCase.expectedValue, val)
+				})
+			}
+		})
+	}
+}
+
+func TestFindNotOk(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name   string
+		values []int
+	}{
+		{
+			name:   "no values",
+			values: []int{},
+		},
+		{
+			name:   "no negative values with 1 item",
+			values: []int{12},
+		},
+		{
+			name:   "no negatives with 3 items",
+			values: []int{100, 300, 57},
+		},
+	}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			sets := getSetsForTest(testCase.values...)
+			for _, s := range sets {
+				isNegative := func(_ int, value int) bool {
+					return value < 0
+				}
+				t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
+					_, _, ok := s.Find(isNegative)
+					assert.False(t, ok)
+				})
+			}
+		})
+	}
+}
+
+func TestKeysValues(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name         string
+		values       []int
+		expectedKeys []int
+	}{
+		{
+			name:         "no values",
+			values:       []int{},
+			expectedKeys: []int{},
+		},
+		{
+			name:         "1 item",
+			values:       []int{12},
+			expectedKeys: []int{12},
+		},
+		{
+			name:         "3 items",
+			values:       []int{100, 300, 57},
+			expectedKeys: []int{100, 300, 57},
+		},
+	}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			sets := getSetsForTest(testCase.values...)
+			for _, s := range sets {
+				t.Run(fmt.Sprintf("%T Keys", s), func(t *testing.T) {
+					result := []int{}
+					for index := range s.Keys(nil) {
+						result = append(result, index)
+					}
+					assert.ElementsMatch(t, testCase.expectedKeys, result)
+				})
+				t.Run(fmt.Sprintf("%T Values", s), func(t *testing.T) {
+					result := []int{}
+					for index := range s.Values(nil) {
+						result = append(result, index)
+					}
+					assert.ElementsMatch(t, testCase.expectedKeys, result)
+				})
+			}
+		})
+	}
+}
+
+func TestItems(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name          string
+		values        []int
+		expectedItems []enumerable.KeyValue[int, int]
+	}{
+		{
+			name:          "no values",
+			values:        []int{},
+			expectedItems: []enumerable.KeyValue[int, int]{},
+		},
+		{
+			name:   "1 item",
+			values: []int{12},
+			expectedItems: []enumerable.KeyValue[int, int]{
+				{Key: 12, Value: 12},
+			},
+		},
+		{
+			name:   "3 items",
+			values: []int{100, 300, 57},
+			expectedItems: []enumerable.KeyValue[int, int]{
+				{Key: 100, Value: 100},
+				{Key: 300, Value: 300},
+				{Key: 57, Value: 57},
+			},
+		},
+	}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			sets := getSetsForTest(testCase.values...)
+			for _, s := range sets {
+				t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
+					result := []enumerable.KeyValue[int, int]{}
+					for item := range s.Items(nil) {
+						result = append(result, item)
+					}
+					assert.ElementsMatch(t, testCase.expectedItems, result)
+				})
+			}
+		})
 	}
 }
