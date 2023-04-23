@@ -151,19 +151,21 @@ func TestClearEmpty(t *testing.T) {
 
 	sets := getSetsForTest[string]()
 	for _, s := range sets {
-		assert.True(t, s.Empty())
+		t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
+			assert.True(t, s.Empty())
 
-		s.Clear()
-		assert.True(t, s.Empty())
+			s.Clear()
+			assert.True(t, s.Empty())
 
-		s.Clear()
-		assert.True(t, s.Empty())
+			s.Clear()
+			assert.True(t, s.Empty())
 
-		s.Add("hello")
-		assert.False(t, s.Empty())
+			s.Add("hello")
+			assert.False(t, s.Empty())
 
-		s.Clear()
-		assert.True(t, s.Empty())
+			s.Clear()
+			assert.True(t, s.Empty())
+		})
 	}
 }
 
