@@ -304,3 +304,52 @@ func TestFindNotOk(t *testing.T) {
 		})
 	}
 }
+
+func TestMap(t *testing.T) {
+	t.Parallel()
+
+	testCases := []struct {
+		name     string
+		mapping  map[string]string
+		expected []int
+	}{
+		{
+			name:     "no items",
+			mapping:  map[string]string{},
+			expected: []int{},
+		},
+		{
+			name:     "one items",
+			mapping:  map[string]string{"123456789": "f"},
+			expected: []int{9},
+		},
+		{
+			name: "a few items",
+			mapping: map[string]string{
+				"54321":        "aaaa",
+				"":             "eeee",
+				"222444666888": "",
+			},
+			expected: []int{5, 0, 12},
+		},
+		{
+			name: "a few more items",
+			mapping: map[string]string{
+				"a":       "eeee",
+				"foo":     "",
+				"bar":     "",
+				"abcdefg": "p",
+			},
+			expected: []int{1, 3, 3, 7},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			result := maputil.Map(testCase.mapping, func(key string, _ string) int {
+				return len(key)
+			})
+			assert.ElementsMatch(t, testCase.expected, result)
+		})
+	}
+}
