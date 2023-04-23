@@ -335,40 +335,88 @@ func TestRemoveUntilEmpty(t *testing.T) {
 	vals := []int{1, 2, 3}
 	sets := getSetsForTest(vals...)
 	for _, s := range sets {
-		assert.Equal(t, 3, s.Size())
-		assert.True(t, s.Contains(1))
+		t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
+			assert.Equal(t, 3, s.Size())
+			assert.True(t, s.Contains(1))
 
-		ok := s.Remove(1)
-		assert.True(t, ok)
-		assert.False(t, s.Contains(1))
+			ok := s.Remove(1)
+			assert.True(t, ok)
+			assert.False(t, s.Contains(1))
+			assert.Equal(t, 2, s.Size())
 
-		ok = s.Remove(1)
-		assert.False(t, ok)
-		assert.False(t, s.Contains(1))
+			ok = s.Remove(1)
+			assert.False(t, ok)
+			assert.False(t, s.Contains(1))
 
-		assert.Equal(t, 2, s.Size())
-		assert.True(t, s.Contains(2))
+			assert.Equal(t, 2, s.Size())
+			assert.True(t, s.Contains(2))
 
-		ok = s.Remove(2)
-		assert.True(t, ok)
-		assert.False(t, s.Contains(2))
+			ok = s.Remove(2)
+			assert.True(t, ok)
+			assert.False(t, s.Contains(2))
+			assert.Equal(t, 1, s.Size())
 
-		ok = s.Remove(2)
-		assert.False(t, ok)
-		assert.False(t, s.Contains(2))
+			ok = s.Remove(2)
+			assert.False(t, ok)
+			assert.False(t, s.Contains(2))
 
-		assert.Equal(t, 1, s.Size())
-		assert.True(t, s.Contains(3))
+			assert.Equal(t, 1, s.Size())
+			assert.True(t, s.Contains(3))
 
-		ok = s.Remove(3)
-		assert.True(t, ok)
-		assert.False(t, s.Contains(3))
+			ok = s.Remove(3)
+			assert.True(t, ok)
+			assert.False(t, s.Contains(3))
+			assert.Equal(t, 0, s.Size())
 
-		ok = s.Remove(3)
-		assert.False(t, ok)
-		assert.False(t, s.Contains(3))
+			ok = s.Remove(3)
+			assert.False(t, ok)
+			assert.False(t, s.Contains(3))
 
-		assert.Equal(t, 0, s.Size())
+			assert.Equal(t, 0, s.Size())
+		})
+	}
+}
+
+func TestRemoveAll(t *testing.T) {
+	t.Parallel()
+
+	vals := []int{1, 2, 3}
+	sets := getSetsForTest(vals...)
+	for _, s := range sets {
+		t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
+			assert.Equal(t, 3, s.Size())
+			assert.True(t, s.ContainsAll(1, 2, 3))
+
+			removed := s.RemoveAll(1, 2, 3, 4, 5)
+			assert.Equal(t, 0, s.Size())
+			assert.Equal(t, 3, removed)
+
+			removed = s.RemoveAll(1, 2, 3, 4, 5)
+			assert.Equal(t, 0, s.Size())
+			assert.Equal(t, 0, removed)
+
+			s.Add(-77)
+			assert.Equal(t, 1, s.Size())
+
+			removed = s.RemoveAll()
+			assert.Equal(t, 1, s.Size())
+			assert.Equal(t, 0, removed)
+
+			removed = s.RemoveAll(-77)
+			assert.Equal(t, 0, s.Size())
+			assert.Equal(t, 1, removed)
+
+			s.AddAll(10, 20)
+			assert.Equal(t, 2, s.Size())
+
+			removed = s.RemoveAll(10, 30)
+			assert.Equal(t, 1, s.Size())
+			assert.Equal(t, 1, removed)
+
+			removed = s.RemoveAll(10, 20, 30)
+			assert.Equal(t, 0, s.Size())
+			assert.Equal(t, 1, removed)
+		})
 	}
 }
 

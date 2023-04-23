@@ -12,7 +12,7 @@ type Set[T any] interface {
 	Add(value T)
 	AddAll(values ...T)
 	Remove(value T) bool
-	RemoveAll(values ...T) bool
+	RemoveAll(values ...T) int
 	Contains(value T) bool
 	ContainsAll(values ...T) bool
 	ContainsAny(values ...T) bool

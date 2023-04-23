@@ -137,12 +137,14 @@ func (s *HashSet[T]) Remove(value T) bool {
 	return contained
 }
 
-func (s *HashSet[T]) RemoveAll(values ...T) bool {
-	contained := true
+func (s *HashSet[T]) RemoveAll(values ...T) int {
+	removed := 0
 	for _, value := range values {
-		contained = contained && s.Remove(value)
+		if s.Remove(value) {
+			removed++
+		}
 	}
-	return contained
+	return removed
 }
 
 func (s *HashSet[T]) ContainsAll(values ...T) bool {
