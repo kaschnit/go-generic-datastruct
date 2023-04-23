@@ -493,6 +493,105 @@ func TestAnyAll(t *testing.T) {
 	}
 }
 
+func TestContainsAnyContainsAll(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name        string
+		initial     []int
+		values      []int
+		expectedAny bool
+		expectedAll bool
+	}{
+		{
+			name:        "no values",
+			initial:     []int{},
+			values:      []int{},
+			expectedAny: false,
+			expectedAll: true,
+		},
+		{
+			name:        "no values with attempted match",
+			initial:     []int{},
+			values:      []int{1, 2, 3},
+			expectedAny: false,
+			expectedAll: false,
+		},
+		{
+			name:        "no values match with 1 item",
+			initial:     []int{12},
+			values:      []int{},
+			expectedAny: false,
+			expectedAll: true,
+		},
+		{
+			name:        "no values with 3 items",
+			initial:     []int{100, -300, 57},
+			values:      []int{},
+			expectedAny: false,
+			expectedAll: true,
+		},
+		{
+			name:        "one match with 3 itesm",
+			initial:     []int{100, 300, -57},
+			values:      []int{500, 700, 900, -57},
+			expectedAny: true,
+			expectedAll: false,
+		},
+		{
+			name:        "no matches values with 3 items",
+			initial:     []int{100, 300, 57},
+			values:      []int{500, 700},
+			expectedAny: false,
+			expectedAll: false,
+		},
+		{
+			name:        "1 of 3 values all match",
+			initial:     []int{-100, -300, -57},
+			values:      []int{-300, 500},
+			expectedAny: true,
+			expectedAll: false,
+		},
+		{
+			name:        "1 of 3 values all match",
+			initial:     []int{-100, -300, -57},
+			values:      []int{-300},
+			expectedAny: true,
+			expectedAll: true,
+		},
+		{
+			name:        "2 of 3 values all match",
+			initial:     []int{-100, -300, -57},
+			values:      []int{-100, -300},
+			expectedAny: true,
+			expectedAll: true,
+		},
+		{
+			name:        "all values match",
+			initial:     []int{-100, -300, -57},
+			values:      []int{-100, -300, -57},
+			expectedAny: true,
+			expectedAll: true,
+		},
+	}
+
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			sets := getSetsForTest(testCase.initial...)
+			for _, s := range sets {
+				t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
+					t.Run("ContainsAny", func(t *testing.T) {
+						assert.Equal(t, testCase.expectedAny, s.ContainsAny(testCase.values...))
+					})
+					t.Run("ContainsAll", func(t *testing.T) {
+						assert.Equal(t, testCase.expectedAll, s.ContainsAll(testCase.values...))
+					})
+				})
+			}
+		})
+	}
+}
+
 func TestFindOk(t *testing.T) {
 	t.Parallel()
 
