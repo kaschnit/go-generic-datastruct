@@ -745,6 +745,110 @@ func TestContainsAnyKeyContainsAllKeys(t *testing.T) {
 	}
 }
 
+func TestFindOk(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name          string
+		items         []entry.Entry[int, int]
+		expectedKey   int
+		expectedValue int
+	}{
+		{
+			name: "negative at index (10, -100)",
+			items: []entry.Entry[int, int]{
+				entry.New(10, -100),
+				entry.New(5, 300),
+				entry.New(1, 57),
+			},
+			expectedKey:   10,
+			expectedValue: -100,
+		},
+		{
+			name: "negative at key (5, -300)",
+			items: []entry.Entry[int, int]{
+				entry.New(10, 100),
+				entry.New(5, -300),
+				entry.New(1, 57),
+			},
+			expectedKey:   5,
+			expectedValue: -300,
+		},
+		{
+			name: "negative at index (1, -57)",
+			items: []entry.Entry[int, int]{
+				entry.New(10, 100),
+				entry.New(5, 300),
+				entry.New(1, -57),
+			},
+			expectedKey:   1,
+			expectedValue: -57,
+		},
+	}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			maps := getMapsForTest(testCase.items...)
+			for _, m := range maps {
+				isKeyPlusValueNegative := func(key int, value int) bool {
+					return key+value < 0
+				}
+				t.Run(fmt.Sprintf("%T", m), func(t *testing.T) {
+					key, val, ok := m.Find(isKeyPlusValueNegative)
+					assert.True(t, ok)
+					assert.Equal(t, testCase.expectedKey, key)
+					assert.Equal(t, testCase.expectedValue, val)
+
+					valFromMap, ok := m.Get(key)
+					assert.True(t, ok)
+					assert.Equal(t, testCase.expectedValue, valFromMap)
+				})
+			}
+		})
+	}
+}
+
+func TestFindNotOk(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name  string
+		items []entry.Entry[int, int]
+	}{
+		{
+			name:  "no values",
+			items: []entry.Entry[int, int]{},
+		},
+		{
+			name: "no negative pair sums with 1 item",
+			items: []entry.Entry[int, int]{
+				entry.New(1, 12),
+			},
+		},
+		{
+			name: "no negative pair sums with 3 items",
+			items: []entry.Entry[int, int]{
+				entry.New(10, 100),
+				entry.New(501, -500),
+				entry.New(1, 57),
+			},
+		},
+	}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			maps := getMapsForTest(testCase.items...)
+			for _, m := range maps {
+				isKeyPlusValueNegative := func(key int, value int) bool {
+					return key+value < 0
+				}
+				t.Run(fmt.Sprintf("%T", m), func(t *testing.T) {
+					_, _, ok := m.Find(isKeyPlusValueNegative)
+					assert.False(t, ok)
+				})
+			}
+		})
+	}
+}
+
 func TestKeysValues(t *testing.T) {
 	t.Parallel()
 

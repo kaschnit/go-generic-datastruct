@@ -101,7 +101,7 @@ func (m *HashMap[K, HK, V]) All(predicate enumerable.Predicate[K, V]) bool {
 
 func (m *HashMap[K, HK, V]) Find(predicate enumerable.Predicate[K, V]) (key K, value V, ok bool) {
 	for _, entry := range m.entries {
-		if predicate(key, value) {
+		if predicate(entry.Key(), entry.Value()) {
 			return entry.Key(), entry.Value(), true
 		}
 	}
