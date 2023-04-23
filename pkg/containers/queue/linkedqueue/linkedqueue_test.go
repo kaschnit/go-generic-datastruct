@@ -13,6 +13,8 @@ import (
 var _ queue.Queue[int] = &linkedqueue.LinkedQueue[int]{}
 
 func TestLinkedQueueString(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name     string
 		queue    *linkedqueue.LinkedQueue[int]
@@ -42,6 +44,8 @@ func TestLinkedQueueString(t *testing.T) {
 }
 
 func TestPush(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name         string
 		initial      []string
@@ -91,6 +95,8 @@ func TestPush(t *testing.T) {
 }
 
 func TestPushAll(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name         string
 		initial      []int

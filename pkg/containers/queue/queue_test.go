@@ -20,6 +20,8 @@ func getQueuesForTest[T constraints.Ordered](values ...T) []queue.Queue[T] {
 }
 
 func TestEmptyFalse(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name    string
 		initial []string
@@ -47,6 +49,8 @@ func TestEmptyFalse(t *testing.T) {
 }
 
 func TestEmptyTrue(t *testing.T) {
+	t.Parallel()
+
 	queues := getQueuesForTest[int]()
 	for _, q := range queues {
 		assert.True(t, q.Empty())
@@ -60,6 +64,8 @@ func TestEmptyTrue(t *testing.T) {
 }
 
 func TestSize(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name     string
 		initial  []float64
@@ -100,6 +106,8 @@ func TestSize(t *testing.T) {
 }
 
 func TestClearNonEmpty(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name    string
 		initial []float64
@@ -142,6 +150,8 @@ func TestClearNonEmpty(t *testing.T) {
 }
 
 func TestClearEmpty(t *testing.T) {
+	t.Parallel()
+
 	queues := getQueuesForTest[string]()
 	for _, q := range queues {
 		assert.True(t, q.Empty())

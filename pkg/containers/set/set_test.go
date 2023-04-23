@@ -16,6 +16,8 @@ func getSetsForTest[T comparable](values ...T) []set.Set[T] {
 }
 
 func TestEmptyFalse(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name    string
 		initial []string
@@ -43,6 +45,8 @@ func TestEmptyFalse(t *testing.T) {
 }
 
 func TestEmptyTrue(t *testing.T) {
+	t.Parallel()
+
 	sets := getSetsForTest[int]()
 	for _, s := range sets {
 		assert.True(t, s.Empty())
@@ -56,6 +60,8 @@ func TestEmptyTrue(t *testing.T) {
 }
 
 func TestSize(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name     string
 		initial  []float64
@@ -96,6 +102,8 @@ func TestSize(t *testing.T) {
 }
 
 func TestClearNonEmpty(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name    string
 		initial []float64
@@ -138,6 +146,8 @@ func TestClearNonEmpty(t *testing.T) {
 }
 
 func TestClearEmpty(t *testing.T) {
+	t.Parallel()
+
 	sets := getSetsForTest[string]()
 	for _, s := range sets {
 		assert.True(t, s.Empty())

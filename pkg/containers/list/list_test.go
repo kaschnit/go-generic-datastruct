@@ -20,6 +20,8 @@ func getListsForTest[T any](values ...T) []list.List[T] {
 }
 
 func TestEmptyFalse(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name    string
 		initial []string
@@ -46,6 +48,8 @@ func TestEmptyFalse(t *testing.T) {
 }
 
 func TestEmptyTrue(t *testing.T) {
+	t.Parallel()
+
 	lists := getListsForTest[int]()
 	for _, l := range lists {
 		assert.True(t, l.Empty())
@@ -59,6 +63,8 @@ func TestEmptyTrue(t *testing.T) {
 }
 
 func TestSize(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name     string
 		initial  []float64
@@ -99,6 +105,8 @@ func TestSize(t *testing.T) {
 }
 
 func TestClearNonEmpty(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name    string
 		initial []float64
@@ -141,6 +149,8 @@ func TestClearNonEmpty(t *testing.T) {
 }
 
 func TestClearEmpty(t *testing.T) {
+	t.Parallel()
+
 	lists := getListsForTest[string]()
 	for _, l := range lists {
 		assert.True(t, l.Empty())
@@ -160,6 +170,8 @@ func TestClearEmpty(t *testing.T) {
 }
 
 func TestAppend(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name     string
 		initial  []string
@@ -206,6 +218,8 @@ func TestAppend(t *testing.T) {
 }
 
 func TestAppendAll(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name         string
 		initial      []int
@@ -262,6 +276,8 @@ func TestAppendAll(t *testing.T) {
 }
 
 func TestPrepend(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name     string
 		initial  []string
@@ -308,6 +324,8 @@ func TestPrepend(t *testing.T) {
 }
 
 func TestPrependAll(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name          string
 		initial       []int
@@ -364,6 +382,8 @@ func TestPrependAll(t *testing.T) {
 }
 
 func TestInsertOk(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name    string
 		initial []string
@@ -434,6 +454,8 @@ func TestInsertOk(t *testing.T) {
 }
 
 func TestInsertNotOk(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name    string
 		initial []string
@@ -518,6 +540,8 @@ func TestInsertNotOk(t *testing.T) {
 }
 
 func TestInsertAllOk(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name     string
 		initial  []string
@@ -612,6 +636,8 @@ func TestInsertAllOk(t *testing.T) {
 }
 
 func TestInsertAllNotOk(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name    string
 		initial []string
@@ -666,6 +692,8 @@ func TestInsertAllNotOk(t *testing.T) {
 }
 
 func TestPopBackUntilEmpty(t *testing.T) {
+	t.Parallel()
+
 	vals := []int{1, 2, 3}
 	lists := getListsForTest(vals...)
 	for _, l := range lists {
@@ -690,6 +718,8 @@ func TestPopBackUntilEmpty(t *testing.T) {
 }
 
 func TestPopFrontUntilEmpty(t *testing.T) {
+	t.Parallel()
+
 	vals := []int{1, 2, 3}
 	lists := getListsForTest(vals...)
 	for _, l := range lists {
@@ -714,6 +744,8 @@ func TestPopFrontUntilEmpty(t *testing.T) {
 }
 
 func TestGetFrontNotOk(t *testing.T) {
+	t.Parallel()
+
 	lists := getListsForTest[string]()
 	for _, l := range lists {
 		t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
@@ -724,6 +756,8 @@ func TestGetFrontNotOk(t *testing.T) {
 }
 
 func TestGetBackNotOk(t *testing.T) {
+	t.Parallel()
+
 	lists := getListsForTest[string]()
 	for _, l := range lists {
 		t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
@@ -734,6 +768,8 @@ func TestGetBackNotOk(t *testing.T) {
 }
 
 func TestGetNotOk(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name         string
 		initial      []string
@@ -763,6 +799,8 @@ func TestGetNotOk(t *testing.T) {
 }
 
 func TestForEach(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name     string
 		initial  []int
@@ -801,6 +839,8 @@ func TestForEach(t *testing.T) {
 }
 
 func TestAnyAll(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name        string
 		initial     []int
@@ -872,6 +912,8 @@ func TestAnyAll(t *testing.T) {
 }
 
 func TestFindOk(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name          string
 		initial       []int
@@ -934,6 +976,8 @@ func TestFindOk(t *testing.T) {
 }
 
 func TestFindNotOk(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name    string
 		initial []int
@@ -968,6 +1012,8 @@ func TestFindNotOk(t *testing.T) {
 }
 
 func TestKeys(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name         string
 		initial      []int
@@ -1006,6 +1052,8 @@ func TestKeys(t *testing.T) {
 }
 
 func TestKeysAbort(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name         string
 		initial      []int
@@ -1053,6 +1101,8 @@ func TestKeysAbort(t *testing.T) {
 }
 
 func TestValues(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name           string
 		initial        []int
@@ -1091,6 +1141,8 @@ func TestValues(t *testing.T) {
 }
 
 func TestValuesAbort(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name           string
 		initial        []int
@@ -1140,6 +1192,8 @@ func TestValuesAbort(t *testing.T) {
 }
 
 func TestItems(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name          string
 		initial       []int
@@ -1184,6 +1238,8 @@ func TestItems(t *testing.T) {
 }
 
 func TestItemsAbort(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name          string
 		initial       []int
@@ -1242,6 +1298,8 @@ func TestItemsAbort(t *testing.T) {
 }
 
 func TestIteration(t *testing.T) {
+	t.Parallel()
+
 	values := []int{100, 200, 500}
 	lists := getListsForTest(values...)
 	for _, l := range lists {
@@ -1293,6 +1351,8 @@ func TestIteration(t *testing.T) {
 }
 
 func TestIteration_Empty(t *testing.T) {
+	t.Parallel()
+
 	lists := getListsForTest[int]()
 	for _, l := range lists {
 		t.Run(fmt.Sprintf("%T - Iterator()", l), func(t *testing.T) {

@@ -14,6 +14,8 @@ import (
 var _ set.Set[int] = hashset.New(1)
 
 func TestHashSetString(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name     string
 		set      *hashset.HashSet[int]

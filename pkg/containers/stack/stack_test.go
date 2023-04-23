@@ -18,6 +18,8 @@ func getStacksForTest[T any](values ...T) []stack.Stack[T] {
 }
 
 func TestEmptyFalse(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name    string
 		initial []string
@@ -44,6 +46,8 @@ func TestEmptyFalse(t *testing.T) {
 }
 
 func TestEmptyTrue(t *testing.T) {
+	t.Parallel()
+
 	stacks := getStacksForTest[int]()
 	for _, s := range stacks {
 		t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
@@ -59,6 +63,8 @@ func TestEmptyTrue(t *testing.T) {
 }
 
 func TestSize(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name     string
 		initial  []float64
@@ -99,6 +105,8 @@ func TestSize(t *testing.T) {
 }
 
 func TestClearNonEmpty(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name    string
 		initial []float64
@@ -141,6 +149,8 @@ func TestClearNonEmpty(t *testing.T) {
 }
 
 func TestClearEmpty(t *testing.T) {
+	t.Parallel()
+
 	stacks := getStacksForTest[string]()
 	for _, s := range stacks {
 		assert.True(t, s.Empty())
@@ -160,6 +170,8 @@ func TestClearEmpty(t *testing.T) {
 }
 
 func TestPush(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name     string
 		initial  []string
@@ -206,6 +218,8 @@ func TestPush(t *testing.T) {
 }
 
 func TestPushAll(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name         string
 		initial      []int
@@ -262,6 +276,8 @@ func TestPushAll(t *testing.T) {
 }
 
 func TestPopUntilEmpty(t *testing.T) {
+	t.Parallel()
+
 	vals := []int{1, 2, 3}
 	stacks := getStacksForTest(vals...)
 	for _, s := range stacks {

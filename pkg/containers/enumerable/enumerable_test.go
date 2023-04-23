@@ -10,6 +10,8 @@ import (
 )
 
 func TestMap(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name     string
 		items    []string
@@ -49,6 +51,8 @@ func TestMap(t *testing.T) {
 }
 
 func TestMapMap(t *testing.T) {
+	t.Parallel()
+
 	testCases := []struct {
 		name     string
 		items    []string

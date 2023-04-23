@@ -12,6 +12,8 @@ import (
 var _ list.List[int] = &linkedlist.DoubleLinkedList[int]{}
 
 func TestDoubleLinkedString(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name     string
 		list     *linkedlist.DoubleLinkedList[int]

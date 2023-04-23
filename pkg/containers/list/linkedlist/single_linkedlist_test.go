@@ -12,6 +12,8 @@ import (
 var _ list.List[int] = &linkedlist.SingleLinkedList[int]{}
 
 func TestSingleLinkedString(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name     string
 		list     *linkedlist.SingleLinkedList[int]

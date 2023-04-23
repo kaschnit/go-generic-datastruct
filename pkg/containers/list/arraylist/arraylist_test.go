@@ -16,6 +16,8 @@ var _ list.List[int] = &arraylist.ArrayList[int]{}
 var _ iterable.ReverseIterable[int, string] = &arraylist.ArrayList[string]{}
 
 func TestString(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name     string
 		list     *arraylist.ArrayList[int]

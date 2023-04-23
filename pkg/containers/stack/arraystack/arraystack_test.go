@@ -12,6 +12,8 @@ import (
 var _ stack.Stack[int] = &arraystack.ArrayStack[int]{}
 
 func TestString(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name     string
 		stack    *arraystack.ArrayStack[int]
