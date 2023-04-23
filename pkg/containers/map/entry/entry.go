@@ -1,5 +1,7 @@
 package entry
 
+import "fmt"
+
 type Entry[K any, V any] struct {
 	key   K
 	value V
@@ -25,4 +27,8 @@ func (e *Entry[K, V]) Key() K {
 
 func (e *Entry[K, V]) Value() V {
 	return e.value
+}
+
+func (e *Entry[K, V]) String() string {
+	return fmt.Sprintf("Entry{Key:%v, Value:%v}", e.key, e.value)
 }

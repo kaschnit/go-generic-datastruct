@@ -17,29 +17,26 @@ func TestHashSetString(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name     string
-		set      *hashset.HashSet[int]
-		expected string
+		name string
+		set  *hashset.HashSet[int]
 	}{
 		{
-			name:     "empty set",
-			set:      hashset.New[int](),
-			expected: "",
+			name: "empty set",
+			set:  hashset.New[int](),
 		},
 		{
-			name:     "set with 1 item",
-			set:      hashset.New(987654321),
-			expected: "987654321",
+			name: "set with 1 item",
+			set:  hashset.New(987654321),
 		},
 		{
-			name:     "set with a few items",
-			set:      hashset.New(100, 1145, -202, 5, 6, 7),
-			expected: "100,1145,-202,5,6,7",
+			name: "set with a few items",
+			set:  hashset.New(100, 1145, -202, 5, 6, 7),
 		},
 	}
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
 			resultLines := strings.Split(testCase.set.String(), "\n")
+			assert.Len(t, resultLines, 2, "expected 2 lines in HashSet.String() output")
 			assert.Equal(t, resultLines[0], "HashSet")
 
 			// Set does not guarantee ordering

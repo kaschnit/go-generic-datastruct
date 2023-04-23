@@ -1,7 +1,6 @@
 package hashmap
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/kaschnit/go-ds/pkg/compare"
@@ -67,10 +66,10 @@ func (m *HashMap[K, HK, V]) Clear() {
 
 func (m *HashMap[K, HK, V]) String() string {
 	sb := strings.Builder{}
-	sb.WriteString("HashSet\n")
+	sb.WriteString("HashMap\n")
 	strs := []string{}
-	for k := range m.entries {
-		strs = append(strs, fmt.Sprintf("%v", k))
+	for _, entry := range m.entries {
+		strs = append(strs, entry.String())
 	}
 	sb.WriteString(strings.Join(strs, ","))
 	return sb.String()
