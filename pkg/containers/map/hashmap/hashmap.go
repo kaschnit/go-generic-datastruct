@@ -50,6 +50,10 @@ func New[K comparable, V any](entries ...entry.Entry[K, V]) *HashMap[K, K, V] {
 	return NewBuilder[K, K, V](compare.IdentityHashKey[K]).PutAll(entries...).Build()
 }
 
+func NewFromMap[K comparable, V any](m map[K]V) *HashMap[K, K, V] {
+	return New(entry.NewFromMap(m)...)
+}
+
 func (m *HashMap[K, HK, V]) Empty() bool {
 	return m.Size() == 0
 }

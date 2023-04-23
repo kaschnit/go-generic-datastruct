@@ -42,3 +42,36 @@ func TestEntryString(t *testing.T) {
 		})
 	}
 }
+
+func TestNewFromMap(t *testing.T) {
+	tests := []struct {
+		name           string
+		mapping        map[string]int
+		expectedResult []entry.Entry[string, int]
+	}{
+		{
+			name:           "empty map",
+			mapping:        map[string]int{},
+			expectedResult: []entry.Entry[string, int]{},
+		},
+		{
+			name: "non-empty map",
+			mapping: map[string]int{
+				"foo": 48765,
+				"bar": 1,
+			},
+			expectedResult: []entry.Entry[string, int]{
+				entry.New("foo", 48765),
+				entry.New("bar", 1),
+			},
+		},
+	}
+
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			entries := entry.NewFromMap(testCase.mapping)
+			assert.Equal(t, len(testCase.expectedResult), len(entries))
+			assert.ElementsMatch(t, testCase.expectedResult, entries)
+		})
+	}
+}

@@ -80,3 +80,33 @@ func TestHashMapString(t *testing.T) {
 		})
 	}
 }
+
+func TestNewFromMap(t *testing.T) {
+	tests := []struct {
+		name             string
+		mapping          map[string]int
+		expectedContains []string
+	}{
+		{
+			name:             "empty map",
+			mapping:          map[string]int{},
+			expectedContains: []string{},
+		},
+		{
+			name: "non-empty map",
+			mapping: map[string]int{
+				"foo": 48765,
+				"bar": 1,
+			},
+			expectedContains: []string{"foo", "bar"},
+		},
+	}
+
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			m := hashmap.NewFromMap(testCase.mapping)
+			assert.Equal(t, len(testCase.expectedContains), m.Size())
+			assert.True(t, m.ContainsAllKeys(testCase.expectedContains...))
+		})
+	}
+}
