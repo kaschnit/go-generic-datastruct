@@ -103,7 +103,9 @@ func (l *ConcurrentList[T]) Iterator() (iter iterator.ForwardIterator[int, T], o
 	l.rwlock.RLock()
 	defer l.rwlock.RUnlock()
 
-	// TODO: implement thread-safe iterator
+	// TODO: implement thread-safe iterator.
+	// The ConcurrentList.Iterator() method itself is thread-safe, but it's easy
+	// to cause data races with the returned iterators.
 	return l.inner.Iterator()
 }
 

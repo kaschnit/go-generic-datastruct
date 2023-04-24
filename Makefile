@@ -16,8 +16,9 @@ COVERAGE_PROFILE := .profile.cov
 .PHONY: unittest
 unittest: TARGET=./...
 unittest: VERBOSE=false
+unittest: FLAGS=
 unittest:
-	@go test -coverpkg=$(TARGET) -coverprofile=$(COVERAGE_PROFILE) $(TARGET) -v=$(VERBOSE)
+	@go test -coverpkg=$(TARGET) -coverprofile=$(COVERAGE_PROFILE) $(TARGET) -v=$(VERBOSE) $(FLAGS)
 	@go tool cover -func=$(COVERAGE_PROFILE)
 
 .PHONY: coverage-html
