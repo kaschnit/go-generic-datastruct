@@ -8,6 +8,7 @@ import (
 	"github.com/kaschnit/go-ds/pkg/containers/iterable"
 	"github.com/kaschnit/go-ds/pkg/containers/list"
 	"github.com/kaschnit/go-ds/pkg/containers/list/arraylist"
+	"github.com/kaschnit/go-ds/pkg/containers/list/concurrentlist"
 	"github.com/kaschnit/go-ds/pkg/containers/list/linkedlist"
 	"github.com/stretchr/testify/assert"
 )
@@ -17,6 +18,7 @@ func getListsForTest[T any](values ...T) []list.List[T] {
 		arraylist.New(values...),
 		linkedlist.NewSingleLinked(values...),
 		linkedlist.NewDoubleLinked(values...),
+		concurrentlist.MakeThreadSafe[T](arraylist.New(values...)),
 	}
 }
 
