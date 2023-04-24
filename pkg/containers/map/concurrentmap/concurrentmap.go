@@ -11,7 +11,8 @@ import (
 
 func MakeThreadSafe[K any, V any](m mapp.Map[K, V]) *ConcurrentMap[K, V] {
 	return &ConcurrentMap[K, V]{
-		inner: m,
+		inner:  m,
+		rwlock: sync.RWMutex{},
 	}
 }
 
