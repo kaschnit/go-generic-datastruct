@@ -2,8 +2,11 @@ package concurrentmap_test
 
 import (
 	"fmt"
+	"math/rand"
 	"strings"
+	"sync"
 	"testing"
+	"time"
 
 	mapp "github.com/kaschnit/go-ds/pkg/containers/map"
 	"github.com/kaschnit/go-ds/pkg/containers/map/concurrentmap"
@@ -56,4 +59,60 @@ func TestConcurrentMapString(t *testing.T) {
 			})
 		})
 	}
+}
+
+func TestConcurrentMapConcurrentPutAndRemove(t *testing.T) {
+	t.Parallel()
+
+	m := concurrentmap.MakeThreadSafe[string, int](hashmap.New[string, int]())
+	wg := sync.WaitGroup{}
+
+	size := 5000
+
+	for i := 0; i < size; i++ {
+		value := i
+
+		// Make the goroutine wait for a random duration between 0.0 and 0.1 seconds
+		sleepDuration := time.Duration(rand.Float64()/10) * time.Second
+
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			time.Sleep(sleepDuration)
+			m.Put(fmt.Sprintf("%d", value), value)
+		}()
+	}
+
+	// Wait for all goroutines to finish
+	wg.Wait()
+
+	assert.Equal(t, size, m.Size())
+
+	for i := 0; i < size; i++ {
+		value := i
+
+		// Make the goroutine wait for a random duration between 0.0 and 0.1 seconds
+		sleepDuration := time.Duration(rand.Float64()/10) * time.Second
+
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			time.Sleep(sleepDuration)
+
+			key := fmt.Sprintf("%d", value)
+
+			actualValue, ok := m.Get(key)
+			assert.True(t, ok)
+			assert.Equal(t, value, actualValue)
+
+			contained := m.RemoveKey(key)
+			assert.True(t, contained)
+		}()
+	}
+
+	// Wait for all goroutines to finish
+	wg.Wait()
+
+	assert.True(t, m.Empty())
+	assert.Equal(t, 0, m.Size())
 }
