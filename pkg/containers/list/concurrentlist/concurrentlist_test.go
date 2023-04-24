@@ -1,6 +1,7 @@
 package concurrentlist_test
 
 import (
+	"fmt"
 	"math/rand"
 	"sync"
 	"testing"
@@ -24,22 +25,54 @@ func getListsForTest[T any](values ...T) []list.List[T] {
 	}
 }
 
-func TestConcurrentListConcurrentAppendAndPop(t *testing.T) {
+func TestConcurrentListString(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name  string
-		items []int
+		name           string
+		list           list.List[string]
+		expectedSuffix string
 	}{
 		{
-			name:  "empty list",
-			items: []int{},
+			name:           "empty arraylist",
+			list:           arraylist.New[string](),
+			expectedSuffix: "ArrayList\n",
+		},
+		{
+			name:           "empty single linked list",
+			list:           linkedlist.NewSingleLinked[string](),
+			expectedSuffix: "SingleLinkedList\n",
+		},
+		{
+			name:           "arraylist with 1 item",
+			list:           arraylist.New("foo"),
+			expectedSuffix: "ArrayList\nfoo",
+		},
+		{
+			name:           "double linked list with 1 item",
+			list:           linkedlist.NewDoubleLinked("foo"),
+			expectedSuffix: "DoubleLinkedList\nfoo",
+		},
+		{
+			name:           "arraylist with a few items",
+			list:           arraylist.New("abc", "def", "ghi", "jkl", "mno", "pqr"),
+			expectedSuffix: "ArrayList\nabc,def,ghi,jkl,mno,pqr",
 		},
 	}
-
 	for _, testCase := range tests {
-		innerLists := getListsForTest(testCase.items...)
-		for _, innerList := range innerLists {
+		t.Run(testCase.name, func(t *testing.T) {
+			l := concurrentlist.MakeThreadSafe(testCase.list)
+			assert.Equal(t, fmt.Sprintf("[Concurrent]%s", testCase.expectedSuffix), l.String())
+		})
+	}
+}
+
+func TestConcurrentListConcurrentAppendAndPop(t *testing.T) {
+	t.Parallel()
+
+	innerLists := getListsForTest[int]()
+	for _, innerList := range innerLists {
+		t.Run(fmt.Sprintf("%T", innerList), func(t *testing.T) {
 			l := concurrentlist.MakeThreadSafe(innerList)
 			wg := sync.WaitGroup{}
 
@@ -85,6 +118,6 @@ func TestConcurrentListConcurrentAppendAndPop(t *testing.T) {
 
 			assert.True(t, l.Empty())
 			assert.Equal(t, 0, l.Size())
-		}
+		})
 	}
 }

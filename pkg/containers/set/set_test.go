@@ -6,6 +6,7 @@ import (
 
 	"github.com/kaschnit/go-ds/pkg/containers/enumerable"
 	"github.com/kaschnit/go-ds/pkg/containers/set"
+	"github.com/kaschnit/go-ds/pkg/containers/set/concurrentset"
 	"github.com/kaschnit/go-ds/pkg/containers/set/hashset"
 	"github.com/stretchr/testify/assert"
 )
@@ -13,6 +14,7 @@ import (
 func getSetsForTest[T comparable](values ...T) []set.Set[T] {
 	return []set.Set[T]{
 		hashset.New(values...),
+		concurrentset.MakeThreadSafe[T](hashset.New(values...)),
 	}
 }
 
