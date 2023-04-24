@@ -6,14 +6,18 @@ import (
 
 	"github.com/kaschnit/go-ds/pkg/containers/enumerable"
 	mapp "github.com/kaschnit/go-ds/pkg/containers/map"
+	"github.com/kaschnit/go-ds/pkg/containers/map/concurrentmap"
 	"github.com/kaschnit/go-ds/pkg/containers/map/entry"
 	"github.com/kaschnit/go-ds/pkg/containers/map/hashmap"
 	"github.com/stretchr/testify/assert"
 )
 
 func getMapsForTest[K comparable, V any](entries ...entry.Entry[K, V]) []mapp.Map[K, V] {
+	m := concurrentmap.MakeThreadSafe[K, V](hashmap.New(entries...))
+	print(m)
 	return []mapp.Map[K, V]{
 		hashmap.New(entries...),
+		concurrentmap.MakeThreadSafe[K, V](hashmap.New(entries...)),
 	}
 }
 
@@ -739,6 +743,50 @@ func TestContainsAnyKeyContainsAllKeys(t *testing.T) {
 					t.Run("ContainsAll", func(t *testing.T) {
 						assert.Equal(t, testCase.expectedAll, m.ContainsAllKeys(testCase.keys...))
 					})
+				})
+			}
+		})
+	}
+}
+
+func TestForEach(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name     string
+		items    []entry.Entry[string, int]
+		expected int
+	}{
+		{
+			name:     "sum nothing",
+			items:    []entry.Entry[string, int]{},
+			expected: 0,
+		},
+		{
+			name:     "sum a single number",
+			items:    []entry.Entry[string, int]{entry.New("foo", 12)},
+			expected: 15,
+		},
+		{
+			name: "sum a few numbers",
+			items: []entry.Entry[string, int]{
+				entry.New("", -100),
+				entry.New("b", 300),
+				entry.New("cde", 57),
+			},
+			expected: 261,
+		},
+	}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			maps := getMapsForTest(testCase.items...)
+			for _, m := range maps {
+				total := 0
+				t.Run(fmt.Sprintf("%T", m), func(t *testing.T) {
+					m.ForEach(func(key string, value int) {
+						total += len(key) + value
+					})
+					assert.Equal(t, testCase.expected, total)
 				})
 			}
 		})

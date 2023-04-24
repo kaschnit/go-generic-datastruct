@@ -71,7 +71,7 @@ func TestHashMapString(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			resultLines := strings.Split(testCase.mapping.String(), "\n")
 			assert.Len(t, resultLines, 2, "expected 2 lines in HashMap.String() output")
-			assert.Equal(t, resultLines[0], "HashMap")
+			assert.Equal(t, "HashMap", resultLines[0])
 
 			// Map does not guarantee ordering
 			testCase.mapping.ForEach(func(key int, value string) {

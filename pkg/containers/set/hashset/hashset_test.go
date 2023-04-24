@@ -37,7 +37,7 @@ func TestHashSetString(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			resultLines := strings.Split(testCase.set.String(), "\n")
 			assert.Len(t, resultLines, 2, "expected 2 lines in HashSet.String() output")
-			assert.Equal(t, resultLines[0], "HashSet")
+			assert.Equal(t, "HashSet", resultLines[0])
 
 			// Set does not guarantee ordering
 			testCase.set.ForEach(func(_, value int) {
