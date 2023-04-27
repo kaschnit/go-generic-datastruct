@@ -43,10 +43,11 @@ func (s *ConcurrentSet[T]) Clear() {
 
 func (s *ConcurrentSet[T]) String() string {
 	sb := strings.Builder{}
-	sb.WriteString("[Concurrent]\n")
+	sb.WriteString("[Concurrent]")
 
 	s.rwlock.RLock()
 	defer s.rwlock.RUnlock()
+
 	sb.WriteString(s.inner.String())
 
 	return sb.String()

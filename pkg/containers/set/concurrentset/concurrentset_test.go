@@ -3,6 +3,7 @@ package concurrentset_test
 import (
 	"fmt"
 	"math/rand"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -18,6 +19,45 @@ var _ set.Set[int] = &concurrentset.ConcurrentSet[int]{}
 func getSetsForTest[T comparable](values ...T) []set.Set[T] {
 	return []set.Set[T]{
 		hashset.New(values...),
+	}
+}
+
+func TestConcurrentMapString(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name              string
+		values            set.Set[int]
+		expectedFirstLine string
+	}{
+		{
+			name:              "empty hashset",
+			values:            hashset.New[int](),
+			expectedFirstLine: "HashSet",
+		},
+		{
+			name:              "hashset with 1 item",
+			values:            hashset.New(987654321),
+			expectedFirstLine: "HashSet",
+		},
+		{
+			name:              "hashset with a few items",
+			values:            hashset.New(100, 1145, -202, 5, 6, 7),
+			expectedFirstLine: "HashSet",
+		},
+	}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			s := concurrentset.MakeThreadSafe(testCase.values)
+			resultLines := strings.Split(s.String(), "\n")
+			assert.Len(t, resultLines, 2, "expected 2 lines in ConcurrentSet.String() output")
+			assert.Equal(t, fmt.Sprintf("[Concurrent]%s", testCase.expectedFirstLine), resultLines[0])
+
+			// Set does not guarantee ordering
+			testCase.values.ForEach(func(_ int, value int) {
+				assert.Contains(t, resultLines[1], fmt.Sprintf("%d", value))
+			})
+		})
 	}
 }
 

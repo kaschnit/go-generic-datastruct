@@ -56,7 +56,7 @@ func TestConcurrentMapString(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			m := concurrentmap.MakeThreadSafe(testCase.mapping)
 			resultLines := strings.Split(m.String(), "\n")
-			assert.Len(t, resultLines, 2, "expected 2 lines in HashMap.String() output")
+			assert.Len(t, resultLines, 2, "expected 2 lines in ConcurrentSet.String() output")
 			assert.Equal(t, fmt.Sprintf("[Concurrent]%s", testCase.expectedFirstLine), resultLines[0])
 
 			// Map does not guarantee ordering
