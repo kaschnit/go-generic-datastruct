@@ -596,6 +596,46 @@ func TestContainsAnyContainsAll(t *testing.T) {
 	}
 }
 
+func TestForEach(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name     string
+		items    []int
+		expected int
+	}{
+		{
+			name:     "sum nothing",
+			items:    []int{},
+			expected: 0,
+		},
+		{
+			name:     "sum a single number",
+			items:    []int{12},
+			expected: 12,
+		},
+		{
+			name:     "sum a few numbers",
+			items:    []int{-100, 300, 57},
+			expected: 257,
+		},
+	}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			maps := getSetsForTest(testCase.items...)
+			for _, m := range maps {
+				total := 0
+				t.Run(fmt.Sprintf("%T", m), func(t *testing.T) {
+					m.ForEach(func(_ int, value int) {
+						total += value
+					})
+					assert.Equal(t, testCase.expected, total)
+				})
+			}
+		})
+	}
+}
+
 func TestFindOk(t *testing.T) {
 	t.Parallel()
 
@@ -678,24 +718,27 @@ func TestKeysValues(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name         string
-		values       []int
-		expectedKeys []int
+		name   string
+		values []int
+
+		// Keys() and Values() are expected to have the same behavior for a set,
+		// where the keys are also the values.
+		expectedValues []int
 	}{
 		{
-			name:         "no values",
-			values:       []int{},
-			expectedKeys: []int{},
+			name:           "no values",
+			values:         []int{},
+			expectedValues: []int{},
 		},
 		{
-			name:         "1 item",
-			values:       []int{12},
-			expectedKeys: []int{12},
+			name:           "1 item",
+			values:         []int{12},
+			expectedValues: []int{12},
 		},
 		{
-			name:         "3 items",
-			values:       []int{100, 300, 57},
-			expectedKeys: []int{100, 300, 57},
+			name:           "3 items",
+			values:         []int{100, 300, 57},
+			expectedValues: []int{100, 300, 57},
 		},
 	}
 	for _, testCase := range tests {
@@ -704,17 +747,17 @@ func TestKeysValues(t *testing.T) {
 			for _, s := range sets {
 				t.Run(fmt.Sprintf("%T Keys", s), func(t *testing.T) {
 					result := []int{}
-					for index := range s.Keys(nil) {
-						result = append(result, index)
+					for key := range s.Keys(nil) {
+						result = append(result, key)
 					}
-					assert.ElementsMatch(t, testCase.expectedKeys, result)
+					assert.ElementsMatch(t, testCase.expectedValues, result)
 				})
 				t.Run(fmt.Sprintf("%T Values", s), func(t *testing.T) {
 					result := []int{}
-					for index := range s.Values(nil) {
-						result = append(result, index)
+					for value := range s.Values(nil) {
+						result = append(result, value)
 					}
-					assert.ElementsMatch(t, testCase.expectedKeys, result)
+					assert.ElementsMatch(t, testCase.expectedValues, result)
 				})
 			}
 		})

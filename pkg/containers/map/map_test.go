@@ -13,8 +13,6 @@ import (
 )
 
 func getMapsForTest[K comparable, V any](entries ...entry.Entry[K, V]) []mapp.Map[K, V] {
-	m := concurrentmap.MakeThreadSafe[K, V](hashmap.New(entries...))
-	print(m)
 	return []mapp.Map[K, V]{
 		hashmap.New(entries...),
 		concurrentmap.MakeThreadSafe[K, V](hashmap.New(entries...)),
