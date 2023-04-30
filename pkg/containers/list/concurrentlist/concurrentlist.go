@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/kaschnit/go-ds/pkg/containers/enumerable"
+	"github.com/kaschnit/go-ds/pkg/containers/enumerable/abort"
 	"github.com/kaschnit/go-ds/pkg/containers/list"
 	"github.com/kaschnit/go-ds/pkg/iterator"
 )
@@ -82,25 +83,25 @@ func (l *ConcurrentList[T]) Find(predicate enumerable.Predicate[int, T]) (key in
 	return l.inner.Find(predicate)
 }
 
-func (l *ConcurrentList[T]) Keys(abort <-chan struct{}) <-chan int {
+func (l *ConcurrentList[T]) Keys(signal abort.Signal) <-chan int {
 	l.rwlock.RLock()
 	defer l.rwlock.RUnlock()
 
-	return l.inner.Keys(abort)
+	return l.inner.Keys(signal)
 }
 
-func (l *ConcurrentList[T]) Values(abort <-chan struct{}) <-chan T {
+func (l *ConcurrentList[T]) Values(signal abort.Signal) <-chan T {
 	l.rwlock.RLock()
 	defer l.rwlock.RUnlock()
 
-	return l.inner.Values(abort)
+	return l.inner.Values(signal)
 }
 
-func (l *ConcurrentList[T]) Items(abort <-chan struct{}) <-chan enumerable.KeyValue[int, T] {
+func (l *ConcurrentList[T]) Items(signal abort.Signal) <-chan enumerable.KeyValue[int, T] {
 	l.rwlock.RLock()
 	defer l.rwlock.RUnlock()
 
-	return l.inner.Items(abort)
+	return l.inner.Items(signal)
 }
 
 func (l *ConcurrentList[T]) Iterator() (iter iterator.ForwardIterator[int, T], ok bool) {

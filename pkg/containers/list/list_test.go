@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/kaschnit/go-ds/pkg/containers/enumerable"
+	"github.com/kaschnit/go-ds/pkg/containers/enumerable/abort"
 	"github.com/kaschnit/go-ds/pkg/containers/iterable"
 	"github.com/kaschnit/go-ds/pkg/containers/list"
 	"github.com/kaschnit/go-ds/pkg/containers/list/arraylist"
@@ -1097,11 +1098,11 @@ func TestKeysAbort(t *testing.T) {
 			for _, l := range lists {
 				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
 					result := []int{}
-					aborter := make(chan struct{})
-					for index := range l.Keys(aborter) {
+					aborter := abort.New()
+					for index := range l.Keys(aborter.Signal()) {
 						result = append(result, index)
 						if index == testCase.abortAtIndex {
-							close(aborter)
+							aborter.Abort()
 							break
 						}
 					}
@@ -1186,15 +1187,15 @@ func TestValuesAbort(t *testing.T) {
 			for _, l := range lists {
 				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
 					result := []int{}
-					aborter := make(chan struct{})
+					aborter := abort.New()
 					i := 0
-					for value := range l.Values(aborter) {
+					for value := range l.Values(aborter.Signal()) {
 						result = append(result, value)
 						if i == testCase.abortAtIndex {
-							close(aborter)
+							aborter.Abort()
 							break
 						}
-						i += 1
+						i++
 					}
 					assert.Equal(t, testCase.expectedValues, result)
 				})
@@ -1292,15 +1293,15 @@ func TestItemsAbort(t *testing.T) {
 			for _, l := range lists {
 				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
 					result := []enumerable.KeyValue[int, int]{}
-					aborter := make(chan struct{})
+					aborter := abort.New()
 					i := 0
-					for item := range l.Items(aborter) {
+					for item := range l.Items(aborter.Signal()) {
 						result = append(result, item)
 						if i == testCase.abortAtIndex {
-							close(aborter)
+							aborter.Abort()
 							break
 						}
-						i += 1
+						i++
 					}
 					assert.Equal(t, testCase.expectedItems, result)
 				})

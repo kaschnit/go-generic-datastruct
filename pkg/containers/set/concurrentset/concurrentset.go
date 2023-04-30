@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/kaschnit/go-ds/pkg/containers/enumerable"
+	"github.com/kaschnit/go-ds/pkg/containers/enumerable/abort"
 	"github.com/kaschnit/go-ds/pkg/containers/set"
 )
 
@@ -85,25 +86,25 @@ func (s *ConcurrentSet[T]) Find(predicate enumerable.Predicate[T, T]) (key T, va
 	return s.inner.Find(predicate)
 }
 
-func (s *ConcurrentSet[T]) Keys(abort <-chan struct{}) <-chan T {
+func (s *ConcurrentSet[T]) Keys(signal abort.Signal) <-chan T {
 	s.rwlock.RLock()
 	defer s.rwlock.RUnlock()
 
-	return s.inner.Keys(abort)
+	return s.inner.Keys(signal)
 }
 
-func (s *ConcurrentSet[T]) Values(abort <-chan struct{}) <-chan T {
+func (s *ConcurrentSet[T]) Values(signal abort.Signal) <-chan T {
 	s.rwlock.RLock()
 	defer s.rwlock.RUnlock()
 
-	return s.inner.Values(abort)
+	return s.inner.Values(signal)
 }
 
-func (s *ConcurrentSet[T]) Items(abort <-chan struct{}) <-chan enumerable.KeyValue[T, T] {
+func (s *ConcurrentSet[T]) Items(signal abort.Signal) <-chan enumerable.KeyValue[T, T] {
 	s.rwlock.RLock()
 	defer s.rwlock.RUnlock()
 
-	return s.inner.Items(abort)
+	return s.inner.Items(signal)
 }
 
 func (s *ConcurrentSet[T]) Add(value T) {

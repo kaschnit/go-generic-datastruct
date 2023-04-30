@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/kaschnit/go-ds/pkg/containers/enumerable"
+	"github.com/kaschnit/go-ds/pkg/containers/enumerable/abort"
 	"github.com/kaschnit/go-ds/pkg/containers/set"
 	"github.com/kaschnit/go-ds/pkg/containers/set/concurrentset"
 	"github.com/kaschnit/go-ds/pkg/containers/set/hashset"
@@ -764,6 +765,69 @@ func TestKeysValues(t *testing.T) {
 	}
 }
 
+func TestKeysValuesAbort(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name         string
+		values       []int
+		abortAtIndex int
+	}{
+		{
+			name:         "abort after 1 item",
+			values:       []int{100, 200, 500},
+			abortAtIndex: 0,
+		},
+		{
+			name:         "abort after 2nd item",
+			values:       []int{7, 8, -20, 3, 7},
+			abortAtIndex: 1,
+		},
+		{
+			name:         "abort after 3rd item",
+			values:       []int{100, 300, 57},
+			abortAtIndex: 2,
+		},
+	}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			sets := getSetsForTest(testCase.values...)
+			for _, s := range sets {
+				t.Run(fmt.Sprintf("%T Keys", s), func(t *testing.T) {
+					result := []int{}
+					aborter := abort.New()
+					index := 0
+					for key := range s.Keys(aborter.Signal()) {
+						result = append(result, key)
+						if index == testCase.abortAtIndex {
+							aborter.Abort()
+							break
+						}
+						index++
+					}
+					assert.Equal(t, testCase.abortAtIndex+1, len(result))
+					assert.Subset(t, testCase.values, result)
+				})
+				t.Run(fmt.Sprintf("%T Values", s), func(t *testing.T) {
+					result := []int{}
+					aborter := abort.New()
+					index := 0
+					for value := range s.Values(aborter.Signal()) {
+						result = append(result, value)
+						if index == testCase.abortAtIndex {
+							aborter.Abort()
+							break
+						}
+						index++
+					}
+					assert.Equal(t, testCase.abortAtIndex+1, len(result))
+					assert.Subset(t, testCase.values, result)
+				})
+			}
+		})
+	}
+}
+
 func TestItems(t *testing.T) {
 	t.Parallel()
 
@@ -804,6 +868,57 @@ func TestItems(t *testing.T) {
 						result = append(result, item)
 					}
 					assert.ElementsMatch(t, testCase.expectedItems, result)
+				})
+			}
+		})
+	}
+}
+
+func TestItemsAbort(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name         string
+		values       []int
+		abortAtIndex int
+	}{
+		{
+			name:         "abort at index 0",
+			values:       []int{100, 200, 500},
+			abortAtIndex: 0,
+		},
+		{
+			name:         "abort at index 1",
+			values:       []int{7, 8, -20, 3, 7},
+			abortAtIndex: 1,
+		},
+		{
+			name:         "abort at index 2",
+			values:       []int{100, 200, 500, 700},
+			abortAtIndex: 2,
+		},
+	}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			sets := getSetsForTest(testCase.values...)
+			for _, s := range sets {
+				t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
+					result := []enumerable.KeyValue[int, int]{}
+					aborter := abort.New()
+					i := 0
+					for item := range s.Items(aborter.Signal()) {
+						result = append(result, item)
+						if i == testCase.abortAtIndex {
+							aborter.Abort()
+							break
+						}
+						i += 1
+					}
+					assert.Equal(t, testCase.abortAtIndex+1, len(result))
+					for _, resultVal := range result {
+						assert.Contains(t, testCase.values, resultVal.Key)
+						assert.Contains(t, testCase.values, resultVal.Value)
+					}
 				})
 			}
 		})

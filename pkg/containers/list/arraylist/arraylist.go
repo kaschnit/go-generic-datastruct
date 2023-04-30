@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/kaschnit/go-ds/pkg/containers/enumerable"
+	"github.com/kaschnit/go-ds/pkg/containers/enumerable/abort"
 	"github.com/kaschnit/go-ds/pkg/iterator"
 )
 
@@ -106,14 +107,14 @@ func (l *ArrayList[T]) Find(predicate enumerable.Predicate[int, T]) (key int, va
 	return 0, *new(T), false
 }
 
-func (l *ArrayList[T]) Keys(abort <-chan struct{}) <-chan int {
+func (l *ArrayList[T]) Keys(signal abort.Signal) <-chan int {
 	ch := make(chan int)
 	go func() {
 		defer close(ch)
 		for i := range l.values {
 			select {
 			case ch <- i:
-			case <-abort:
+			case <-signal:
 				return
 			}
 		}
@@ -121,14 +122,14 @@ func (l *ArrayList[T]) Keys(abort <-chan struct{}) <-chan int {
 	return ch
 }
 
-func (l *ArrayList[T]) Values(abort <-chan struct{}) <-chan T {
+func (l *ArrayList[T]) Values(signal abort.Signal) <-chan T {
 	ch := make(chan T)
 	go func() {
 		defer close(ch)
 		for _, value := range l.values {
 			select {
 			case ch <- value:
-			case <-abort:
+			case <-signal:
 				return
 			}
 		}
@@ -136,7 +137,7 @@ func (l *ArrayList[T]) Values(abort <-chan struct{}) <-chan T {
 	return ch
 }
 
-func (l *ArrayList[T]) Items(abort <-chan struct{}) <-chan enumerable.KeyValue[int, T] {
+func (l *ArrayList[T]) Items(signal abort.Signal) <-chan enumerable.KeyValue[int, T] {
 	ch := make(chan enumerable.KeyValue[int, T])
 	go func() {
 		defer close(ch)
@@ -146,7 +147,7 @@ func (l *ArrayList[T]) Items(abort <-chan struct{}) <-chan enumerable.KeyValue[i
 				Key:   i,
 				Value: value,
 			}:
-			case <-abort:
+			case <-signal:
 				return
 			}
 		}

@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/kaschnit/go-ds/pkg/containers/enumerable"
+	"github.com/kaschnit/go-ds/pkg/containers/enumerable/abort"
 	"github.com/kaschnit/go-ds/pkg/iterator"
 )
 
@@ -119,14 +120,14 @@ func (l *DoubleLinkedList[T]) Find(predicate enumerable.Predicate[int, T]) (key 
 	return 0, *new(T), false
 }
 
-func (l *DoubleLinkedList[T]) Keys(abort <-chan struct{}) <-chan int {
+func (l *DoubleLinkedList[T]) Keys(signal abort.Signal) <-chan int {
 	ch := make(chan int)
 	go func() {
 		defer close(ch)
 		for i := 0; i < l.size; i++ {
 			select {
 			case ch <- i:
-			case <-abort:
+			case <-signal:
 				return
 			}
 		}
@@ -134,14 +135,14 @@ func (l *DoubleLinkedList[T]) Keys(abort <-chan struct{}) <-chan int {
 	return ch
 }
 
-func (l *DoubleLinkedList[T]) Values(abort <-chan struct{}) <-chan T {
+func (l *DoubleLinkedList[T]) Values(signal abort.Signal) <-chan T {
 	ch := make(chan T)
 	go func() {
 		defer close(ch)
 		for node := l.head; node != nil; node = node.next {
 			select {
 			case ch <- node.value:
-			case <-abort:
+			case <-signal:
 				return
 			}
 		}
@@ -149,7 +150,7 @@ func (l *DoubleLinkedList[T]) Values(abort <-chan struct{}) <-chan T {
 	return ch
 }
 
-func (l *DoubleLinkedList[T]) Items(abort <-chan struct{}) <-chan enumerable.KeyValue[int, T] {
+func (l *DoubleLinkedList[T]) Items(signal abort.Signal) <-chan enumerable.KeyValue[int, T] {
 	ch := make(chan enumerable.KeyValue[int, T])
 	go func() {
 		defer close(ch)
@@ -159,7 +160,7 @@ func (l *DoubleLinkedList[T]) Items(abort <-chan struct{}) <-chan enumerable.Key
 				Key:   i,
 				Value: node.value,
 			}:
-			case <-abort:
+			case <-signal:
 				return
 			}
 		}

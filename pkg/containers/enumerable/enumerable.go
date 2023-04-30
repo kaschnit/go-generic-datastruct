@@ -1,6 +1,9 @@
 package enumerable
 
-import "github.com/kaschnit/go-ds/pkg/containers/container"
+import (
+	"github.com/kaschnit/go-ds/pkg/containers/container"
+	"github.com/kaschnit/go-ds/pkg/containers/enumerable/abort"
+)
 
 // KeyValue is a pair of a key and a value
 type KeyValue[K any, V any] struct {
@@ -27,9 +30,9 @@ type Enumerable[K any, V any] interface {
 	Any(predicate Predicate[K, V]) bool
 	All(predicate Predicate[K, V]) bool
 	Find(predicate Predicate[K, V]) (key K, value V, ok bool)
-	Keys(abort <-chan struct{}) <-chan K
-	Values(abort <-chan struct{}) <-chan V
-	Items(abort <-chan struct{}) <-chan KeyValue[K, V]
+	Keys(signal abort.Signal) <-chan K
+	Values(signal abort.Signal) <-chan V
+	Items(signal abort.Signal) <-chan KeyValue[K, V]
 }
 
 type enumerableContainer[K any, V any] interface {

@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/kaschnit/go-ds/pkg/containers/enumerable"
+	"github.com/kaschnit/go-ds/pkg/containers/enumerable/abort"
 	mapp "github.com/kaschnit/go-ds/pkg/containers/map"
 	"github.com/kaschnit/go-ds/pkg/containers/map/concurrentmap"
 	"github.com/kaschnit/go-ds/pkg/containers/map/entry"
@@ -944,6 +945,79 @@ func TestKeysValues(t *testing.T) {
 						result = append(result, value)
 					}
 					assert.ElementsMatch(t, testCase.expectedValues, result)
+				})
+			}
+		})
+	}
+}
+
+func TestKeysValuesAbort(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name         string
+		entries      []entry.Entry[string, int]
+		abortAtIndex int
+	}{
+		{
+			name: "abort after 1 item",
+			entries: []entry.Entry[string, int]{
+				entry.New("foo", 100),
+				entry.New("bar", 300),
+				entry.New("baz", 57),
+			},
+			abortAtIndex: 0,
+		},
+		{
+			name: "abort after 2nd item",
+			entries: []entry.Entry[string, int]{
+				entry.New("foo", 100),
+				entry.New("bar", 300),
+				entry.New("baz", 57),
+			},
+			abortAtIndex: 1,
+		},
+		{
+			name: "abort after 3rd item",
+			entries: []entry.Entry[string, int]{
+				entry.New("foo", 100),
+				entry.New("bar", 300),
+				entry.New("baz", 57),
+			},
+			abortAtIndex: 2,
+		},
+	}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			maps := getMapsForTest(testCase.entries...)
+			for _, m := range maps {
+				t.Run(fmt.Sprintf("%T Keys", m), func(t *testing.T) {
+					result := []string{}
+					aborter := abort.New()
+					index := 0
+					for key := range m.Keys(aborter.Signal()) {
+						result = append(result, key)
+						if index == testCase.abortAtIndex {
+							aborter.Abort()
+							break
+						}
+						index++
+					}
+					assert.Equal(t, testCase.abortAtIndex+1, len(result))
+				})
+				t.Run(fmt.Sprintf("%T Values", m), func(t *testing.T) {
+					result := []int{}
+					aborter := abort.New()
+					index := 0
+					for value := range m.Values(aborter.Signal()) {
+						result = append(result, value)
+						if index == testCase.abortAtIndex {
+							aborter.Abort()
+							break
+						}
+						index++
+					}
+					assert.Equal(t, testCase.abortAtIndex+1, len(result))
 				})
 			}
 		})
