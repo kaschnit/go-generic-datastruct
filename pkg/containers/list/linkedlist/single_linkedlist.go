@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/kaschnit/go-ds/pkg/containers/enumerable"
-	"github.com/kaschnit/go-ds/pkg/containers/enumerable/abort"
 	"github.com/kaschnit/go-ds/pkg/iterator"
 )
 
@@ -113,54 +112,6 @@ func (l *SingleLinkedList[T]) Find(predicate enumerable.Predicate[int, T]) (key 
 		}
 	}
 	return 0, *new(T), false
-}
-
-func (l *SingleLinkedList[T]) Keys(signal abort.Signal) <-chan int {
-	ch := make(chan int)
-	go func() {
-		defer close(ch)
-		for i := 0; i < l.size; i++ {
-			select {
-			case ch <- i:
-			case <-signal:
-				return
-			}
-		}
-	}()
-	return ch
-}
-
-func (l *SingleLinkedList[T]) Values(signal abort.Signal) <-chan T {
-	ch := make(chan T)
-	go func() {
-		defer close(ch)
-		for node := l.head; node != nil; node = node.next {
-			select {
-			case ch <- node.value:
-			case <-signal:
-				return
-			}
-		}
-	}()
-	return ch
-}
-
-func (l *SingleLinkedList[T]) Items(signal abort.Signal) <-chan enumerable.KeyValue[int, T] {
-	ch := make(chan enumerable.KeyValue[int, T])
-	go func() {
-		defer close(ch)
-		for i, node := 0, l.head; node != nil; i, node = i+1, node.next {
-			select {
-			case ch <- enumerable.KeyValue[int, T]{
-				Key:   i,
-				Value: node.value,
-			}:
-			case <-signal:
-				return
-			}
-		}
-	}()
-	return ch
 }
 
 func (l *SingleLinkedList[T]) Iterator() (iter iterator.ForwardIterator[int, T], ok bool) {

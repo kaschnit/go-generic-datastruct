@@ -5,7 +5,6 @@ import (
 	"sync"
 
 	"github.com/kaschnit/go-ds/pkg/containers/enumerable"
-	"github.com/kaschnit/go-ds/pkg/containers/enumerable/abort"
 	mapp "github.com/kaschnit/go-ds/pkg/containers/map"
 	"github.com/kaschnit/go-ds/pkg/containers/map/entry"
 )
@@ -77,24 +76,6 @@ func (m *ConcurrentMap[K, V]) Find(predicate enumerable.Predicate[K, V]) (key K,
 	m.rwlock.RLock()
 	defer m.rwlock.RUnlock()
 	return m.inner.Find(predicate)
-}
-
-func (m *ConcurrentMap[K, V]) Keys(signal abort.Signal) <-chan K {
-	m.rwlock.RLock()
-	defer m.rwlock.RUnlock()
-	return m.inner.Keys(signal)
-}
-
-func (m *ConcurrentMap[K, V]) Values(signal abort.Signal) <-chan V {
-	m.rwlock.RLock()
-	defer m.rwlock.RUnlock()
-	return m.inner.Values(signal)
-}
-
-func (m *ConcurrentMap[K, V]) Items(signal abort.Signal) <-chan enumerable.KeyValue[K, V] {
-	m.rwlock.RLock()
-	defer m.rwlock.RUnlock()
-	return m.inner.Items(signal)
 }
 
 func (m *ConcurrentMap[K, V]) Get(key K) (V, bool) {

@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/kaschnit/go-ds/pkg/containers/enumerable"
-	"github.com/kaschnit/go-ds/pkg/containers/enumerable/abort"
 )
 
 var itemExists = struct{}{}
@@ -78,43 +77,6 @@ func (s *HashSet[T]) Find(predicate enumerable.Predicate[T, T]) (key T, value T,
 		}
 	}
 	return *new(T), *new(T), false
-}
-
-func (s *HashSet[T]) Keys(signal abort.Signal) <-chan T {
-	return s.Values(signal)
-}
-
-func (s *HashSet[T]) Values(signal abort.Signal) <-chan T {
-	ch := make(chan T)
-	go func() {
-		defer close(ch)
-		for value := range s.values {
-			select {
-			case ch <- value:
-			case <-signal:
-				return
-			}
-		}
-	}()
-	return ch
-}
-
-func (s *HashSet[T]) Items(signal abort.Signal) <-chan enumerable.KeyValue[T, T] {
-	ch := make(chan enumerable.KeyValue[T, T])
-	go func() {
-		defer close(ch)
-		for value := range s.values {
-			select {
-			case ch <- enumerable.KeyValue[T, T]{
-				Key:   value,
-				Value: value,
-			}:
-			case <-signal:
-				return
-			}
-		}
-	}()
-	return ch
 }
 
 func (s *HashSet[T]) Add(value T) {

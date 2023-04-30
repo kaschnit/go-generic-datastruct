@@ -5,7 +5,6 @@ import (
 
 	"github.com/kaschnit/go-ds/pkg/compare"
 	"github.com/kaschnit/go-ds/pkg/containers/enumerable"
-	"github.com/kaschnit/go-ds/pkg/containers/enumerable/abort"
 	"github.com/kaschnit/go-ds/pkg/containers/map/entry"
 )
 
@@ -111,54 +110,6 @@ func (m *HashMap[K, HK, V]) Find(predicate enumerable.Predicate[K, V]) (key K, v
 		}
 	}
 	return *new(K), *new(V), false
-}
-
-func (m *HashMap[K, HK, V]) Keys(signal abort.Signal) <-chan K {
-	ch := make(chan K)
-	go func() {
-		defer close(ch)
-		for _, entry := range m.entries {
-			select {
-			case ch <- entry.Key():
-			case <-signal:
-				return
-			}
-		}
-	}()
-	return ch
-}
-
-func (m *HashMap[K, HK, V]) Values(signal abort.Signal) <-chan V {
-	ch := make(chan V)
-	go func() {
-		defer close(ch)
-		for _, entry := range m.entries {
-			select {
-			case ch <- entry.Value():
-			case <-signal:
-				return
-			}
-		}
-	}()
-	return ch
-}
-
-func (m *HashMap[K, HK, V]) Items(signal abort.Signal) <-chan enumerable.KeyValue[K, V] {
-	ch := make(chan enumerable.KeyValue[K, V])
-	go func() {
-		defer close(ch)
-		for _, entry := range m.entries {
-			select {
-			case ch <- enumerable.KeyValue[K, V]{
-				Key:   entry.Key(),
-				Value: entry.Value(),
-			}:
-			case <-signal:
-				return
-			}
-		}
-	}()
-	return ch
 }
 
 func (m *HashMap[K, HK, V]) Get(key K) (V, bool) {

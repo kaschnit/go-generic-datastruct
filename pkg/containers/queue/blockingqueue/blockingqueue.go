@@ -9,8 +9,6 @@ import (
 	"golang.org/x/sync/semaphore"
 )
 
-type ContextProvider func() context.Context
-
 type Builder[T any] struct {
 	bufSize int
 	items   []T
@@ -43,23 +41,22 @@ func (b *Builder[T]) Build() *BlockingQueue[T] {
 }
 
 type BlockingQueue[T any] struct {
-	linkedList  *linkedlist.DoubleLinkedList[T]
-	bufSize     int
-	sem         semaphore.Weighted
-	ctxProvider ContextProvider
+	linkedList *linkedlist.DoubleLinkedList[T]
+	bufSize    int
+	sem        semaphore.Weighted
 }
 
-func (q *BlockingQueue[T]) Empty() bool {
-	return q.linkedList.Empty()
-}
+// func (q *BlockingQueue[T]) Empty() bool {
+// 	return q.linkedList.Empty()
+// }
 
 func (q *BlockingQueue[T]) Size() int {
 	return q.linkedList.Size()
 }
 
-func (q *BlockingQueue[T]) Clear() {
-	q.linkedList.Clear()
-}
+// func (q *BlockingQueue[T]) Clear() {
+// 	q.linkedList.Clear()
+// }
 
 func (q *BlockingQueue[T]) String() string {
 	sb := strings.Builder{}
@@ -74,12 +71,19 @@ func (q *BlockingQueue[T]) String() string {
 }
 
 func (q *BlockingQueue[T]) Push(value T) {
-	q.PushWithContext(context.Background(), value)
+	err := q.PushWithContext(context.Background(), value)
+	if err != nil {
+		panic("Something went wrong - TODO handle this error")
+	}
 }
 
-func (q *BlockingQueue[T]) PushWithContext(ctx context.Context, value T) {
-	q.sem.Acquire(ctx, 1)
+func (q *BlockingQueue[T]) PushWithContext(ctx context.Context, value T) error {
+	err := q.sem.Acquire(ctx, 1)
+	if err != nil {
+		return err
+	}
 	q.linkedList.Prepend(value)
+	return nil
 }
 
 func (q *BlockingQueue[T]) PushAll(values ...T) {
@@ -88,14 +92,14 @@ func (q *BlockingQueue[T]) PushAll(values ...T) {
 	}
 }
 
-func (q *BlockingQueue[T]) Pop() (value T, ok bool) {
-	val, ok := q.linkedList.PopBack()
-	if ok {
-		q.sem.Release(1)
-	}
-	return val, ok
-}
+// func (q *BlockingQueue[T]) Pop() (value T, ok bool) {
+// 	val, ok := q.linkedList.PopBack()
+// 	if ok {
+// 		q.sem.Release(1)
+// 	}
+// 	return val, ok
+// }
 
-func (q *BlockingQueue[T]) Peek() (value T, ok bool) {
-	return q.linkedList.GetBack()
-}
+// func (q *BlockingQueue[T]) Peek() (value T, ok bool) {
+// 	return q.linkedList.GetBack()
+// }
