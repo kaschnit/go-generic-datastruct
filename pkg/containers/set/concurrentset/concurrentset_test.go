@@ -117,5 +117,15 @@ func TestConcurrentSetConcurrentAddAndRemove(t *testing.T) {
 			assert.Equal(t, 0, s.Size())
 		})
 	}
+}
 
+func TestMakeThreadSafe_AlreadyThreadSafe(t *testing.T) {
+	s := hashset.New[int]()
+	c1 := concurrentset.MakeThreadSafe[int](s)
+	c2 := concurrentset.MakeThreadSafe[int](c1)
+	c3 := concurrentset.MakeThreadSafe[int](c2)
+	assert.NotEqual(t, s, c1)
+	assert.Equal(t, c1, c2)
+	assert.Equal(t, c1, c3)
+	assert.Equal(t, c2, c3)
 }

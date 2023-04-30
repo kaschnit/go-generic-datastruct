@@ -121,3 +121,14 @@ func TestConcurrentListConcurrentAppendAndPop(t *testing.T) {
 		})
 	}
 }
+
+func TestMakeThreadSafe_AlreadyThreadSafe(t *testing.T) {
+	l := arraylist.New[int]()
+	c1 := concurrentlist.MakeThreadSafe[int](l)
+	c2 := concurrentlist.MakeThreadSafe[int](c1)
+	c3 := concurrentlist.MakeThreadSafe[int](c2)
+	assert.NotEqual(t, l, c1)
+	assert.Equal(t, c1, c2)
+	assert.Equal(t, c1, c3)
+	assert.Equal(t, c2, c3)
+}

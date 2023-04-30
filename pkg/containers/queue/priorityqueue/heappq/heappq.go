@@ -8,24 +8,24 @@ import (
 	"golang.org/x/exp/constraints"
 )
 
-type HeapPQBuilder[T any] struct {
+type Builder[T any] struct {
 	comparator compare.Comparator[T]
 	items      []T
 }
 
-func NewBuilder[T any](comparator compare.Comparator[T]) *HeapPQBuilder[T] {
-	return &HeapPQBuilder[T]{
+func NewBuilder[T any](comparator compare.Comparator[T]) *Builder[T] {
+	return &Builder[T]{
 		comparator: comparator,
 	}
 }
 
-func (b *HeapPQBuilder[T]) AddItems(items ...T) *HeapPQBuilder[T] {
+func (b *Builder[T]) AddItems(items ...T) *Builder[T] {
 	b.items = append(b.items, items...)
 
 	return b
 }
 
-func (b *HeapPQBuilder[T]) Build() *HeapPQ[T] {
+func (b *Builder[T]) Build() *HeapPQ[T] {
 	q := HeapPQ[T]{
 		comparator: b.comparator,
 		items:      make([]T, 1),

@@ -9,6 +9,10 @@ import (
 )
 
 func MakeThreadSafe[T comparable](s set.Set[T]) *ConcurrentSet[T] {
+	if c, ok := s.(*ConcurrentSet[T]); ok {
+		return c
+	}
+
 	return &ConcurrentSet[T]{
 		inner:  s,
 		rwlock: sync.RWMutex{},

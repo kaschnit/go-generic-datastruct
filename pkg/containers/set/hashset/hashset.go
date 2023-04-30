@@ -84,7 +84,7 @@ func (s *HashSet[T]) Keys(abort <-chan struct{}) <-chan T {
 }
 
 func (s *HashSet[T]) Values(abort <-chan struct{}) <-chan T {
-	ch := make(chan T, 1)
+	ch := make(chan T)
 	go func() {
 		defer close(ch)
 		for value := range s.values {
@@ -99,7 +99,7 @@ func (s *HashSet[T]) Values(abort <-chan struct{}) <-chan T {
 }
 
 func (s *HashSet[T]) Items(abort <-chan struct{}) <-chan enumerable.KeyValue[T, T] {
-	ch := make(chan enumerable.KeyValue[T, T], 1)
+	ch := make(chan enumerable.KeyValue[T, T])
 	go func() {
 		defer close(ch)
 		for value := range s.values {

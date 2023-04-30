@@ -127,3 +127,14 @@ func TestConcurrentMapConcurrentPutAndRemove(t *testing.T) {
 		})
 	}
 }
+
+func TestMakeThreadSafe_AlreadyThreadSafe(t *testing.T) {
+	m := hashmap.New[int, string]()
+	c1 := concurrentmap.MakeThreadSafe[int, string](m)
+	c2 := concurrentmap.MakeThreadSafe[int, string](c1)
+	c3 := concurrentmap.MakeThreadSafe[int, string](c2)
+	assert.NotEqual(t, m, c1)
+	assert.Equal(t, c1, c2)
+	assert.Equal(t, c1, c3)
+	assert.Equal(t, c2, c3)
+}

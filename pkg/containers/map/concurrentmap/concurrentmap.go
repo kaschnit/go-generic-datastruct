@@ -10,6 +10,10 @@ import (
 )
 
 func MakeThreadSafe[K any, V any](m mapp.Map[K, V]) *ConcurrentMap[K, V] {
+	if c, ok := m.(*ConcurrentMap[K, V]); ok {
+		return c
+	}
+
 	return &ConcurrentMap[K, V]{
 		inner:  m,
 		rwlock: sync.RWMutex{},

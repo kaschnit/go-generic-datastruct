@@ -8,25 +8,25 @@ import (
 	"github.com/kaschnit/go-ds/pkg/containers/map/entry"
 )
 
-type HashMapBuilder[K any, HK comparable, V any] struct {
+type Builder[K any, HK comparable, V any] struct {
 	hashkey compare.HashKey[K, HK]
 	entries map[HK]entry.Entry[K, V]
 }
 
-func NewBuilder[K any, HK comparable, V any](hashkey compare.HashKey[K, HK]) *HashMapBuilder[K, HK, V] {
-	return &HashMapBuilder[K, HK, V]{
+func NewBuilder[K any, HK comparable, V any](hashkey compare.HashKey[K, HK]) *Builder[K, HK, V] {
+	return &Builder[K, HK, V]{
 		hashkey: hashkey,
 		entries: make(map[HK]entry.Entry[K, V]),
 	}
 }
 
-func (b *HashMapBuilder[K, HK, V]) Put(key K, value V) *HashMapBuilder[K, HK, V] {
+func (b *Builder[K, HK, V]) Put(key K, value V) *Builder[K, HK, V] {
 	b.entries[b.hashkey(key)] = entry.New(key, value)
 
 	return b
 }
 
-func (b *HashMapBuilder[K, HK, V]) PutAll(entries ...entry.Entry[K, V]) *HashMapBuilder[K, HK, V] {
+func (b *Builder[K, HK, V]) PutAll(entries ...entry.Entry[K, V]) *Builder[K, HK, V] {
 	for _, entry := range entries {
 		b.entries[b.hashkey(entry.Key())] = entry
 	}
@@ -34,7 +34,7 @@ func (b *HashMapBuilder[K, HK, V]) PutAll(entries ...entry.Entry[K, V]) *HashMap
 	return b
 }
 
-func (b *HashMapBuilder[K, HK, V]) Build() *HashMap[K, HK, V] {
+func (b *Builder[K, HK, V]) Build() *HashMap[K, HK, V] {
 	return &HashMap[K, HK, V]{
 		hashkey: b.hashkey,
 		entries: b.entries,
@@ -113,7 +113,7 @@ func (m *HashMap[K, HK, V]) Find(predicate enumerable.Predicate[K, V]) (key K, v
 }
 
 func (m *HashMap[K, HK, V]) Keys(abort <-chan struct{}) <-chan K {
-	ch := make(chan K, 1)
+	ch := make(chan K)
 	go func() {
 		defer close(ch)
 		for _, entry := range m.entries {
@@ -128,7 +128,7 @@ func (m *HashMap[K, HK, V]) Keys(abort <-chan struct{}) <-chan K {
 }
 
 func (m *HashMap[K, HK, V]) Values(abort <-chan struct{}) <-chan V {
-	ch := make(chan V, 1)
+	ch := make(chan V)
 	go func() {
 		defer close(ch)
 		for _, entry := range m.entries {
@@ -143,7 +143,7 @@ func (m *HashMap[K, HK, V]) Values(abort <-chan struct{}) <-chan V {
 }
 
 func (m *HashMap[K, HK, V]) Items(abort <-chan struct{}) <-chan enumerable.KeyValue[K, V] {
-	ch := make(chan enumerable.KeyValue[K, V], 1)
+	ch := make(chan enumerable.KeyValue[K, V])
 	go func() {
 		defer close(ch)
 		for _, entry := range m.entries {

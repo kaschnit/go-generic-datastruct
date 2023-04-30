@@ -10,6 +10,10 @@ import (
 )
 
 func MakeThreadSafe[T any](l list.List[T]) *ConcurrentList[T] {
+	if c, ok := l.(*ConcurrentList[T]); ok {
+		return c
+	}
+
 	return &ConcurrentList[T]{
 		inner:  l,
 		rwlock: sync.RWMutex{},
