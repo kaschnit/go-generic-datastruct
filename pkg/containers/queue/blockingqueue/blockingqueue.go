@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/kaschnit/go-ds/pkg/containers/list/linkedlist"
-	"golang.org/x/sync/semaphore"
 )
 
 type Builder[T any] struct {
@@ -32,7 +31,7 @@ func (b *Builder[T]) AddItems(items ...T) *Builder[T] {
 func (b *Builder[T]) Build() *BlockingQueue[T] {
 	q := &BlockingQueue[T]{
 		linkedList: linkedlist.NewDoubleLinked[T](),
-		sem:        *semaphore.NewWeighted(int64(b.bufSize)),
+		sem:        make(chan struct{}, b.bufSize),
 		bufSize:    b.bufSize,
 	}
 	q.PushAll(b.items...)
@@ -43,20 +42,20 @@ func (b *Builder[T]) Build() *BlockingQueue[T] {
 type BlockingQueue[T any] struct {
 	linkedList *linkedlist.DoubleLinkedList[T]
 	bufSize    int
-	sem        semaphore.Weighted
+	sem        chan struct{}
 }
 
-// func (q *BlockingQueue[T]) Empty() bool {
-// 	return q.linkedList.Empty()
-// }
+func (q *BlockingQueue[T]) Empty() bool {
+	return q.linkedList.Empty()
+}
 
 func (q *BlockingQueue[T]) Size() int {
 	return q.linkedList.Size()
 }
 
-// func (q *BlockingQueue[T]) Clear() {
-// 	q.linkedList.Clear()
-// }
+func (q *BlockingQueue[T]) Clear() {
+	q.linkedList.Clear()
+}
 
 func (q *BlockingQueue[T]) String() string {
 	sb := strings.Builder{}
@@ -71,19 +70,12 @@ func (q *BlockingQueue[T]) String() string {
 }
 
 func (q *BlockingQueue[T]) Push(value T) {
-	err := q.PushWithContext(context.Background(), value)
-	if err != nil {
-		panic("Something went wrong - TODO handle this error")
-	}
+	q.PushWithContext(context.Background(), value)
 }
 
-func (q *BlockingQueue[T]) PushWithContext(ctx context.Context, value T) error {
-	err := q.sem.Acquire(ctx, 1)
-	if err != nil {
-		return err
-	}
+func (q *BlockingQueue[T]) PushWithContext(ctx context.Context, value T) {
+	q.sem <- struct{}{}
 	q.linkedList.Prepend(value)
-	return nil
 }
 
 func (q *BlockingQueue[T]) PushAll(values ...T) {
@@ -92,14 +84,11 @@ func (q *BlockingQueue[T]) PushAll(values ...T) {
 	}
 }
 
-// func (q *BlockingQueue[T]) Pop() (value T, ok bool) {
-// 	val, ok := q.linkedList.PopBack()
-// 	if ok {
-// 		q.sem.Release(1)
-// 	}
-// 	return val, ok
-// }
+func (q *BlockingQueue[T]) Pop() (value T, ok bool) {
+	<-q.sem
+	return q.linkedList.PopBack()
+}
 
-// func (q *BlockingQueue[T]) Peek() (value T, ok bool) {
-// 	return q.linkedList.GetBack()
-// }
+func (q *BlockingQueue[T]) Peek() (value T, ok bool) {
+	return q.linkedList.GetBack()
+}

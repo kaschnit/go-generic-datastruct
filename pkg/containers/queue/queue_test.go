@@ -52,13 +52,15 @@ func TestEmptyTrue(t *testing.T) {
 
 	queues := getQueuesForTest[int]()
 	for _, q := range queues {
-		assert.True(t, q.Empty())
+		t.Run(fmt.Sprintf("%T", q), func(t *testing.T) {
+			assert.True(t, q.Empty())
 
-		q.Push(1)
-		assert.False(t, q.Empty())
+			q.Push(1)
+			assert.False(t, q.Empty())
 
-		q.Pop()
-		assert.True(t, q.Empty())
+			q.Pop()
+			assert.True(t, q.Empty())
+		})
 	}
 }
 
@@ -153,18 +155,20 @@ func TestClearEmpty(t *testing.T) {
 
 	queues := getQueuesForTest[string]()
 	for _, q := range queues {
-		assert.True(t, q.Empty())
+		t.Run(fmt.Sprintf("%T", q), func(t *testing.T) {
+			assert.True(t, q.Empty())
 
-		q.Clear()
-		assert.True(t, q.Empty())
+			q.Clear()
+			assert.True(t, q.Empty())
 
-		q.Clear()
-		assert.True(t, q.Empty())
+			q.Clear()
+			assert.True(t, q.Empty())
 
-		q.Push("hello")
-		assert.False(t, q.Empty())
+			q.Push("hello")
+			assert.False(t, q.Empty())
 
-		q.Clear()
-		assert.True(t, q.Empty())
+			q.Clear()
+			assert.True(t, q.Empty())
+		})
 	}
 }

@@ -1,11 +1,45 @@
-package sliceutil_test
+package slice_test
 
 import (
 	"testing"
 
-	"github.com/kaschnit/go-ds/pkg/sliceutil"
+	"github.com/kaschnit/go-ds/pkg/containers/enumerable"
+	"github.com/kaschnit/go-ds/pkg/containers/slice"
 	"github.com/stretchr/testify/assert"
 )
+
+var _ enumerable.Enumerable[int, string] = slice.Slice[string]([]string{})
+
+func TestString(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name     string
+		slice    slice.Slice[int]
+		expected string
+	}{
+		{
+			name:     "empty list",
+			slice:    []int{},
+			expected: "Slice\n",
+		},
+		{
+			name:     "list with 1 item",
+			slice:    []int{987654321},
+			expected: "Slice\n987654321",
+		},
+		{
+			name:     "list with a few items",
+			slice:    []int{100, 1145, -202, 5, 6, 7},
+			expected: "Slice\n100,1145,-202,5,6,7",
+		},
+	}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			assert.Equal(t, testCase.expected, testCase.slice.String())
+		})
+	}
+}
 
 func TestForEach(t *testing.T) {
 	t.Parallel()
@@ -34,7 +68,7 @@ func TestForEach(t *testing.T) {
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
 			total := 0
-			sliceutil.ForEach(testCase.slice, func(_ int, value int) {
+			slice.Slice[int](testCase.slice).ForEach(func(_ int, value int) {
 				total += value
 			})
 			assert.Equal(t, testCase.expected, total)
@@ -47,8 +81,8 @@ func TestFilter(t *testing.T) {
 
 	tests := []struct {
 		name     string
-		slice    []int
-		expected []int
+		slice    slice.Slice[int]
+		expected slice.Slice[int]
 	}{
 		{
 			name:     "negative at index 0",
@@ -83,7 +117,7 @@ func TestFilter(t *testing.T) {
 	}
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
-			result := sliceutil.Filter(testCase.slice, func(_ int, value int) bool {
+			result := testCase.slice.Filter(func(_ int, value int) bool {
 				return value < 0
 			})
 			assert.Equal(t, testCase.expected, result)
@@ -150,10 +184,10 @@ func TestAnyAll(t *testing.T) {
 				return value < 0
 			}
 			t.Run("Any", func(t *testing.T) {
-				assert.Equal(t, testCase.expectedAny, sliceutil.Any(testCase.slice, isNegative))
+				assert.Equal(t, testCase.expectedAny, slice.Slice[int](testCase.slice).Any(isNegative))
 			})
 			t.Run("All", func(t *testing.T) {
-				assert.Equal(t, testCase.expectedAll, sliceutil.All(testCase.slice, isNegative))
+				assert.Equal(t, testCase.expectedAll, slice.Slice[int](testCase.slice).All(isNegative))
 			})
 		})
 	}
@@ -207,7 +241,7 @@ func TestFindOk(t *testing.T) {
 	}
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
-			idx, val, ok := sliceutil.Find(testCase.slice, func(_ int, value int) bool {
+			idx, val, ok := slice.Slice[int](testCase.slice).Find(func(_ int, value int) bool {
 				return value < 0
 			})
 			assert.True(t, ok)
@@ -239,99 +273,10 @@ func TestFindNotOk(t *testing.T) {
 	}
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
-			_, _, ok := sliceutil.Find(testCase.slice, func(_ int, value int) bool {
+			_, _, ok := slice.Slice[int](testCase.slice).Find(func(_ int, value int) bool {
 				return value < 0
 			})
 			assert.False(t, ok)
-		})
-	}
-}
-
-func TestMap(t *testing.T) {
-	t.Parallel()
-
-	testCases := []struct {
-		name     string
-		slice    []string
-		expected []int
-	}{
-		{
-			name:     "no items",
-			slice:    []string{},
-			expected: []int{},
-		},
-		{
-			name:     "one items",
-			slice:    []string{"123456789"},
-			expected: []int{9},
-		},
-		{
-			name:     "a few items",
-			slice:    []string{"54321", "", "222444666888"},
-			expected: []int{5, 0, 12},
-		},
-		{
-			name:     "a few more items",
-			slice:    []string{"a", "foo", "bar", "abcdefg"},
-			expected: []int{1, 3, 3, 7},
-		},
-	}
-
-	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
-			result := sliceutil.Map(testCase.slice, func(_ int, v string) int {
-				return len(v)
-			})
-			assert.Equal(t, testCase.expected, result)
-		})
-	}
-}
-
-func TestMapMap(t *testing.T) {
-	t.Parallel()
-
-	testCases := []struct {
-		name     string
-		slice    []string
-		expected map[string]int
-	}{
-		{
-			name:     "no items",
-			slice:    []string{},
-			expected: map[string]int{},
-		},
-		{
-			name:     "one item",
-			slice:    []string{"123456789"},
-			expected: map[string]int{"123456789": 9},
-		},
-		{
-			name:  "a few items",
-			slice: []string{"54321", "", "222444666888"},
-			expected: map[string]int{
-				"54321":        5,
-				"":             0,
-				"222444666888": 12,
-			},
-		},
-		{
-			name:  "a few more items",
-			slice: []string{"a", "foo", "bar", "abcdefg"},
-			expected: map[string]int{
-				"a":       1,
-				"foo":     3,
-				"bar":     3,
-				"abcdefg": 7,
-			},
-		},
-	}
-
-	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
-			result := sliceutil.MapMap(testCase.slice, func(_ int, v string) (string, int) {
-				return v, len(v)
-			})
-			assert.Equal(t, testCase.expected, result)
 		})
 	}
 }

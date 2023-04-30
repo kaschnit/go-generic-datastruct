@@ -61,13 +61,15 @@ func TestEmptyTrue(t *testing.T) {
 
 	lists := getListsForTest[int]()
 	for _, l := range lists {
-		assert.True(t, l.Empty())
+		t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
+			assert.True(t, l.Empty())
 
-		l.Append(1)
-		assert.False(t, l.Empty())
+			l.Append(1)
+			assert.False(t, l.Empty())
 
-		l.PopBack()
-		assert.True(t, l.Empty())
+			l.PopBack()
+			assert.True(t, l.Empty())
+		})
 	}
 }
 

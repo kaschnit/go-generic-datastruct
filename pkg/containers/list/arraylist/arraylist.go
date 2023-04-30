@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/kaschnit/go-ds/pkg/containers/enumerable"
+	"github.com/kaschnit/go-ds/pkg/containers/slice"
 	"github.com/kaschnit/go-ds/pkg/iterator"
 )
 
@@ -39,7 +40,7 @@ func (a *arrayListIterator[T]) HasNext() bool {
 }
 
 type ArrayList[T any] struct {
-	values []T
+	values slice.Slice[T]
 }
 
 func New[T any](values ...T) *ArrayList[T] {
@@ -59,7 +60,7 @@ func (l *ArrayList[T]) Size() int {
 }
 
 func (l *ArrayList[T]) Clear() {
-	l.values = []T{}
+	l.values = make(slice.Slice[T], 0)
 }
 
 func (l *ArrayList[T]) String() string {
@@ -74,36 +75,19 @@ func (l *ArrayList[T]) String() string {
 }
 
 func (l *ArrayList[T]) ForEach(op enumerable.Op[int, T]) {
-	for i, value := range l.values {
-		op(i, value)
-	}
+	l.values.ForEach(op)
 }
 
 func (l *ArrayList[T]) Any(predicate enumerable.Predicate[int, T]) bool {
-	for i, value := range l.values {
-		if predicate(i, value) {
-			return true
-		}
-	}
-	return false
+	return l.values.Any(predicate)
 }
 
 func (l *ArrayList[T]) All(predicate enumerable.Predicate[int, T]) bool {
-	for i, value := range l.values {
-		if !predicate(i, value) {
-			return false
-		}
-	}
-	return true
+	return l.values.All(predicate)
 }
 
 func (l *ArrayList[T]) Find(predicate enumerable.Predicate[int, T]) (key int, value T, ok bool) {
-	for i, value := range l.values {
-		if predicate(i, value) {
-			return i, value, true
-		}
-	}
-	return 0, *new(T), false
+	return l.values.Find(predicate)
 }
 
 func (l *ArrayList[T]) Iterator() (iter iterator.ForwardIterator[int, T], ok bool) {
