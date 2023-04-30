@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/kaschnit/go-ds/pkg/containers/queue"
+	"github.com/kaschnit/go-ds/pkg/containers/queue/concurrentqueue"
 	"github.com/kaschnit/go-ds/pkg/containers/queue/linkedqueue"
 	"github.com/kaschnit/go-ds/pkg/containers/queue/priorityqueue/heappq"
 	"github.com/stretchr/testify/assert"
@@ -15,6 +16,7 @@ func getQueuesForTest[T constraints.Ordered](values ...T) []queue.Queue[T] {
 	return []queue.Queue[T]{
 		heappq.New(values...),
 		linkedqueue.New(values...),
+		concurrentqueue.MakeThreadSafe[T](linkedqueue.New(values...)),
 	}
 }
 
