@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// Ensure that HashMap implements Map
+// Ensure that HashMap implements Map.
 var _ mapp.Map[string, int] = &hashmap.HashMap[string, string, int]{}
 
 func TestBuilderPut(t *testing.T) {
@@ -67,8 +67,11 @@ func TestHashMapString(t *testing.T) {
 			),
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			resultLines := strings.Split(testCase.mapping.String(), "\n")
 			assert.Len(t, resultLines, 2, "expected 2 lines in HashMap.String() output")
 			assert.Equal(t, "HashMap", resultLines[0])
@@ -82,6 +85,8 @@ func TestHashMapString(t *testing.T) {
 }
 
 func TestNewFromMap(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name             string
 		mapping          map[string]int
@@ -102,8 +107,11 @@ func TestNewFromMap(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			m := hashmap.NewFromMap(testCase.mapping)
 			assert.Equal(t, len(testCase.expectedContains), m.Size())
 			assert.True(t, m.ContainsAllKeys(testCase.expectedContains...))

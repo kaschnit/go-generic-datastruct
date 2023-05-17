@@ -7,6 +7,7 @@ import (
 	"github.com/kaschnit/go-ds/pkg/containers/enumerable"
 )
 
+//nolint:gochecknoglobals
 var itemExists = struct{}{}
 
 type HashSet[T comparable] struct {
@@ -18,6 +19,7 @@ func New[T comparable](values ...T) *HashSet[T] {
 		values: make(map[T]struct{}),
 	}
 	set.AddAll(values...)
+
 	return &set
 }
 
@@ -38,11 +40,14 @@ func (s *HashSet[T]) Clear() {
 func (s *HashSet[T]) String() string {
 	sb := strings.Builder{}
 	sb.WriteString("HashSet\n")
+
 	strs := []string{}
 	for k := range s.values {
 		strs = append(strs, fmt.Sprintf("%v", k))
 	}
+
 	sb.WriteString(strings.Join(strs, ","))
+
 	return sb.String()
 }
 
@@ -58,6 +63,7 @@ func (s *HashSet[T]) Any(predicate enumerable.Predicate[T, T]) bool {
 			return true
 		}
 	}
+
 	return false
 }
 
@@ -67,15 +73,17 @@ func (s *HashSet[T]) All(predicate enumerable.Predicate[T, T]) bool {
 			return false
 		}
 	}
+
 	return true
 }
 
-func (s *HashSet[T]) Find(predicate enumerable.Predicate[T, T]) (key T, value T, ok bool) {
+func (s *HashSet[T]) Find(predicate enumerable.Predicate[T, T]) (T, T, bool) {
 	for value := range s.values {
 		if predicate(value, value) {
 			return value, value, true
 		}
 	}
+
 	return *new(T), *new(T), false
 }
 
@@ -91,22 +99,26 @@ func (s *HashSet[T]) AddAll(values ...T) {
 
 func (s *HashSet[T]) Contains(value T) bool {
 	_, contains := s.values[value]
+
 	return contains
 }
 
 func (s *HashSet[T]) Remove(value T) bool {
 	contained := s.Contains(value)
 	delete(s.values, value)
+
 	return contained
 }
 
 func (s *HashSet[T]) RemoveAll(values ...T) int {
 	removed := 0
+
 	for _, value := range values {
 		if s.Remove(value) {
 			removed++
 		}
 	}
+
 	return removed
 }
 
@@ -116,6 +128,7 @@ func (s *HashSet[T]) ContainsAll(values ...T) bool {
 			return false
 		}
 	}
+
 	return true
 }
 
@@ -125,5 +138,6 @@ func (s *HashSet[T]) ContainsAny(values ...T) bool {
 			return true
 		}
 	}
+
 	return false
 }

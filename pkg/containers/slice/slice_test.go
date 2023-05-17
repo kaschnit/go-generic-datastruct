@@ -34,8 +34,11 @@ func TestString(t *testing.T) {
 			expected: "Slice\n100,1145,-202,5,6,7",
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			assert.Equal(t, testCase.expected, testCase.slice.String())
 		})
 	}
@@ -65,8 +68,11 @@ func TestForEach(t *testing.T) {
 			expected: 257,
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			total := 0
 			slice.Slice[int](testCase.slice).ForEach(func(_ int, value int) {
 				total += value
@@ -115,8 +121,11 @@ func TestFilter(t *testing.T) {
 			expected: []int{-100, -300, -57},
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			result := testCase.slice.Filter(func(_ int, value int) bool {
 				return value < 0
 			})
@@ -178,8 +187,11 @@ func TestAnyAll(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			isNegative := func(_ int, value int) bool {
 				return value < 0
 			}
@@ -239,8 +251,11 @@ func TestFindOk(t *testing.T) {
 			expectedValue: -100,
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			idx, val, ok := slice.Slice[int](testCase.slice).Find(func(_ int, value int) bool {
 				return value < 0
 			})
@@ -271,8 +286,11 @@ func TestFindNotOk(t *testing.T) {
 			slice: []int{100, 300, 57},
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			_, _, ok := slice.Slice[int](testCase.slice).Find(func(_ int, value int) bool {
 				return value < 0
 			})

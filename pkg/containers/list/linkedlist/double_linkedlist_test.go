@@ -9,10 +9,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// Ensure that DoubleLinkedList implements List
+// Ensure that DoubleLinkedList implements List.
 var _ list.List[int] = &linkedlist.DoubleLinkedList[int]{}
 
-// Ensure that ArrayList implements ReverseIterable
+// Ensure that ArrayList implements ReverseIterable.
 var _ iterable.ReverseIterable[int, string] = &linkedlist.DoubleLinkedList[string]{}
 
 func TestDoubleLinkedString(t *testing.T) {
@@ -39,8 +39,11 @@ func TestDoubleLinkedString(t *testing.T) {
 			expected: "DoubleLinkedList\n100,1145,-202,5,6,7",
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			assert.Equal(t, testCase.expected, testCase.list.String())
 		})
 	}

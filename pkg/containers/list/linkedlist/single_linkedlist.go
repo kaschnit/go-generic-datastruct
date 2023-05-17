@@ -13,18 +13,19 @@ type singleLinkedListIterator[T any] struct {
 	node  *singleLinkedNode[T]
 }
 
-func (a *singleLinkedListIterator[T]) Key() (key int, ok bool) {
+func (a *singleLinkedListIterator[T]) Key() (int, bool) {
 	return a.index, a.node != nil
 }
 
-func (a *singleLinkedListIterator[T]) Value() (value T, ok bool) {
+func (a *singleLinkedListIterator[T]) Value() (T, bool) {
 	return a.node.value, true
 }
 
-func (a *singleLinkedListIterator[T]) Next() (next iterator.ForwardIterator[int, T], ok bool) {
+func (a *singleLinkedListIterator[T]) Next() (iterator.ForwardIterator[int, T], bool) {
 	if !a.HasNext() {
 		return nil, false
 	}
+
 	return &singleLinkedListIterator[T]{
 		index: a.index + 1,
 		node:  a.node.next,
@@ -53,6 +54,7 @@ func NewSingleLinked[T any](values ...T) *SingleLinkedList[T] {
 		size: 0,
 	}
 	list.AppendAll(values...)
+
 	return &list
 }
 
@@ -73,11 +75,14 @@ func (l *SingleLinkedList[T]) Clear() {
 func (l *SingleLinkedList[T]) String() string {
 	sb := strings.Builder{}
 	sb.WriteString("SingleLinkedList\n")
+
 	strs := make([]string, l.Size())
 	for i, node := 0, l.head; node != nil; i, node = i+1, node.next {
 		strs[i] = fmt.Sprintf("%v", node.value)
 	}
+
 	sb.WriteString(strings.Join(strs, ","))
+
 	return sb.String()
 }
 
@@ -93,6 +98,7 @@ func (l *SingleLinkedList[T]) Any(predicate enumerable.Predicate[int, T]) bool {
 			return true
 		}
 	}
+
 	return false
 }
 
@@ -102,22 +108,25 @@ func (l *SingleLinkedList[T]) All(predicate enumerable.Predicate[int, T]) bool {
 			return false
 		}
 	}
+
 	return true
 }
 
-func (l *SingleLinkedList[T]) Find(predicate enumerable.Predicate[int, T]) (key int, value T, ok bool) {
+func (l *SingleLinkedList[T]) Find(predicate enumerable.Predicate[int, T]) (int, T, bool) {
 	for i, node := 0, l.head; node != nil; i, node = i+1, node.next {
 		if predicate(i, node.value) {
 			return i, node.value, true
 		}
 	}
+
 	return 0, *new(T), false
 }
 
-func (l *SingleLinkedList[T]) Iterator() (iter iterator.ForwardIterator[int, T], ok bool) {
+func (l *SingleLinkedList[T]) Iterator() (iterator.ForwardIterator[int, T], bool) {
 	if l.Empty() {
 		return nil, false
 	}
+
 	return &singleLinkedListIterator[T]{
 		index: 0,
 		node:  l.head,
@@ -134,6 +143,7 @@ func (l *SingleLinkedList[T]) Append(value T) {
 	} else {
 		l.tail.next = newTail
 	}
+
 	l.tail = newTail
 	l.size++
 }
@@ -149,9 +159,11 @@ func (l *SingleLinkedList[T]) Prepend(value T) {
 		value: value,
 		next:  l.head,
 	}
+
 	if l.tail == nil {
 		l.tail = newHead
 	}
+
 	l.head = newHead
 	l.size++
 }
@@ -162,14 +174,16 @@ func (l *SingleLinkedList[T]) PrependAll(values ...T) {
 	}
 }
 
-func (l *SingleLinkedList[T]) Insert(index int, value T) (ok bool) {
+func (l *SingleLinkedList[T]) Insert(index int, value T) bool {
 	if index < 0 || index > l.Size() {
 		return false
 	} else if index == 0 {
 		l.Prepend(value)
+
 		return true
 	} else if index == l.Size() {
 		l.Append(value)
+
 		return true
 	}
 
@@ -191,16 +205,18 @@ func (l *SingleLinkedList[T]) Insert(index int, value T) (ok bool) {
 	return true
 }
 
-func (l *SingleLinkedList[T]) InsertAll(index int, values ...T) (ok bool) {
+func (l *SingleLinkedList[T]) InsertAll(index int, values ...T) bool {
 	if len(values) == 0 {
 		return true
 	} else if index < 0 || index > l.Size() {
 		return false
 	} else if index == 0 {
 		l.PrependAll(values...)
+
 		return true
 	} else if index == l.Size() {
 		l.AppendAll(values...)
+
 		return true
 	}
 
@@ -220,7 +236,7 @@ func (l *SingleLinkedList[T]) InsertAll(index int, values ...T) (ok bool) {
 	return true
 }
 
-func (l *SingleLinkedList[T]) PopBack() (value T, ok bool) {
+func (l *SingleLinkedList[T]) PopBack() (T, bool) {
 	back, ok := l.GetBack()
 	if ok {
 		if l.Size() == 1 {
@@ -239,37 +255,43 @@ func (l *SingleLinkedList[T]) PopBack() (value T, ok bool) {
 
 		l.size--
 	}
+
 	return back, ok
 }
 
-func (l *SingleLinkedList[T]) PopFront() (value T, ok bool) {
+func (l *SingleLinkedList[T]) PopFront() (T, bool) {
 	front, ok := l.GetFront()
 	if ok {
 		l.head = l.head.next
 		l.size--
 	}
+
 	return front, ok
 }
 
-func (l *SingleLinkedList[T]) GetFront() (value T, ok bool) {
+func (l *SingleLinkedList[T]) GetFront() (T, bool) {
 	if l.Empty() {
 		return *new(T), false
 	}
+
 	return l.head.value, true
 }
 
-func (l *SingleLinkedList[T]) GetBack() (value T, ok bool) {
+func (l *SingleLinkedList[T]) GetBack() (T, bool) {
 	if l.Empty() {
 		return *new(T), false
 	}
+
 	return l.tail.value, true
 }
 
-func (l *SingleLinkedList[T]) Get(index int) (value T, ok bool) {
+func (l *SingleLinkedList[T]) Get(index int) (T, bool) {
 	if index < 0 || index >= l.Size() {
 		return *new(T), false
 	}
+
 	node := l.getNode(index)
+
 	return node.value, true
 }
 
@@ -278,5 +300,6 @@ func (l *SingleLinkedList[T]) getNode(index int) *singleLinkedNode[T] {
 	for i := 0; i < index; i++ {
 		node = node.next
 	}
+
 	return node
 }

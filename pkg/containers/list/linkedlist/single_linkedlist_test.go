@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// Ensure that SingleLinkedList implements List
+// Ensure that SingleLinkedList implements List.
 var _ list.List[int] = &linkedlist.SingleLinkedList[int]{}
 
 func TestSingleLinkedString(t *testing.T) {
@@ -35,8 +35,11 @@ func TestSingleLinkedString(t *testing.T) {
 			expected: "SingleLinkedList\n100,1145,-202,5,6,7",
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			assert.Equal(t, testCase.expected, testCase.list.String())
 		})
 	}

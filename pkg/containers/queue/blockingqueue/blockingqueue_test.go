@@ -39,8 +39,11 @@ func TestBlockingQueueString(t *testing.T) {
 			expected: "BlockingQueue[capacity=6]\n7,6,5,-202,1145,100",
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			assert.Equal(t, testCase.expected, testCase.queue.String())
 		})
 	}
@@ -63,8 +66,11 @@ func TestEmptyFalse(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			q := blockingqueue.NewBuilder[string](len(testCase.initial) + 5).
 				AddItems(testCase.initial...).
 				Build()
@@ -115,8 +121,11 @@ func TestSize(t *testing.T) {
 			expected: 6,
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			q := blockingqueue.NewBuilder[float64](len(testCase.initial) + 5).
 				AddItems(testCase.initial...).
 				Build()
@@ -146,8 +155,12 @@ func TestClearNonEmpty(t *testing.T) {
 			initial: []float64{2.5, 1.000, -5.444, 0.1, 500, 12},
 		},
 	}
-	for _, testCase := range tests {
+
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			q := blockingqueue.NewBuilder[float64](len(testCase.initial) + 5).
 				AddItems(testCase.initial...).
 				Build()
@@ -188,6 +201,8 @@ func TestClearEmpty(t *testing.T) {
 }
 
 func TestPeekOk(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name     string
 		items    []int
@@ -199,8 +214,11 @@ func TestPeekOk(t *testing.T) {
 			expected: 9,
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			q := blockingqueue.NewBuilder[int](len(testCase.items)).
 				AddItems(testCase.items...).
 				Build()
@@ -212,6 +230,8 @@ func TestPeekOk(t *testing.T) {
 }
 
 func TestPeekNotOk(t *testing.T) {
+	t.Parallel()
+
 	q := blockingqueue.NewBuilder[int](3).Build()
 
 	_, ok := q.Peek()
@@ -232,6 +252,8 @@ func TestPeekNotOk(t *testing.T) {
 }
 
 func TestAddItems_MoreThanCapacity(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name  string
 		items []int
@@ -250,8 +272,11 @@ func TestAddItems_MoreThanCapacity(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			q := blockingqueue.NewBuilder[int](3).
 				AddItems(testCase.items...).
 				Build()

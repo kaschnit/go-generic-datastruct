@@ -36,8 +36,11 @@ func TestForEach(t *testing.T) {
 			expected: 263,
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			total := 0
 			maputil.ForEach(testCase.mapping, func(key string, value int) {
 				total += len(key) + value
@@ -120,8 +123,11 @@ func TestFilter(t *testing.T) {
 			},
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			result := maputil.Filter(testCase.mapping, func(_ string, value int) bool {
 				return value < 0
 			})
@@ -205,8 +211,11 @@ func TestAnyAll(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			isMatch := func(key string, value int) bool {
 				return len(key) > 1 && value < 0
 			}
@@ -260,8 +269,11 @@ func TestFindOk(t *testing.T) {
 			expectedValue: -57,
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			key, val, ok := maputil.Find(testCase.mapping, func(_ string, value int) bool {
 				return value < 0
 			})
@@ -296,8 +308,12 @@ func TestFindNotOk(t *testing.T) {
 			},
 		},
 	}
-	for _, testCase := range tests {
+
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			_, _, ok := maputil.Find(testCase.mapping, func(_ string, value int) bool {
 				return value < 0
 			})
@@ -345,8 +361,11 @@ func TestMap(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range testCases {
+	for i := range testCases {
+		testCase := testCases[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			result := maputil.Map(testCase.mapping, func(key string, _ string) int {
 				return len(key)
 			})
@@ -403,8 +422,11 @@ func TestMapMap(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range testCases {
+	for i := range testCases {
+		testCase := testCases[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			result := maputil.MapMap(testCase.mapping, func(k string, v string) (string, int) {
 				return fmt.Sprintf("%s-%s", k, v), len(k)
 			})

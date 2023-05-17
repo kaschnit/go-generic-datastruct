@@ -36,8 +36,11 @@ func TestConcurrentListString(t *testing.T) {
 			expectedSuffix: "LinkedQueue\npqr,mno,jkl,ghi,def,abc",
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			l := concurrentqueue.MakeThreadSafe(testCase.queue)
 			assert.Equal(t, fmt.Sprintf("[Concurrent]%s", testCase.expectedSuffix), l.String())
 		})

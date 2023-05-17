@@ -34,8 +34,11 @@ func TestEmptyFalse(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			sets := getSetsForTest(testCase.initial...)
 			for _, s := range sets {
 				t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
@@ -90,8 +93,12 @@ func TestSize(t *testing.T) {
 			expected: 6,
 		},
 	}
-	for _, testCase := range tests {
+
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			sets := getSetsForTest(testCase.initial...)
 			for _, q := range sets {
 				t.Run(fmt.Sprintf("%T", q), func(t *testing.T) {
@@ -123,8 +130,11 @@ func TestClearNonEmpty(t *testing.T) {
 			initial: []float64{2.5, 1.000, -5.444, 0.1, 500, 12},
 		},
 	}
-	for _, testCase := range tests {
+
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
 			sets := getSetsForTest(testCase.initial...)
 			for _, s := range sets {
 				t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
@@ -151,8 +161,11 @@ func TestClearEmpty(t *testing.T) {
 	t.Parallel()
 
 	sets := getSetsForTest[string]()
-	for _, s := range sets {
+	for i := range sets {
+		s := sets[i]
 		t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
+			t.Parallel()
+
 			assert.True(t, s.Empty())
 
 			s.Clear()
@@ -200,11 +213,17 @@ func TestAddNewItem(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			sets := getSetsForTest(testCase.initial...)
-			for _, s := range sets {
+			for i := range sets {
+				s := sets[i]
 				t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
+					t.Parallel()
+
 					contains := s.Contains(testCase.pushItem)
 					assert.False(t, contains)
 
@@ -245,11 +264,17 @@ func TestAddExistingItem(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			sets := getSetsForTest(testCase.initial...)
-			for _, s := range sets {
+			for i := range sets {
+				s := sets[i]
 				t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
+					t.Parallel()
+
 					contains := s.Contains(testCase.addItem)
 					assert.True(t, contains)
 
@@ -317,8 +342,11 @@ func TestAddAll(t *testing.T) {
 			expectedSize: 3,
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			sets := getSetsForTest(testCase.initial...)
 			for _, s := range sets {
 				t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
@@ -337,8 +365,12 @@ func TestRemoveUntilEmpty(t *testing.T) {
 
 	vals := []int{1, 2, 3}
 	sets := getSetsForTest(vals...)
-	for _, s := range sets {
+
+	for i := range sets {
+		s := sets[i]
 		t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
+			t.Parallel()
+
 			assert.Equal(t, 3, s.Size())
 			assert.True(t, s.Contains(1))
 
@@ -384,9 +416,13 @@ func TestRemoveAll(t *testing.T) {
 	t.Parallel()
 
 	vals := []int{1, 2, 3}
+
 	sets := getSetsForTest(vals...)
-	for _, s := range sets {
+	for i := range sets {
+		s := sets[i]
 		t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
+			t.Parallel()
+
 			assert.Equal(t, 3, s.Size())
 			assert.True(t, s.ContainsAll(1, 2, 3))
 
@@ -476,8 +512,11 @@ func TestAnyAll(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			sets := getSetsForTest(testCase.initial...)
 			for _, s := range sets {
 				t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
@@ -578,8 +617,11 @@ func TestContainsAnyContainsAll(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			sets := getSetsForTest(testCase.initial...)
 			for _, s := range sets {
 				t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
@@ -619,8 +661,11 @@ func TestForEach(t *testing.T) {
 			expected: 257,
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			maps := getSetsForTest(testCase.items...)
 			for _, m := range maps {
 				total := 0
@@ -659,8 +704,11 @@ func TestFindOk(t *testing.T) {
 			expectedValue: -57,
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			sets := getSetsForTest(testCase.values...)
 			for _, s := range sets {
 				isNegative := func(_ int, value int) bool {
@@ -697,8 +745,11 @@ func TestFindNotOk(t *testing.T) {
 			values: []int{100, 300, 57},
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			sets := getSetsForTest(testCase.values...)
 			for _, s := range sets {
 				isNegative := func(_ int, value int) bool {

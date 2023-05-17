@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// Ensure that ConcurrentList implements List
+// Ensure that ConcurrentList implements List.
 var _ list.List[int] = &concurrentlist.ConcurrentList[int]{}
 
 func getListsForTest[T any](values ...T) []list.List[T] {
@@ -59,8 +59,12 @@ func TestConcurrentListString(t *testing.T) {
 			expectedSuffix: "ArrayList\nabc,def,ghi,jkl,mno,pqr",
 		},
 	}
-	for _, testCase := range tests {
+
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			l := concurrentlist.MakeThreadSafe(testCase.list)
 			assert.Equal(t, fmt.Sprintf("[Concurrent]%s", testCase.expectedSuffix), l.String())
 		})
@@ -71,10 +75,13 @@ func TestConcurrentListConcurrentAppendAndPop(t *testing.T) {
 	t.Parallel()
 
 	innerLists := getListsForTest[int]()
-	for _, innerList := range innerLists {
+	for i := range innerLists {
+		innerList := innerLists[i]
 		t.Run(fmt.Sprintf("%T", innerList), func(t *testing.T) {
+			t.Parallel()
+
 			l := concurrentlist.MakeThreadSafe(innerList)
-			wg := sync.WaitGroup{}
+			waitGroup := sync.WaitGroup{}
 
 			size := 5000
 
@@ -85,16 +92,16 @@ func TestConcurrentListConcurrentAppendAndPop(t *testing.T) {
 				// Make the goroutine wait for a random duration between 0.0 and 0.1 seconds
 				sleepDuration := time.Duration(rand.Float64()/10) * time.Second
 
-				wg.Add(1)
+				waitGroup.Add(1)
 				go func() {
-					defer wg.Done()
+					defer waitGroup.Done()
 					time.Sleep(sleepDuration)
 					l.Append(value)
 				}()
 			}
 
 			// Wait for all goroutines to finish
-			wg.Wait()
+			waitGroup.Wait()
 
 			assert.Equal(t, size, l.Size())
 
@@ -102,9 +109,9 @@ func TestConcurrentListConcurrentAppendAndPop(t *testing.T) {
 				// Make the goroutine wait for a random duration between 0.0 and 0.1 seconds
 				sleepDuration := time.Duration(rand.Float64()/10) * time.Second
 
-				wg.Add(1)
+				waitGroup.Add(1)
 				go func() {
-					defer wg.Done()
+					defer waitGroup.Done()
 					time.Sleep(sleepDuration)
 
 					actualValue, ok := l.PopBack()
@@ -114,7 +121,7 @@ func TestConcurrentListConcurrentAppendAndPop(t *testing.T) {
 			}
 
 			// Wait for all goroutines to finish
-			wg.Wait()
+			waitGroup.Wait()
 
 			assert.True(t, l.Empty())
 			assert.Equal(t, 0, l.Size())
@@ -123,10 +130,13 @@ func TestConcurrentListConcurrentAppendAndPop(t *testing.T) {
 }
 
 func TestMakeThreadSafe_AlreadyThreadSafe(t *testing.T) {
+	t.Parallel()
+
 	l := arraylist.New[int]()
 	c1 := concurrentlist.MakeThreadSafe[int](l)
 	c2 := concurrentlist.MakeThreadSafe[int](c1)
 	c3 := concurrentlist.MakeThreadSafe[int](c2)
+
 	assert.NotEqual(t, l, c1)
 	assert.Equal(t, c1, c2)
 	assert.Equal(t, c1, c3)

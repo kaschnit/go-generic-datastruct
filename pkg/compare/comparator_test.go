@@ -7,10 +7,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// Ensure that OrderedComparator implements Comparator
+// Ensure that OrderedComparator implements Comparator.
 var _ compare.Comparator[int] = compare.OrderedComparator[int]
 
 func TestOrderedComparator(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name     string
 		left     int
@@ -54,14 +56,19 @@ func TestOrderedComparator(t *testing.T) {
 			expected: compare.PriorityLeftHigher,
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			assert.Equal(t, testCase.expected, compare.OrderedComparator(testCase.left, testCase.right))
 		})
 	}
 }
 
 func TestReverseOrderedComparator(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name     string
 		left     int
@@ -105,14 +112,19 @@ func TestReverseOrderedComparator(t *testing.T) {
 			expected: compare.PriorityRightHigher,
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			assert.Equal(t, testCase.expected, compare.OppositeOrderedComparator(testCase.left, testCase.right))
 		})
 	}
 }
 
 func TestOpposite(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name  string
 		left  int
@@ -149,8 +161,12 @@ func TestOpposite(t *testing.T) {
 			right: 7,
 		},
 	}
-	for _, testCase := range tests {
+
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			assert.Equal(
 				t,
 				compare.OppositeOrderedComparator(testCase.left, testCase.right),

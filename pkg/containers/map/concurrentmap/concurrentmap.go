@@ -28,12 +28,14 @@ type ConcurrentMap[K any, V any] struct {
 func (m *ConcurrentMap[K, V]) Empty() bool {
 	m.rwlock.RLock()
 	defer m.rwlock.RUnlock()
+
 	return m.inner.Empty()
 }
 
 func (m *ConcurrentMap[K, V]) Size() int {
 	m.rwlock.RLock()
 	defer m.rwlock.RUnlock()
+
 	return m.inner.Size()
 }
 
@@ -63,24 +65,28 @@ func (m *ConcurrentMap[K, V]) ForEach(op enumerable.Op[K, V]) {
 func (m *ConcurrentMap[K, V]) Any(predicate enumerable.Predicate[K, V]) bool {
 	m.rwlock.RLock()
 	defer m.rwlock.RUnlock()
+
 	return m.inner.Any(predicate)
 }
 
 func (m *ConcurrentMap[K, V]) All(predicate enumerable.Predicate[K, V]) bool {
 	m.rwlock.RLock()
 	defer m.rwlock.RUnlock()
+
 	return m.inner.All(predicate)
 }
 
-func (m *ConcurrentMap[K, V]) Find(predicate enumerable.Predicate[K, V]) (key K, value V, ok bool) {
+func (m *ConcurrentMap[K, V]) Find(predicate enumerable.Predicate[K, V]) (K, V, bool) {
 	m.rwlock.RLock()
 	defer m.rwlock.RUnlock()
+
 	return m.inner.Find(predicate)
 }
 
 func (m *ConcurrentMap[K, V]) Get(key K) (V, bool) {
 	m.rwlock.RLock()
 	defer m.rwlock.RUnlock()
+
 	return m.inner.Get(key)
 }
 
@@ -99,29 +105,34 @@ func (m *ConcurrentMap[K, V]) PutAll(entries ...entry.Entry[K, V]) {
 func (m *ConcurrentMap[K, V]) RemoveKey(key K) bool {
 	m.rwlock.Lock()
 	defer m.rwlock.Unlock()
+
 	return m.inner.RemoveKey(key)
 }
 
 func (m *ConcurrentMap[K, V]) RemoveAllKeys(keys ...K) int {
 	m.rwlock.Lock()
 	defer m.rwlock.Unlock()
+
 	return m.inner.RemoveAllKeys(keys...)
 }
 
 func (m *ConcurrentMap[K, V]) ContainsKey(key K) bool {
 	m.rwlock.RLock()
 	defer m.rwlock.RUnlock()
+
 	return m.inner.ContainsKey(key)
 }
 
 func (m *ConcurrentMap[K, V]) ContainsAllKeys(keys ...K) bool {
 	m.rwlock.RLock()
 	defer m.rwlock.RUnlock()
+
 	return m.inner.ContainsAllKeys(keys...)
 }
 
 func (m *ConcurrentMap[K, V]) ContainsAnyKey(keys ...K) bool {
 	m.rwlock.RLock()
 	defer m.rwlock.RUnlock()
+
 	return m.inner.ContainsAnyKey(keys...)
 }

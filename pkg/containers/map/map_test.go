@@ -39,11 +39,17 @@ func TestEmptyFalse(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			maps := getMapsForTest(testCase.initial...)
-			for _, m := range maps {
+			for i := range maps {
+				m := maps[i]
 				t.Run(fmt.Sprintf("%T", m), func(t *testing.T) {
+					t.Parallel()
+
 					assert.False(t, m.Empty())
 				})
 			}
@@ -55,14 +61,19 @@ func TestEmptyTrue(t *testing.T) {
 	t.Parallel()
 
 	maps := getMapsForTest[string, int]()
-	for _, m := range maps {
-		assert.True(t, m.Empty())
+	for i := range maps {
+		m := maps[i]
+		t.Run(fmt.Sprintf("%T", m), func(t *testing.T) {
+			t.Parallel()
 
-		m.Put("foo", 100)
-		assert.False(t, m.Empty())
+			assert.True(t, m.Empty())
 
-		m.RemoveKey("foo")
-		assert.True(t, m.Empty())
+			m.Put("foo", 100)
+			assert.False(t, m.Empty())
+
+			m.RemoveKey("foo")
+			assert.True(t, m.Empty())
+		})
 	}
 }
 
@@ -115,11 +126,17 @@ func TestSize(t *testing.T) {
 			expected: 6,
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			maps := getMapsForTest(testCase.initial...)
-			for _, m := range maps {
+			for i := range maps {
+				m := maps[i]
 				t.Run(fmt.Sprintf("%T", m), func(t *testing.T) {
+					t.Parallel()
+
 					assert.Equal(t, testCase.expected, m.Size())
 				})
 			}
@@ -158,11 +175,17 @@ func TestClearNonEmpty(t *testing.T) {
 			},
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			maps := getMapsForTest(testCase.initial...)
-			for _, m := range maps {
+			for i := range maps {
+				m := maps[i]
 				t.Run(fmt.Sprintf("%T", m), func(t *testing.T) {
+					t.Parallel()
+
 					assert.False(t, m.Empty())
 
 					m.Clear()
@@ -186,8 +209,11 @@ func TestClearEmpty(t *testing.T) {
 	t.Parallel()
 
 	maps := getMapsForTest[string, int]()
-	for _, m := range maps {
+	for i := range maps {
+		m := maps[i]
 		t.Run(fmt.Sprintf("%T", m), func(t *testing.T) {
+			t.Parallel()
+
 			assert.True(t, m.Empty())
 
 			m.Clear()
@@ -249,11 +275,17 @@ func TestPutNewKey(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			maps := getMapsForTest(testCase.initial...)
-			for _, m := range maps {
+			for i := range maps {
+				m := maps[i]
 				t.Run(fmt.Sprintf("%T", m), func(t *testing.T) {
+					t.Parallel()
+
 					contains := m.ContainsKey(testCase.putItem.Key())
 					assert.False(t, contains)
 
@@ -313,11 +345,17 @@ func TestPutExistingKey(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			maps := getMapsForTest(testCase.initial...)
-			for _, m := range maps {
+			for i := range maps {
+				m := maps[i]
 				t.Run(fmt.Sprintf("%T", m), func(t *testing.T) {
+					t.Parallel()
+
 					contains := m.ContainsKey(testCase.putItem.Key())
 					assert.True(t, contains)
 
@@ -392,11 +430,17 @@ func TestAddAll(t *testing.T) {
 			expectedSize: 5,
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			maps := getMapsForTest(testCase.initial...)
-			for _, m := range maps {
+			for i := range maps {
+				m := maps[i]
 				t.Run(fmt.Sprintf("%T", m), func(t *testing.T) {
+					t.Parallel()
+
 					m.PutAll(testCase.putItems...)
 					assert.Equal(t, testCase.expectedSize, m.Size())
 
@@ -431,9 +475,13 @@ func TestRemoveKeyUntilEmpty(t *testing.T) {
 		entry.New("you", 2),
 		entry.New("them", 3),
 	}
+
 	maps := getMapsForTest(vals...)
-	for _, m := range maps {
+	for i := range maps {
+		m := maps[i]
 		t.Run(fmt.Sprintf("%T", m), func(t *testing.T) {
+			t.Parallel()
+
 			assert.Equal(t, 3, m.Size())
 			assert.False(t, m.Empty())
 			assert.True(t, m.ContainsKey("me"))
@@ -487,9 +535,13 @@ func TestRemoveAllKeys(t *testing.T) {
 		entry.New("you", 2),
 		entry.New("them", 3),
 	}
+
 	maps := getMapsForTest(vals...)
-	for _, m := range maps {
+	for i := range maps {
+		m := maps[i]
 		t.Run(fmt.Sprintf("%T", m), func(t *testing.T) {
+			t.Parallel()
+
 			assert.Equal(t, 3, m.Size())
 			assert.True(t, m.ContainsAllKeys("me", "you", "them"))
 
@@ -599,18 +651,28 @@ func TestAnyAll(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			maps := getMapsForTest(testCase.initial...)
-			for _, m := range maps {
+			for i := range maps {
+				m := maps[i]
 				t.Run(fmt.Sprintf("%T", m), func(t *testing.T) {
+					t.Parallel()
+
 					isValueNegative := func(_ string, value int) bool {
 						return value < 0
 					}
 					t.Run("Any", func(t *testing.T) {
+						t.Parallel()
+
 						assert.Equal(t, testCase.expectedAny, m.Any(isValueNegative))
 					})
 					t.Run("All", func(t *testing.T) {
+						t.Parallel()
+
 						assert.Equal(t, testCase.expectedAll, m.All(isValueNegative))
 					})
 				})
@@ -729,16 +791,26 @@ func TestContainsAnyKeyContainsAllKeys(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			maps := getMapsForTest(testCase.initial...)
-			for _, m := range maps {
-				t.Run(fmt.Sprintf("%T", m), func(t *testing.T) {
+			for i := range maps {
+				mp := maps[i]
+				t.Run(fmt.Sprintf("%T", mp), func(t *testing.T) {
+					t.Parallel()
+
 					t.Run("ContainsAny", func(t *testing.T) {
-						assert.Equal(t, testCase.expectedAny, m.ContainsAnyKey(testCase.keys...))
+						t.Parallel()
+
+						assert.Equal(t, testCase.expectedAny, mp.ContainsAnyKey(testCase.keys...))
 					})
 					t.Run("ContainsAll", func(t *testing.T) {
-						assert.Equal(t, testCase.expectedAll, m.ContainsAllKeys(testCase.keys...))
+						t.Parallel()
+
+						assert.Equal(t, testCase.expectedAll, mp.ContainsAllKeys(testCase.keys...))
 					})
 				})
 			}
@@ -774,12 +846,18 @@ func TestForEach(t *testing.T) {
 			expected: 261,
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			maps := getMapsForTest(testCase.items...)
-			for _, m := range maps {
+			for i := range maps {
+				m := maps[i]
 				total := 0
 				t.Run(fmt.Sprintf("%T", m), func(t *testing.T) {
+					t.Parallel()
+
 					m.ForEach(func(key string, value int) {
 						total += len(key) + value
 					})
@@ -830,14 +908,20 @@ func TestFindOk(t *testing.T) {
 			expectedValue: -57,
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			maps := getMapsForTest(testCase.items...)
-			for _, m := range maps {
+			for i := range maps {
+				m := maps[i]
 				isKeyPlusValueNegative := func(key int, value int) bool {
 					return key+value < 0
 				}
 				t.Run(fmt.Sprintf("%T", m), func(t *testing.T) {
+					t.Parallel()
+
 					key, val, ok := m.Find(isKeyPlusValueNegative)
 					assert.True(t, ok)
 					assert.Equal(t, testCase.expectedKey, key)
@@ -878,14 +962,20 @@ func TestFindNotOk(t *testing.T) {
 			},
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			maps := getMapsForTest(testCase.items...)
-			for _, m := range maps {
+			for i := range maps {
+				m := maps[i]
 				isKeyPlusValueNegative := func(key int, value int) bool {
 					return key+value < 0
 				}
 				t.Run(fmt.Sprintf("%T", m), func(t *testing.T) {
+					t.Parallel()
+
 					_, _, ok := m.Find(isKeyPlusValueNegative)
 					assert.False(t, ok)
 				})

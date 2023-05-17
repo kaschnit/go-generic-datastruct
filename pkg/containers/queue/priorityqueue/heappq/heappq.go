@@ -31,6 +31,7 @@ func (b *Builder[T]) Build() *HeapPQ[T] {
 		items:      make([]T, 1),
 	}
 	q.PushAll(b.items...)
+
 	return &q
 }
 
@@ -59,11 +60,14 @@ func (q *HeapPQ[T]) String() string {
 	qCpy := q.Copy()
 	sb := strings.Builder{}
 	sb.WriteString("HeapPQ\n")
+
 	strs := make([]string, 0, qCpy.Size())
 	for item, ok := qCpy.Pop(); ok; item, ok = qCpy.Pop() {
 		strs = append(strs, fmt.Sprintf("%v", item))
 	}
+
 	sb.WriteString(strings.Join(strs, ","))
+
 	return sb.String()
 }
 
@@ -81,8 +85,8 @@ func (q *HeapPQ[T]) PushAll(values ...T) {
 	}
 }
 
-func (q *HeapPQ[T]) Pop() (value T, ok bool) {
-	value, ok = q.Peek()
+func (q *HeapPQ[T]) Pop() (T, bool) {
+	value, ok := q.Peek()
 	if !ok {
 		return value, false
 	}
@@ -99,10 +103,11 @@ func (q *HeapPQ[T]) Pop() (value T, ok bool) {
 	return value, true
 }
 
-func (q *HeapPQ[T]) Peek() (value T, ok bool) {
+func (q *HeapPQ[T]) Peek() (T, bool) {
 	if q.Empty() {
 		return *new(T), false
 	}
+
 	return q.items[1], true
 }
 
@@ -132,11 +137,11 @@ func (q *HeapPQ[T]) percolateUp() {
 func (q *HeapPQ[T]) percolateDown() {
 	// Percolate down to maintain the heap invariant
 	for fixIndex := 1; fixIndex != len(q.items)-1; {
-
 		leftIndex := leftChild(fixIndex)
 		rightIndex := rightChild(fixIndex)
 
 		childIndex := -1
+
 		if leftIndex < len(q.items) && rightIndex < len(q.items) {
 			cmp := q.comparator(q.items[leftIndex], q.items[rightIndex])
 			if cmp == compare.PriorityLeftHigher {
@@ -157,6 +162,7 @@ func (q *HeapPQ[T]) percolateDown() {
 			if !childInPlace {
 				q.items[fixIndex], q.items[childIndex] = q.items[childIndex], q.items[fixIndex]
 				fixIndex = childIndex
+
 				continue
 			}
 		}
@@ -166,10 +172,12 @@ func (q *HeapPQ[T]) percolateDown() {
 	}
 }
 
+//nolint:gomnd
 func parent(index int) int {
 	return index / 2
 }
 
+//nolint:gomnd
 func leftChild(index int) int {
 	return index * 2
 }

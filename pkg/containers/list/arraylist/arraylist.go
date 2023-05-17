@@ -15,18 +15,19 @@ type arrayListIterator[T any] struct {
 	nextOp func(index int) int
 }
 
-func (a *arrayListIterator[T]) Key() (key int, ok bool) {
+func (a *arrayListIterator[T]) Key() (int, bool) {
 	return a.index, a.index >= 0 && a.index < a.arr.Size()
 }
 
-func (a *arrayListIterator[T]) Value() (value T, ok bool) {
+func (a *arrayListIterator[T]) Value() (T, bool) {
 	return a.arr.Get(a.index)
 }
 
-func (a *arrayListIterator[T]) Next() (next iterator.ForwardIterator[int, T], ok bool) {
+func (a *arrayListIterator[T]) Next() (iterator.ForwardIterator[int, T], bool) {
 	if !a.HasNext() {
 		return nil, false
 	}
+
 	return &arrayListIterator[T]{
 		index:  a.nextOp(a.index),
 		arr:    a.arr,
@@ -36,6 +37,7 @@ func (a *arrayListIterator[T]) Next() (next iterator.ForwardIterator[int, T], ok
 
 func (a *arrayListIterator[T]) HasNext() bool {
 	nextIndex := a.nextOp(a.index)
+
 	return nextIndex >= 0 && nextIndex < a.arr.Size()
 }
 
@@ -48,6 +50,7 @@ func New[T any](values ...T) *ArrayList[T] {
 		values: make([]T, len(values)),
 	}
 	copy(list.values, values)
+
 	return &list
 }
 
@@ -66,11 +69,14 @@ func (l *ArrayList[T]) Clear() {
 func (l *ArrayList[T]) String() string {
 	sb := strings.Builder{}
 	sb.WriteString("ArrayList\n")
+
 	strs := []string{}
 	for _, value := range l.values {
 		strs = append(strs, fmt.Sprintf("%v", value))
 	}
+
 	sb.WriteString(strings.Join(strs, ","))
+
 	return sb.String()
 }
 
@@ -86,14 +92,15 @@ func (l *ArrayList[T]) All(predicate enumerable.Predicate[int, T]) bool {
 	return l.values.All(predicate)
 }
 
-func (l *ArrayList[T]) Find(predicate enumerable.Predicate[int, T]) (key int, value T, ok bool) {
+func (l *ArrayList[T]) Find(predicate enumerable.Predicate[int, T]) (int, T, bool) {
 	return l.values.Find(predicate)
 }
 
-func (l *ArrayList[T]) Iterator() (iter iterator.ForwardIterator[int, T], ok bool) {
+func (l *ArrayList[T]) Iterator() (iterator.ForwardIterator[int, T], bool) {
 	if l.Empty() {
 		return nil, false
 	}
+
 	return &arrayListIterator[T]{
 		index: 0,
 		arr:   l,
@@ -103,10 +110,11 @@ func (l *ArrayList[T]) Iterator() (iter iterator.ForwardIterator[int, T], ok boo
 	}, true
 }
 
-func (l *ArrayList[T]) IteratorReverse() (iter iterator.ForwardIterator[int, T], ok bool) {
+func (l *ArrayList[T]) IteratorReverse() (iterator.ForwardIterator[int, T], bool) {
 	if l.Empty() {
 		return nil, false
 	}
+
 	return &arrayListIterator[T]{
 		index: l.Size() - 1,
 		arr:   l,
@@ -132,55 +140,64 @@ func (l *ArrayList[T]) PrependAll(values ...T) {
 	l.values = append(values, l.values...)
 }
 
-func (l *ArrayList[T]) Insert(index int, value T) (ok bool) {
+func (l *ArrayList[T]) Insert(index int, value T) bool {
 	if index < 0 || index > l.Size() {
 		return false
 	}
+
 	l.values = append(l.values[:index], append([]T{value}, l.values[index:]...)...)
+
 	return true
 }
 
-func (l *ArrayList[T]) InsertAll(index int, values ...T) (ok bool) {
+func (l *ArrayList[T]) InsertAll(index int, values ...T) bool {
 	if index < 0 || index > l.Size() {
 		return false
 	}
+
 	l.values = append(l.values[:index], append(values, l.values[index:]...)...)
+
 	return true
 }
 
-func (l *ArrayList[T]) PopBack() (value T, ok bool) {
+func (l *ArrayList[T]) PopBack() (T, bool) {
 	back, ok := l.GetBack()
 	if ok {
 		l.values = l.values[:len(l.values)-1]
 	}
+
 	return back, ok
 }
 
-func (l *ArrayList[T]) PopFront() (value T, ok bool) {
+func (l *ArrayList[T]) PopFront() (T, bool) {
 	front, ok := l.GetFront()
 	if ok {
 		l.values = l.values[1:]
 	}
+
 	return front, ok
 }
 
-func (l *ArrayList[T]) GetFront() (value T, ok bool) {
+func (l *ArrayList[T]) GetFront() (T, bool) {
 	if l.Empty() {
 		return *new(T), false
 	}
+
 	return l.values[0], true
 }
 
-func (l *ArrayList[T]) GetBack() (value T, ok bool) {
+func (l *ArrayList[T]) GetBack() (T, bool) {
 	if l.Empty() {
 		return *new(T), false
 	}
+
 	return l.values[len(l.values)-1], true
 }
 
-func (l *ArrayList[T]) Get(index int) (value T, ok bool) {
+func (l *ArrayList[T]) Get(index int) (T, bool) {
 	if index < 0 || index >= l.Size() {
 		return *new(T), false
 	}
+
 	return l.values[index], true
 }

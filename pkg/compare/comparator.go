@@ -24,10 +24,10 @@ type Comparator[T any] func(left T, right T) Priority
 func OrderedComparator[T constraints.Ordered](left T, right T) Priority {
 	if left > right {
 		return PriorityLeftHigher
-	}
-	if left < right {
+	} else if left < right {
 		return PriorityRightHigher
 	}
+
 	return PriorityEqual
 }
 
@@ -36,10 +36,10 @@ func OrderedComparator[T constraints.Ordered](left T, right T) Priority {
 func OppositeOrderedComparator[T constraints.Ordered](left T, right T) Priority {
 	if left < right {
 		return PriorityLeftHigher
-	}
-	if left > right {
+	} else if left > right {
 		return PriorityRightHigher
 	}
+
 	return PriorityEqual
 }
 
@@ -53,6 +53,8 @@ func Opposite[T any](c Comparator[T]) Comparator[T] {
 			return PriorityRightHigher
 		case PriorityRightHigher:
 			return PriorityLeftHigher
+		case PriorityEqual:
+			return PriorityEqual
 		default:
 			return PriorityEqual
 		}

@@ -71,11 +71,14 @@ func (m *HashMap[K, HK, V]) Clear() {
 func (m *HashMap[K, HK, V]) String() string {
 	sb := strings.Builder{}
 	sb.WriteString("HashMap\n")
+
 	strs := []string{}
 	for _, entry := range m.entries {
 		strs = append(strs, entry.String())
 	}
+
 	sb.WriteString(strings.Join(strs, ","))
+
 	return sb.String()
 }
 
@@ -91,6 +94,7 @@ func (m *HashMap[K, HK, V]) Any(predicate enumerable.Predicate[K, V]) bool {
 			return true
 		}
 	}
+
 	return false
 }
 
@@ -100,15 +104,17 @@ func (m *HashMap[K, HK, V]) All(predicate enumerable.Predicate[K, V]) bool {
 			return false
 		}
 	}
+
 	return true
 }
 
-func (m *HashMap[K, HK, V]) Find(predicate enumerable.Predicate[K, V]) (key K, value V, ok bool) {
+func (m *HashMap[K, HK, V]) Find(predicate enumerable.Predicate[K, V]) (K, V, bool) {
 	for _, entry := range m.entries {
 		if predicate(entry.Key(), entry.Value()) {
 			return entry.Key(), entry.Value(), true
 		}
 	}
+
 	return *new(K), *new(V), false
 }
 
@@ -117,6 +123,7 @@ func (m *HashMap[K, HK, V]) Get(key K) (V, bool) {
 	if !ok {
 		return *new(V), false
 	}
+
 	return entry.Value(), true
 }
 
@@ -134,16 +141,19 @@ func (m *HashMap[K, HK, V]) RemoveKey(key K) bool {
 	hashedKey := m.hashkey(key)
 	contained := m.containsHashedKey(hashedKey)
 	delete(m.entries, hashedKey)
+
 	return contained
 }
 
 func (m *HashMap[K, HK, V]) RemoveAllKeys(keys ...K) int {
 	removed := 0
+
 	for _, key := range keys {
 		if m.RemoveKey(key) {
 			removed++
 		}
 	}
+
 	return removed
 }
 
@@ -157,6 +167,7 @@ func (m *HashMap[K, HK, V]) ContainsAllKeys(keys ...K) bool {
 			return false
 		}
 	}
+
 	return true
 }
 
@@ -166,10 +177,12 @@ func (m *HashMap[K, HK, V]) ContainsAnyKey(keys ...K) bool {
 			return true
 		}
 	}
+
 	return false
 }
 
 func (m *HashMap[K, HK, V]) containsHashedKey(key HK) bool {
 	_, contains := m.entries[key]
+
 	return contains
 }

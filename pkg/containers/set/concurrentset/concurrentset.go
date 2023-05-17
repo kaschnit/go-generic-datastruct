@@ -8,13 +8,13 @@ import (
 	"github.com/kaschnit/go-ds/pkg/containers/set"
 )
 
-func MakeThreadSafe[T comparable](s set.Set[T]) *ConcurrentSet[T] {
-	if c, ok := s.(*ConcurrentSet[T]); ok {
+func MakeThreadSafe[T comparable](otherSet set.Set[T]) *ConcurrentSet[T] {
+	if c, ok := otherSet.(*ConcurrentSet[T]); ok {
 		return c
 	}
 
 	return &ConcurrentSet[T]{
-		inner:  s,
+		inner:  otherSet,
 		rwlock: sync.RWMutex{},
 	}
 }
@@ -46,15 +46,15 @@ func (s *ConcurrentSet[T]) Clear() {
 }
 
 func (s *ConcurrentSet[T]) String() string {
-	sb := strings.Builder{}
-	sb.WriteString("[Concurrent]")
+	stringBuilder := strings.Builder{}
+	stringBuilder.WriteString("[Concurrent]")
 
 	s.rwlock.RLock()
 	defer s.rwlock.RUnlock()
 
-	sb.WriteString(s.inner.String())
+	stringBuilder.WriteString(s.inner.String())
 
-	return sb.String()
+	return stringBuilder.String()
 }
 
 func (s *ConcurrentSet[T]) ForEach(op enumerable.Op[T, T]) {
@@ -78,7 +78,7 @@ func (s *ConcurrentSet[T]) All(predicate enumerable.Predicate[T, T]) bool {
 	return s.inner.All(predicate)
 }
 
-func (s *ConcurrentSet[T]) Find(predicate enumerable.Predicate[T, T]) (key T, value T, ok bool) {
+func (s *ConcurrentSet[T]) Find(predicate enumerable.Predicate[T, T]) (T, T, bool) {
 	s.rwlock.RLock()
 	defer s.rwlock.RUnlock()
 

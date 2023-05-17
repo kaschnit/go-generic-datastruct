@@ -37,11 +37,17 @@ func TestEmptyFalse(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			queues := getQueuesForTest(testCase.initial...)
-			for _, q := range queues {
+			for i := range queues {
+				q := queues[i]
 				t.Run(fmt.Sprintf("%T", q), func(t *testing.T) {
+					t.Parallel()
+
 					assert.False(t, q.Empty())
 				})
 			}
@@ -53,8 +59,11 @@ func TestEmptyTrue(t *testing.T) {
 	t.Parallel()
 
 	queues := getQueuesForTest[int]()
-	for _, q := range queues {
+	for i := range queues {
+		q := queues[i]
 		t.Run(fmt.Sprintf("%T", q), func(t *testing.T) {
+			t.Parallel()
+
 			assert.True(t, q.Empty())
 
 			q.Push(1)
@@ -95,11 +104,17 @@ func TestSize(t *testing.T) {
 			expected: 6,
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			queues := getQueuesForTest(testCase.initial...)
-			for _, q := range queues {
+			for i := range queues {
+				q := queues[i]
 				t.Run(fmt.Sprintf("%T", q), func(t *testing.T) {
+					t.Parallel()
+
 					assert.Equal(t, testCase.expected, q.Size())
 					assert.Equal(t, len(testCase.initial), q.Size())
 				})
@@ -128,11 +143,17 @@ func TestClearNonEmpty(t *testing.T) {
 			initial: []float64{2.5, 1.000, -5.444, 0.1, 500, 12},
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			queues := getQueuesForTest(testCase.initial...)
-			for _, q := range queues {
+			for i := range queues {
+				q := queues[i]
 				t.Run(fmt.Sprintf("%T", q), func(t *testing.T) {
+					t.Parallel()
+
 					assert.False(t, q.Empty())
 
 					q.Clear()
@@ -156,8 +177,11 @@ func TestClearEmpty(t *testing.T) {
 	t.Parallel()
 
 	queues := getQueuesForTest[string]()
-	for _, q := range queues {
+	for i := range queues {
+		q := queues[i]
 		t.Run(fmt.Sprintf("%T", q), func(t *testing.T) {
+			t.Parallel()
+
 			assert.True(t, q.Empty())
 
 			q.Clear()

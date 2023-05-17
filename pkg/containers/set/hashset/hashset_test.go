@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// Ensure that HashSet implements Set
+// Ensure that HashSet implements Set.
 var _ set.Set[int] = hashset.New(1)
 
 func TestHashSetString(t *testing.T) {
@@ -33,8 +33,11 @@ func TestHashSetString(t *testing.T) {
 			set:  hashset.New(100, 1145, -202, 5, 6, 7),
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			resultLines := strings.Split(testCase.set.String(), "\n")
 			assert.Len(t, resultLines, 2, "expected 2 lines in HashSet.String() output")
 			assert.Equal(t, "HashSet", resultLines[0])

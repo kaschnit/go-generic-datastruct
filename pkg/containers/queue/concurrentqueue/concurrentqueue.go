@@ -7,13 +7,13 @@ import (
 	"github.com/kaschnit/go-ds/pkg/containers/queue"
 )
 
-func MakeThreadSafe[T any](q queue.Queue[T]) *ConcurrentQueue[T] {
-	if c, ok := q.(*ConcurrentQueue[T]); ok {
+func MakeThreadSafe[T any](otherQueue queue.Queue[T]) *ConcurrentQueue[T] {
+	if c, ok := otherQueue.(*ConcurrentQueue[T]); ok {
 		return c
 	}
 
 	return &ConcurrentQueue[T]{
-		inner:  q,
+		inner:  otherQueue,
 		rwlock: sync.RWMutex{},
 	}
 }
@@ -69,14 +69,14 @@ func (q *ConcurrentQueue[T]) PushAll(values ...T) {
 	q.inner.PushAll(values...)
 }
 
-func (q *ConcurrentQueue[T]) Pop() (value T, ok bool) {
+func (q *ConcurrentQueue[T]) Pop() (T, bool) {
 	q.rwlock.Lock()
 	defer q.rwlock.Unlock()
 
 	return q.inner.Pop()
 }
 
-func (q *ConcurrentQueue[T]) Peek() (value T, ok bool) {
+func (q *ConcurrentQueue[T]) Peek() (T, bool) {
 	q.rwlock.RLock()
 	defer q.rwlock.RUnlock()
 

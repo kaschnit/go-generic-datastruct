@@ -14,19 +14,21 @@ type doubleLinkedListIterator[T any] struct {
 	nextOp func(index int, node *doubleLinkedNode[T]) (int, *doubleLinkedNode[T])
 }
 
-func (a *doubleLinkedListIterator[T]) Key() (key int, ok bool) {
+func (a *doubleLinkedListIterator[T]) Key() (int, bool) {
 	return a.index, a.node != nil
 }
 
-func (a *doubleLinkedListIterator[T]) Value() (value T, ok bool) {
+func (a *doubleLinkedListIterator[T]) Value() (T, bool) {
 	return a.node.value, true
 }
 
-func (a *doubleLinkedListIterator[T]) Next() (next iterator.ForwardIterator[int, T], ok bool) {
+func (a *doubleLinkedListIterator[T]) Next() (iterator.ForwardIterator[int, T], bool) {
 	if !a.HasNext() {
 		return nil, false
 	}
+
 	nextIndex, nextNode := a.nextOp(a.index, a.node)
+
 	return &doubleLinkedListIterator[T]{
 		index:  nextIndex,
 		node:   nextNode,
@@ -36,6 +38,7 @@ func (a *doubleLinkedListIterator[T]) Next() (next iterator.ForwardIterator[int,
 
 func (a *doubleLinkedListIterator[T]) HasNext() bool {
 	_, nextNode := a.nextOp(a.index, a.node)
+
 	return nextNode != nil
 }
 
@@ -58,6 +61,7 @@ func NewDoubleLinked[T any](values ...T) *DoubleLinkedList[T] {
 		size: 0,
 	}
 	list.AppendAll(values...)
+
 	return &list
 }
 
@@ -78,11 +82,14 @@ func (l *DoubleLinkedList[T]) Clear() {
 func (l *DoubleLinkedList[T]) String() string {
 	sb := strings.Builder{}
 	sb.WriteString("DoubleLinkedList\n")
+
 	strs := make([]string, l.Size())
 	for i, node := 0, l.head; node != nil; i, node = i+1, node.next {
 		strs[i] = fmt.Sprintf("%v", node.value)
 	}
+
 	sb.WriteString(strings.Join(strs, ","))
+
 	return sb.String()
 }
 
@@ -98,6 +105,7 @@ func (l *DoubleLinkedList[T]) Any(predicate enumerable.Predicate[int, T]) bool {
 			return true
 		}
 	}
+
 	return false
 }
 
@@ -107,22 +115,25 @@ func (l *DoubleLinkedList[T]) All(predicate enumerable.Predicate[int, T]) bool {
 			return false
 		}
 	}
+
 	return true
 }
 
-func (l *DoubleLinkedList[T]) Find(predicate enumerable.Predicate[int, T]) (key int, value T, ok bool) {
+func (l *DoubleLinkedList[T]) Find(predicate enumerable.Predicate[int, T]) (int, T, bool) {
 	for i, node := 0, l.head; node != nil; i, node = i+1, node.next {
 		if predicate(i, node.value) {
 			return i, node.value, true
 		}
 	}
+
 	return 0, *new(T), false
 }
 
-func (l *DoubleLinkedList[T]) Iterator() (iter iterator.ForwardIterator[int, T], ok bool) {
+func (l *DoubleLinkedList[T]) Iterator() (iterator.ForwardIterator[int, T], bool) {
 	if l.Empty() {
 		return nil, false
 	}
+
 	return &doubleLinkedListIterator[T]{
 		index: 0,
 		node:  l.head,
@@ -132,10 +143,11 @@ func (l *DoubleLinkedList[T]) Iterator() (iter iterator.ForwardIterator[int, T],
 	}, true
 }
 
-func (l *DoubleLinkedList[T]) IteratorReverse() (iter iterator.ForwardIterator[int, T], ok bool) {
+func (l *DoubleLinkedList[T]) IteratorReverse() (iterator.ForwardIterator[int, T], bool) {
 	if l.Empty() {
 		return nil, false
 	}
+
 	return &doubleLinkedListIterator[T]{
 		index: l.Size() - 1,
 		node:  l.tail,
@@ -156,6 +168,7 @@ func (l *DoubleLinkedList[T]) Append(value T) {
 	} else {
 		l.tail.next = newTail
 	}
+
 	l.tail = newTail
 	l.size++
 }
@@ -177,6 +190,7 @@ func (l *DoubleLinkedList[T]) Prepend(value T) {
 	} else {
 		l.head.prev = newHead
 	}
+
 	l.head = newHead
 	l.size++
 }
@@ -187,14 +201,16 @@ func (l *DoubleLinkedList[T]) PrependAll(values ...T) {
 	}
 }
 
-func (l *DoubleLinkedList[T]) Insert(index int, value T) (ok bool) {
+func (l *DoubleLinkedList[T]) Insert(index int, value T) bool {
 	if index < 0 || index > l.Size() {
 		return false
 	} else if index == 0 {
 		l.Prepend(value)
+
 		return true
 	} else if index == l.Size() {
 		l.Append(value)
+
 		return true
 	}
 
@@ -213,6 +229,7 @@ func (l *DoubleLinkedList[T]) Insert(index int, value T) (ok bool) {
 	// prevNode's index was validated, so it will not be nil.
 	// nextNode may be nil, since prevNode is allowed to be the last node in the list.
 	prevNode.next = newNode
+
 	if nextNode != nil {
 		nextNode.prev = newNode
 	}
@@ -222,16 +239,18 @@ func (l *DoubleLinkedList[T]) Insert(index int, value T) (ok bool) {
 	return true
 }
 
-func (l *DoubleLinkedList[T]) InsertAll(index int, values ...T) (ok bool) {
+func (l *DoubleLinkedList[T]) InsertAll(index int, values ...T) bool {
 	if len(values) == 0 {
 		return true
 	} else if index < 0 || index > l.Size() {
 		return false
 	} else if index == 0 {
 		l.PrependAll(values...)
+
 		return true
 	} else if index == l.Size() {
 		l.AppendAll(values...)
+
 		return true
 	}
 
@@ -248,6 +267,7 @@ func (l *DoubleLinkedList[T]) InsertAll(index int, values ...T) (ok bool) {
 	// nextNode may be nil, since prevNode is allowed to be the last node in the list.
 	prevNode.next = subList.head
 	subList.head.prev = prevNode
+
 	if nextNode != nil {
 		subList.tail.next = nextNode
 		nextNode.prev = subList.tail
@@ -258,7 +278,7 @@ func (l *DoubleLinkedList[T]) InsertAll(index int, values ...T) (ok bool) {
 	return true
 }
 
-func (l *DoubleLinkedList[T]) PopBack() (value T, ok bool) {
+func (l *DoubleLinkedList[T]) PopBack() (T, bool) {
 	back, ok := l.GetBack()
 	if ok {
 		l.tail = l.tail.prev
@@ -267,12 +287,14 @@ func (l *DoubleLinkedList[T]) PopBack() (value T, ok bool) {
 		} else {
 			l.tail.next = nil
 		}
+
 		l.size--
 	}
+
 	return back, ok
 }
 
-func (l *DoubleLinkedList[T]) PopFront() (value T, ok bool) {
+func (l *DoubleLinkedList[T]) PopFront() (T, bool) {
 	front, ok := l.GetFront()
 	if ok {
 		l.head = l.head.next
@@ -283,27 +305,31 @@ func (l *DoubleLinkedList[T]) PopFront() (value T, ok bool) {
 		}
 		l.size--
 	}
+
 	return front, ok
 }
 
-func (l *DoubleLinkedList[T]) GetFront() (value T, ok bool) {
+func (l *DoubleLinkedList[T]) GetFront() (T, bool) {
 	if l.Empty() {
 		return *new(T), false
 	}
+
 	return l.head.value, true
 }
 
-func (l *DoubleLinkedList[T]) GetBack() (value T, ok bool) {
+func (l *DoubleLinkedList[T]) GetBack() (T, bool) {
 	if l.Empty() {
 		return *new(T), false
 	}
+
 	return l.tail.value, true
 }
 
-func (l *DoubleLinkedList[T]) Get(index int) (value T, ok bool) {
+func (l *DoubleLinkedList[T]) Get(index int) (T, bool) {
 	if index < 0 || index >= l.Size() {
 		return *new(T), false
 	}
+
 	return l.getNode(index).value, true
 }
 
@@ -311,6 +337,7 @@ func (l *DoubleLinkedList[T]) getNode(index int) *doubleLinkedNode[T] {
 	if index < l.Size()/2 {
 		return l.getNodeFromFront(index)
 	}
+
 	return l.getNodeFromBack(index)
 }
 
@@ -319,6 +346,7 @@ func (l *DoubleLinkedList[T]) getNodeFromFront(index int) *doubleLinkedNode[T] {
 	for i := 0; i < index; i++ {
 		node = node.next
 	}
+
 	return node
 }
 
@@ -327,5 +355,6 @@ func (l *DoubleLinkedList[T]) getNodeFromBack(index int) *doubleLinkedNode[T] {
 	for i := l.Size() - 1; i > index; i-- {
 		node = node.prev
 	}
+
 	return node
 }

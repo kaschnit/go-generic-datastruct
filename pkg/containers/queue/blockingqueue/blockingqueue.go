@@ -1,7 +1,6 @@
 package blockingqueue
 
 import (
-	"context"
 	"fmt"
 	"strings"
 
@@ -65,15 +64,13 @@ func (q *BlockingQueue[T]) String() string {
 	q.linkedList.ForEach(func(_ int, value T) {
 		strs = append(strs, fmt.Sprintf("%v", value))
 	})
+
 	sb.WriteString(strings.Join(strs, ","))
+
 	return sb.String()
 }
 
 func (q *BlockingQueue[T]) Push(value T) {
-	q.PushWithContext(context.Background(), value)
-}
-
-func (q *BlockingQueue[T]) PushWithContext(ctx context.Context, value T) {
 	q.sem <- struct{}{}
 	q.linkedList.Prepend(value)
 }
@@ -84,11 +81,12 @@ func (q *BlockingQueue[T]) PushAll(values ...T) {
 	}
 }
 
-func (q *BlockingQueue[T]) Pop() (value T, ok bool) {
+func (q *BlockingQueue[T]) Pop() (T, bool) {
 	<-q.sem
+
 	return q.linkedList.PopBack()
 }
 
-func (q *BlockingQueue[T]) Peek() (value T, ok bool) {
+func (q *BlockingQueue[T]) Peek() (T, bool) {
 	return q.linkedList.GetBack()
 }

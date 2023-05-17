@@ -46,8 +46,11 @@ func TestConcurrentMapString(t *testing.T) {
 			expectedFirstLine: "HashSet",
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			s := concurrentset.MakeThreadSafe(testCase.values)
 			resultLines := strings.Split(s.String(), "\n")
 			assert.Len(t, resultLines, 2, "expected 2 lines in ConcurrentSet.String() output")
@@ -65,10 +68,13 @@ func TestConcurrentSetConcurrentAddAndRemove(t *testing.T) {
 	t.Parallel()
 
 	innerSets := getSetsForTest[int]()
-	for _, innerSet := range innerSets {
+	for i := range innerSets {
+		innerSet := innerSets[i]
 		t.Run(fmt.Sprintf("%T", innerSet), func(t *testing.T) {
+			t.Parallel()
+
 			s := concurrentset.MakeThreadSafe(innerSet)
-			wg := sync.WaitGroup{}
+			waitGroup := sync.WaitGroup{}
 
 			size := 5000
 
@@ -78,16 +84,16 @@ func TestConcurrentSetConcurrentAddAndRemove(t *testing.T) {
 				// Make the goroutine wait for a random duration between 0.0 and 0.1 seconds
 				sleepDuration := time.Duration(rand.Float64()/10) * time.Second
 
-				wg.Add(1)
+				waitGroup.Add(1)
 				go func() {
-					defer wg.Done()
+					defer waitGroup.Done()
 					time.Sleep(sleepDuration)
 					s.Add(value)
 				}()
 			}
 
 			// Wait for all goroutines to finish
-			wg.Wait()
+			waitGroup.Wait()
 
 			assert.Equal(t, size, s.Size())
 
@@ -97,9 +103,9 @@ func TestConcurrentSetConcurrentAddAndRemove(t *testing.T) {
 				// Make the goroutine wait for a random duration between 0.0 and 0.1 seconds
 				sleepDuration := time.Duration(rand.Float64()/10) * time.Second
 
-				wg.Add(1)
+				waitGroup.Add(1)
 				go func() {
-					defer wg.Done()
+					defer waitGroup.Done()
 					time.Sleep(sleepDuration)
 
 					contained := s.Contains(value)
@@ -111,7 +117,7 @@ func TestConcurrentSetConcurrentAddAndRemove(t *testing.T) {
 			}
 
 			// Wait for all goroutines to finish
-			wg.Wait()
+			waitGroup.Wait()
 
 			assert.True(t, s.Empty())
 			assert.Equal(t, 0, s.Size())
@@ -120,10 +126,13 @@ func TestConcurrentSetConcurrentAddAndRemove(t *testing.T) {
 }
 
 func TestMakeThreadSafe_AlreadyThreadSafe(t *testing.T) {
+	t.Parallel()
+
 	s := hashset.New[int]()
 	c1 := concurrentset.MakeThreadSafe[int](s)
 	c2 := concurrentset.MakeThreadSafe[int](c1)
 	c3 := concurrentset.MakeThreadSafe[int](c2)
+
 	assert.NotEqual(t, s, c1)
 	assert.Equal(t, c1, c2)
 	assert.Equal(t, c1, c3)

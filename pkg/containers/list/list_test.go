@@ -44,11 +44,18 @@ func TestEmptyFalse(t *testing.T) {
 			initial: []string{"hello"},
 		},
 	}
-	for _, testCase := range tests {
+
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			lists := getListsForTest(testCase.initial...)
-			for _, l := range lists {
+			for i := range lists {
+				l := lists[i]
 				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
+					t.Parallel()
+
 					assert.False(t, l.Empty())
 				})
 			}
@@ -60,8 +67,11 @@ func TestEmptyTrue(t *testing.T) {
 	t.Parallel()
 
 	lists := getListsForTest[int]()
-	for _, l := range lists {
+	for i := range lists {
+		l := lists[i]
 		t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
+			t.Parallel()
+
 			assert.True(t, l.Empty())
 
 			l.Append(1)
@@ -102,11 +112,17 @@ func TestSize(t *testing.T) {
 			expected: 6,
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			lists := getListsForTest(testCase.initial...)
-			for _, l := range lists {
+			for i := range lists {
+				l := lists[i]
 				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
+					t.Parallel()
+
 					assert.Equal(t, testCase.expected, l.Size())
 					assert.Equal(t, len(testCase.initial), l.Size())
 				})
@@ -135,11 +151,17 @@ func TestClearNonEmpty(t *testing.T) {
 			initial: []float64{2.5, 1.000, -5.444, 0.1, 500, 12},
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			lists := getListsForTest(testCase.initial...)
-			for _, l := range lists {
+			for i := range lists {
+				l := lists[i]
 				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
+					t.Parallel()
+
 					assert.False(t, l.Empty())
 
 					l.Clear()
@@ -163,8 +185,11 @@ func TestClearEmpty(t *testing.T) {
 	t.Parallel()
 
 	lists := getListsForTest[string]()
-	for _, l := range lists {
+	for i := range lists {
+		l := lists[i]
 		t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
+			t.Parallel()
+
 			assert.True(t, l.Empty())
 
 			l.Clear()
@@ -212,16 +237,22 @@ func TestAppend(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
-			lists := getListsForTest(testCase.initial...)
-			for _, l := range lists {
-				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
-					prevSize := l.Size()
-					l.Append(testCase.pushItem)
-					assert.Equal(t, prevSize+1, l.Size())
+			t.Parallel()
 
-					actual, ok := l.GetBack()
+			lists := getListsForTest(testCase.initial...)
+			for i := range lists {
+				lst := lists[i]
+				t.Run(fmt.Sprintf("%T", lst), func(t *testing.T) {
+					t.Parallel()
+
+					prevSize := lst.Size()
+					lst.Append(testCase.pushItem)
+					assert.Equal(t, prevSize+1, lst.Size())
+
+					actual, ok := lst.GetBack()
 					assert.True(t, ok)
 					assert.Equal(t, testCase.pushItem, actual)
 				})
@@ -270,10 +301,14 @@ func TestAppendAll(t *testing.T) {
 			expectedBack: 3,
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			lists := getListsForTest(testCase.initial...)
-			for _, l := range lists {
+			for i := range lists {
+				l := lists[i]
 				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
 					prevSize := l.Size()
 					l.AppendAll(testCase.pushItems...)
@@ -318,10 +353,14 @@ func TestPrepend(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			lists := getListsForTest(testCase.initial...)
-			for _, l := range lists {
+			for i := range lists {
+				l := lists[i]
 				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
 					prevSize := l.Size()
 					l.Prepend(testCase.pushItem)
@@ -376,11 +415,17 @@ func TestPrependAll(t *testing.T) {
 			expectedFront: 1,
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			lists := getListsForTest(testCase.initial...)
-			for _, l := range lists {
+			for i := range lists {
+				l := lists[i]
 				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
+					t.Parallel()
+
 					prevSize := l.Size()
 					l.PrependAll(testCase.pushItems...)
 					assert.Equal(t, prevSize+len(testCase.pushItems), l.Size())
@@ -447,11 +492,17 @@ func TestInsertOk(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			lists := getListsForTest(testCase.initial...)
-			for _, l := range lists {
+			for i := range lists {
+				l := lists[i]
 				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
+					t.Parallel()
+
 					prevSize := l.Size()
 					ok := l.Insert(testCase.index, testCase.item)
 					assert.True(t, ok)
@@ -537,11 +588,17 @@ func TestInsertNotOk(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			lists := getListsForTest(testCase.initial...)
-			for _, l := range lists {
+			for i := range lists {
+				l := lists[i]
 				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
+					t.Parallel()
+
 					prevSize := l.Size()
 					ok := l.Insert(testCase.index, testCase.item)
 					assert.False(t, ok)
@@ -627,11 +684,17 @@ func TestInsertAllOk(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			lists := getListsForTest(testCase.initial...)
-			for _, l := range lists {
+			for i := range lists {
+				l := lists[i]
 				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
+					t.Parallel()
+
 					prevSize := l.Size()
 					ok := l.InsertAll(testCase.index, testCase.items...)
 					assert.True(t, ok)
@@ -689,11 +752,17 @@ func TestInsertAllNotOk(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			lists := getListsForTest(testCase.initial...)
-			for _, l := range lists {
+			for i := range lists {
+				l := lists[i]
 				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
+					t.Parallel()
+
 					prevSize := l.Size()
 					ok := l.InsertAll(testCase.index, testCase.items...)
 					assert.False(t, ok)
@@ -708,25 +777,31 @@ func TestPopBackUntilEmpty(t *testing.T) {
 	t.Parallel()
 
 	vals := []int{1, 2, 3}
+
 	lists := getListsForTest(vals...)
-	for _, l := range lists {
-		val, ok := l.PopBack()
-		assert.True(t, ok)
-		assert.Equal(t, 3, val)
+	for i := range lists {
+		l := lists[i]
+		t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
+			t.Parallel()
 
-		val, ok = l.PopBack()
-		assert.True(t, ok)
-		assert.Equal(t, 2, val)
+			val, ok := l.PopBack()
+			assert.True(t, ok)
+			assert.Equal(t, 3, val)
 
-		val, ok = l.PopBack()
-		assert.True(t, ok)
-		assert.Equal(t, 1, val)
+			val, ok = l.PopBack()
+			assert.True(t, ok)
+			assert.Equal(t, 2, val)
 
-		val, ok = l.PopBack()
-		assert.False(t, ok, "Expected not ok but was ok, val was %v", val)
+			val, ok = l.PopBack()
+			assert.True(t, ok)
+			assert.Equal(t, 1, val)
 
-		val, ok = l.PopFront()
-		assert.False(t, ok, "Expected not ok but was ok, val was %v", val)
+			val, ok = l.PopBack()
+			assert.False(t, ok, "Expected not ok but was ok, val was %v", val)
+
+			val, ok = l.PopFront()
+			assert.False(t, ok, "Expected not ok but was ok, val was %v", val)
+		})
 	}
 }
 
@@ -735,24 +810,30 @@ func TestPopFrontUntilEmpty(t *testing.T) {
 
 	vals := []int{1, 2, 3}
 	lists := getListsForTest(vals...)
-	for _, l := range lists {
-		val, ok := l.PopFront()
-		assert.True(t, ok)
-		assert.Equal(t, 1, val)
 
-		val, ok = l.PopFront()
-		assert.True(t, ok)
-		assert.Equal(t, 2, val)
+	for i := range lists {
+		l := lists[i]
+		t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
+			t.Parallel()
 
-		val, ok = l.PopFront()
-		assert.True(t, ok)
-		assert.Equal(t, 3, val)
+			val, ok := l.PopFront()
+			assert.True(t, ok)
+			assert.Equal(t, 1, val)
 
-		val, ok = l.PopFront()
-		assert.False(t, ok, "Expected not ok but was ok, val was %v", val)
+			val, ok = l.PopFront()
+			assert.True(t, ok)
+			assert.Equal(t, 2, val)
 
-		val, ok = l.PopBack()
-		assert.False(t, ok, "Expected not ok but was ok, val was %v", val)
+			val, ok = l.PopFront()
+			assert.True(t, ok)
+			assert.Equal(t, 3, val)
+
+			val, ok = l.PopFront()
+			assert.False(t, ok, "Expected not ok but was ok, val was %v", val)
+
+			val, ok = l.PopBack()
+			assert.False(t, ok, "Expected not ok but was ok, val was %v", val)
+		})
 	}
 }
 
@@ -760,8 +841,11 @@ func TestGetFrontNotOk(t *testing.T) {
 	t.Parallel()
 
 	lists := getListsForTest[string]()
-	for _, l := range lists {
+	for i := range lists {
+		l := lists[i]
 		t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
+			t.Parallel()
+
 			_, ok := l.GetFront()
 			assert.False(t, ok)
 		})
@@ -772,8 +856,11 @@ func TestGetBackNotOk(t *testing.T) {
 	t.Parallel()
 
 	lists := getListsForTest[string]()
-	for _, l := range lists {
+	for i := range lists {
+		l := lists[i]
 		t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
+			t.Parallel()
+
 			_, ok := l.GetBack()
 			assert.False(t, ok)
 		})
@@ -794,13 +881,22 @@ func TestGetNotOk(t *testing.T) {
 			notOkIndices: []int{-77, -1, 0, 1, 12, 20},
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			lists := getListsForTest(testCase.initial...)
-			for _, l := range lists {
+			for i := range lists {
+				l := lists[i]
 				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
-					for _, index := range testCase.notOkIndices {
+					t.Parallel()
+
+					for i := range testCase.notOkIndices {
+						index := testCase.notOkIndices[i]
 						t.Run(fmt.Sprintf("index %d", index), func(t *testing.T) {
+							t.Parallel()
+
 							_, ok := l.Get(index)
 							assert.False(t, ok)
 						})
@@ -835,12 +931,18 @@ func TestForEach(t *testing.T) {
 			expected: 257,
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			lists := getListsForTest(testCase.initial...)
-			for _, l := range lists {
+			for i := range lists {
+				l := lists[i]
 				total := 0
 				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
+					t.Parallel()
+
 					l.ForEach(func(key int, value int) {
 						total += value
 					})
@@ -904,11 +1006,17 @@ func TestAnyAll(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			lists := getListsForTest(testCase.initial...)
-			for _, l := range lists {
+			for i := range lists {
+				l := lists[i]
 				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
+					t.Parallel()
+
 					isNegative := func(_ int, value int) bool {
 						return value < 0
 					}
@@ -970,14 +1078,20 @@ func TestFindOk(t *testing.T) {
 			expectedValue: -100,
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			lists := getListsForTest(testCase.initial...)
-			for _, l := range lists {
+			for i := range lists {
+				l := lists[i]
 				isNegative := func(_ int, value int) bool {
 					return value < 0
 				}
 				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
+					t.Parallel()
+
 					idx, val, ok := l.Find(isNegative)
 					assert.True(t, ok)
 					assert.Equal(t, testCase.expectedIndex, idx)
@@ -1008,14 +1122,20 @@ func TestFindNotOk(t *testing.T) {
 			initial: []int{100, 300, 57},
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			lists := getListsForTest(testCase.initial...)
-			for _, l := range lists {
+			for i := range lists {
+				l := lists[i]
 				isNegative := func(_ int, value int) bool {
 					return value < 0
 				}
 				t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
+					t.Parallel()
+
 					_, _, ok := l.Find(isNegative)
 					assert.False(t, ok)
 				})
@@ -1029,8 +1149,12 @@ func TestIteration(t *testing.T) {
 
 	values := []int{100, 200, 500}
 	lists := getListsForTest(values...)
-	for _, l := range lists {
+
+	for i := range lists {
+		l := lists[i]
 		t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
+			t.Parallel()
+
 			// Iterator to element 0
 			itr, ok := l.Iterator()
 			assert.True(t, ok)
@@ -1081,8 +1205,11 @@ func TestIteration_Empty(t *testing.T) {
 	t.Parallel()
 
 	lists := getListsForTest[int]()
-	for _, l := range lists {
+	for i := range lists {
+		l := lists[i]
 		t.Run(fmt.Sprintf("%T - Iterator()", l), func(t *testing.T) {
+			t.Parallel()
+
 			_, ok := l.Iterator()
 			assert.False(t, ok)
 		})
@@ -1093,9 +1220,13 @@ func TestIterationReverse(t *testing.T) {
 	t.Parallel()
 
 	values := []int{100, 200, 500}
+
 	lists := getReversibleListsForTest(values...)
-	for _, l := range lists {
+	for i := range lists {
+		l := lists[i]
 		t.Run(fmt.Sprintf("%T", l), func(t *testing.T) {
+			t.Parallel()
+
 			// Iterator to element 0
 			itr, ok := l.IteratorReverse()
 			assert.True(t, ok)
@@ -1146,8 +1277,11 @@ func TestIterationReverse_Empty(t *testing.T) {
 	t.Parallel()
 
 	lists := getReversibleListsForTest[int]()
-	for _, l := range lists {
+	for i := range lists {
+		l := lists[i]
 		t.Run(fmt.Sprintf("%T - Iterator()", l), func(t *testing.T) {
+			t.Parallel()
+
 			_, ok := l.IteratorReverse()
 			assert.False(t, ok)
 		})

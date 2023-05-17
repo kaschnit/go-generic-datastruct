@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// Ensure that HeapPQ implements Queue
+// Ensure that HeapPQ implements Queue.
 var _ queue.Queue[int] = &heappq.HeapPQ[int]{}
 
 func TestHeapPQString(t *testing.T) {
@@ -55,8 +55,12 @@ func TestHeapPQString(t *testing.T) {
 			expected: "HeapPQ\n10,8,6,4,2,0,-2,-4",
 		},
 	}
-	for _, testCase := range tests {
+
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			// Assert twice because HeapPQ.String() makes a copy of the heap, want
 			// to make sure the copy is not sharing data.
 			assert.Equal(t, testCase.expected, testCase.queue.String())
@@ -93,6 +97,7 @@ func TestHeapPQKitchenSink(t *testing.T) {
 	q.Push(1)
 	assert.False(t, q.Empty())
 	assert.Equal(t, 1, q.Size())
+
 	for i := 0; i < 3; i++ {
 		value, ok := q.Peek()
 		assert.True(t, ok)

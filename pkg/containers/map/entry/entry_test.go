@@ -36,14 +36,19 @@ func TestEntryString(t *testing.T) {
 			expected: "Entry{Key:hello, Value:world}",
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			assert.Equal(t, testCase.expected, testCase.value.String())
 		})
 	}
 }
 
 func TestNewFromMap(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name           string
 		mapping        map[string]int
@@ -67,8 +72,11 @@ func TestNewFromMap(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			entries := entry.NewFromMap(testCase.mapping)
 			assert.Equal(t, len(testCase.expectedResult), len(entries))
 			assert.ElementsMatch(t, testCase.expectedResult, entries)

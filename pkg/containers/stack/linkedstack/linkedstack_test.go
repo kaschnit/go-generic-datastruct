@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// Ensure that LinkedStack implements Stack
+// Ensure that LinkedStack implements Stack.
 var _ stack.Stack[int] = &linkedstack.LinkedStack[int]{}
 
 func TestString(t *testing.T) {
@@ -35,8 +35,12 @@ func TestString(t *testing.T) {
 			expected: "LinkedStack\n100,1145,-202,5,6,7",
 		},
 	}
-	for _, testCase := range tests {
+
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			assert.Equal(t, testCase.expected, testCase.stack.String())
 		})
 	}

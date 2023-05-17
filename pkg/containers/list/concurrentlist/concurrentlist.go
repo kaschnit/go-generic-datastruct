@@ -28,12 +28,14 @@ type ConcurrentList[T any] struct {
 func (l *ConcurrentList[T]) Empty() bool {
 	l.rwlock.RLock()
 	defer l.rwlock.RUnlock()
+
 	return l.inner.Empty()
 }
 
 func (l *ConcurrentList[T]) Size() int {
 	l.rwlock.RLock()
 	defer l.rwlock.RUnlock()
+
 	return l.inner.Size()
 }
 
@@ -75,14 +77,14 @@ func (l *ConcurrentList[T]) All(predicate enumerable.Predicate[int, T]) bool {
 	return l.inner.All(predicate)
 }
 
-func (l *ConcurrentList[T]) Find(predicate enumerable.Predicate[int, T]) (key int, value T, ok bool) {
+func (l *ConcurrentList[T]) Find(predicate enumerable.Predicate[int, T]) (int, T, bool) {
 	l.rwlock.RLock()
 	defer l.rwlock.RUnlock()
 
 	return l.inner.Find(predicate)
 }
 
-func (l *ConcurrentList[T]) Iterator() (iter iterator.ForwardIterator[int, T], ok bool) {
+func (l *ConcurrentList[T]) Iterator() (iterator.ForwardIterator[int, T], bool) {
 	l.rwlock.RLock()
 	defer l.rwlock.RUnlock()
 
@@ -120,49 +122,49 @@ func (l *ConcurrentList[T]) PrependAll(values ...T) {
 	l.inner.PrependAll(values...)
 }
 
-func (l *ConcurrentList[T]) Insert(index int, value T) (ok bool) {
+func (l *ConcurrentList[T]) Insert(index int, value T) bool {
 	l.rwlock.Lock()
 	defer l.rwlock.Unlock()
 
 	return l.inner.Insert(index, value)
 }
 
-func (l *ConcurrentList[T]) InsertAll(index int, values ...T) (ok bool) {
+func (l *ConcurrentList[T]) InsertAll(index int, values ...T) bool {
 	l.rwlock.Lock()
 	defer l.rwlock.Unlock()
 
 	return l.inner.InsertAll(index, values...)
 }
 
-func (l *ConcurrentList[T]) PopBack() (value T, ok bool) {
+func (l *ConcurrentList[T]) PopBack() (T, bool) {
 	l.rwlock.Lock()
 	defer l.rwlock.Unlock()
 
 	return l.inner.PopBack()
 }
 
-func (l *ConcurrentList[T]) PopFront() (value T, ok bool) {
+func (l *ConcurrentList[T]) PopFront() (T, bool) {
 	l.rwlock.Lock()
 	defer l.rwlock.Unlock()
 
 	return l.inner.PopFront()
 }
 
-func (l *ConcurrentList[T]) GetFront() (value T, ok bool) {
+func (l *ConcurrentList[T]) GetFront() (T, bool) {
 	l.rwlock.RLock()
 	defer l.rwlock.RUnlock()
 
 	return l.inner.GetFront()
 }
 
-func (l *ConcurrentList[T]) GetBack() (value T, ok bool) {
+func (l *ConcurrentList[T]) GetBack() (T, bool) {
 	l.rwlock.RLock()
 	defer l.rwlock.RUnlock()
 
 	return l.inner.GetBack()
 }
 
-func (l *ConcurrentList[T]) Get(index int) (value T, ok bool) {
+func (l *ConcurrentList[T]) Get(index int) (T, bool) {
 	l.rwlock.RLock()
 	defer l.rwlock.RUnlock()
 

@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// Ensure that ArrayStack implements Stack
+// Ensure that ArrayStack implements Stack.
 var _ stack.Stack[int] = &arraystack.ArrayStack[int]{}
 
 func TestString(t *testing.T) {
@@ -35,8 +35,11 @@ func TestString(t *testing.T) {
 			expected: "ArrayStack\n100,1145,-202,5,6,7",
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			assert.Equal(t, testCase.expected, testCase.stack.String())
 		})
 	}

@@ -39,8 +39,11 @@ func TestMap(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range testCases {
+	for i := range testCases {
+		testCase := testCases[i]
 		t.Run(fmt.Sprintf("ArrayList %s", testCase.name), func(t *testing.T) {
+			t.Parallel()
+
 			l := arraylist.New(testCase.items...)
 			result := enumerable.Map[int, string](l, func(_ int, v string) int {
 				return len(v)
@@ -89,8 +92,11 @@ func TestMapMap(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range testCases {
+	for i := range testCases {
+		testCase := testCases[i]
 		t.Run(fmt.Sprintf("ArrayList %s", testCase.name), func(t *testing.T) {
+			t.Parallel()
+
 			l := arraylist.New(testCase.items...)
 			result := enumerable.MapMap[int, string](l, func(_ int, v string) (string, int) {
 				return v, len(v)

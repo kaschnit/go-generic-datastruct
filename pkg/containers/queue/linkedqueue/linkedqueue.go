@@ -16,6 +16,7 @@ func New[T any](values ...T) *LinkedQueue[T] {
 		linkedList: linkedlist.NewDoubleLinked[T](),
 	}
 	q.PushAll(values...)
+
 	return &q
 }
 
@@ -39,7 +40,9 @@ func (q *LinkedQueue[T]) String() string {
 	q.linkedList.ForEach(func(_ int, value T) {
 		strs = append(strs, fmt.Sprintf("%v", value))
 	})
+
 	sb.WriteString(strings.Join(strs, ","))
+
 	return sb.String()
 }
 
@@ -53,10 +56,10 @@ func (q *LinkedQueue[T]) PushAll(values ...T) {
 	}
 }
 
-func (q *LinkedQueue[T]) Pop() (value T, ok bool) {
+func (q *LinkedQueue[T]) Pop() (T, bool) {
 	return q.linkedList.PopBack()
 }
 
-func (q *LinkedQueue[T]) Peek() (value T, ok bool) {
+func (q *LinkedQueue[T]) Peek() (T, bool) {
 	return q.linkedList.GetBack()
 }

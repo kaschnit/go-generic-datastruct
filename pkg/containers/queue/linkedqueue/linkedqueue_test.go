@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// Ensure that LinkedQueue implements Queue
+// Ensure that LinkedQueue implements Queue.
 var _ queue.Queue[int] = &linkedqueue.LinkedQueue[int]{}
 
 func TestLinkedQueueString(t *testing.T) {
@@ -36,8 +36,12 @@ func TestLinkedQueueString(t *testing.T) {
 			expected: "LinkedQueue\n7,6,5,-202,1145,100",
 		},
 	}
-	for _, testCase := range tests {
+
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			assert.Equal(t, testCase.expected, testCase.queue.String())
 		})
 	}
@@ -78,10 +82,15 @@ func TestPush(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			q := linkedqueue.New(testCase.initial...)
 			t.Run(fmt.Sprintf("%T", q), func(t *testing.T) {
+				t.Parallel()
+
 				prevSize := q.Size()
 				q.Push(testCase.pushItem)
 				assert.Equal(t, prevSize+1, q.Size())
@@ -134,10 +143,15 @@ func TestPushAll(t *testing.T) {
 			expectedPeek: 1,
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			q := linkedqueue.New(testCase.initial...)
 			t.Run(fmt.Sprintf("%T", q), func(t *testing.T) {
+				t.Parallel()
+
 				prevSize := q.Size()
 				q.PushAll(testCase.pushItems...)
 				assert.Equal(t, prevSize+len(testCase.pushItems), q.Size())

@@ -1,0 +1,25 @@
+linters:
+  enable-all: true
+  disable:
+    - deadcode
+    - exhaustivestruct
+    - exhaustruct
+    - gocritic
+    - golint
+    - ifshort
+    - interfacer
+    - ireturn
+    - maligned
+    - nosnakecase
+    - scopelint
+    - structcheck
+    - varcheck
+    - varnamelen
+
+issues:
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - dupl
+        - funlen
+        - gosec

@@ -52,8 +52,11 @@ func TestConcurrentMapString(t *testing.T) {
 			expectedFirstLine: "HashMap",
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			m := concurrentmap.MakeThreadSafe(testCase.mapping)
 			resultLines := strings.Split(m.String(), "\n")
 			assert.Len(t, resultLines, 2, "expected 2 lines in ConcurrentSet.String() output")
@@ -71,10 +74,13 @@ func TestConcurrentMapConcurrentPutAndRemove(t *testing.T) {
 	t.Parallel()
 
 	innerMaps := getMapsForTest[string, int]()
-	for _, innerMap := range innerMaps {
+	for i := range innerMaps {
+		innerMap := innerMaps[i]
 		t.Run(fmt.Sprintf("%T", innerMap), func(t *testing.T) {
+			t.Parallel()
+
 			m := concurrentmap.MakeThreadSafe(innerMap)
-			wg := sync.WaitGroup{}
+			waitGroup := sync.WaitGroup{}
 
 			size := 5000
 
@@ -84,16 +90,16 @@ func TestConcurrentMapConcurrentPutAndRemove(t *testing.T) {
 				// Make the goroutine wait for a random duration between 0.0 and 0.1 seconds
 				sleepDuration := time.Duration(rand.Float64()/10) * time.Second
 
-				wg.Add(1)
+				waitGroup.Add(1)
 				go func() {
-					defer wg.Done()
+					defer waitGroup.Done()
 					time.Sleep(sleepDuration)
 					m.Put(fmt.Sprintf("%d", value), value)
 				}()
 			}
 
 			// Wait for all goroutines to finish
-			wg.Wait()
+			waitGroup.Wait()
 
 			assert.Equal(t, size, m.Size())
 
@@ -103,9 +109,9 @@ func TestConcurrentMapConcurrentPutAndRemove(t *testing.T) {
 				// Make the goroutine wait for a random duration between 0.0 and 0.1 seconds
 				sleepDuration := time.Duration(rand.Float64()/10) * time.Second
 
-				wg.Add(1)
+				waitGroup.Add(1)
 				go func() {
-					defer wg.Done()
+					defer waitGroup.Done()
 					time.Sleep(sleepDuration)
 
 					key := fmt.Sprintf("%d", value)
@@ -120,7 +126,7 @@ func TestConcurrentMapConcurrentPutAndRemove(t *testing.T) {
 			}
 
 			// Wait for all goroutines to finish
-			wg.Wait()
+			waitGroup.Wait()
 
 			assert.True(t, m.Empty())
 			assert.Equal(t, 0, m.Size())
@@ -129,12 +135,15 @@ func TestConcurrentMapConcurrentPutAndRemove(t *testing.T) {
 }
 
 func TestMakeThreadSafe_AlreadyThreadSafe(t *testing.T) {
+	t.Parallel()
+
 	m := hashmap.New[int, string]()
-	c1 := concurrentmap.MakeThreadSafe[int, string](m)
-	c2 := concurrentmap.MakeThreadSafe[int, string](c1)
-	c3 := concurrentmap.MakeThreadSafe[int, string](c2)
-	assert.NotEqual(t, m, c1)
-	assert.Equal(t, c1, c2)
-	assert.Equal(t, c1, c3)
-	assert.Equal(t, c2, c3)
+	map1 := concurrentmap.MakeThreadSafe[int, string](m)
+	map2 := concurrentmap.MakeThreadSafe[int, string](map1)
+	map3 := concurrentmap.MakeThreadSafe[int, string](map2)
+
+	assert.NotEqual(t, m, map1)
+	assert.Equal(t, map1, map2)
+	assert.Equal(t, map1, map3)
+	assert.Equal(t, map2, map3)
 }

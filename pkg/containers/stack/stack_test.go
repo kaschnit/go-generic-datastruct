@@ -33,11 +33,17 @@ func TestEmptyFalse(t *testing.T) {
 			initial: []string{"hello"},
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			stacks := getStacksForTest(testCase.initial...)
-			for _, s := range stacks {
+			for i := range stacks {
+				s := stacks[i]
 				t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
+					t.Parallel()
+
 					assert.False(t, s.Empty())
 				})
 			}
@@ -49,8 +55,11 @@ func TestEmptyTrue(t *testing.T) {
 	t.Parallel()
 
 	stacks := getStacksForTest[int]()
-	for _, s := range stacks {
+	for i := range stacks {
+		s := stacks[i]
 		t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
+			t.Parallel()
+
 			assert.True(t, s.Empty())
 
 			s.Push(1)
@@ -91,11 +100,17 @@ func TestSize(t *testing.T) {
 			expected: 6,
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			stacks := getStacksForTest(testCase.initial...)
-			for _, s := range stacks {
+			for i := range stacks {
+				s := stacks[i]
 				t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
+					t.Parallel()
+
 					assert.Equal(t, testCase.expected, s.Size())
 					assert.Equal(t, len(testCase.initial), s.Size())
 				})
@@ -124,11 +139,17 @@ func TestClearNonEmpty(t *testing.T) {
 			initial: []float64{2.5, 1.000, -5.444, 0.1, 500, 12},
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			stacks := getStacksForTest(testCase.initial...)
-			for _, s := range stacks {
+			for i := range stacks {
+				s := stacks[i]
 				t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
+					t.Parallel()
+
 					assert.False(t, s.Empty())
 
 					s.Clear()
@@ -152,20 +173,25 @@ func TestClearEmpty(t *testing.T) {
 	t.Parallel()
 
 	stacks := getStacksForTest[string]()
-	for _, s := range stacks {
-		assert.True(t, s.Empty())
+	for i := range stacks {
+		s := stacks[i]
+		t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
+			t.Parallel()
 
-		s.Clear()
-		assert.True(t, s.Empty())
+			assert.True(t, s.Empty())
 
-		s.Clear()
-		assert.True(t, s.Empty())
+			s.Clear()
+			assert.True(t, s.Empty())
 
-		s.Push("hello")
-		assert.False(t, s.Empty())
+			s.Clear()
+			assert.True(t, s.Empty())
 
-		s.Clear()
-		assert.True(t, s.Empty())
+			s.Push("hello")
+			assert.False(t, s.Empty())
+
+			s.Clear()
+			assert.True(t, s.Empty())
+		})
 	}
 }
 
@@ -199,8 +225,11 @@ func TestPush(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			stacks := getStacksForTest(testCase.initial...)
 			for _, s := range stacks {
 				t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
@@ -257,8 +286,11 @@ func TestPushAll(t *testing.T) {
 			expectedPeek: 3,
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			stacks := getStacksForTest(testCase.initial...)
 			for _, s := range stacks {
 				t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
@@ -279,21 +311,27 @@ func TestPopUntilEmpty(t *testing.T) {
 	t.Parallel()
 
 	vals := []int{1, 2, 3}
+
 	stacks := getStacksForTest(vals...)
-	for _, s := range stacks {
-		val, ok := s.Pop()
-		assert.True(t, ok)
-		assert.Equal(t, 3, val)
+	for i := range stacks {
+		s := stacks[i]
+		t.Run(fmt.Sprintf("%T", s), func(t *testing.T) {
+			t.Parallel()
 
-		val, ok = s.Pop()
-		assert.True(t, ok)
-		assert.Equal(t, 2, val)
+			val, ok := s.Pop()
+			assert.True(t, ok)
+			assert.Equal(t, 3, val)
 
-		val, ok = s.Pop()
-		assert.True(t, ok)
-		assert.Equal(t, 1, val)
+			val, ok = s.Pop()
+			assert.True(t, ok)
+			assert.Equal(t, 2, val)
 
-		val, ok = s.Pop()
-		assert.False(t, ok, "Expected not ok but was ok, val was %v", val)
+			val, ok = s.Pop()
+			assert.True(t, ok)
+			assert.Equal(t, 1, val)
+
+			val, ok = s.Pop()
+			assert.False(t, ok, "Expected not ok but was ok, val was %v", val)
+		})
 	}
 }

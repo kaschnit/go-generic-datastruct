@@ -7,11 +7,15 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// Ensure that OrderedComparator implements Comparator
-var _ compare.HashKey[int, int] = compare.IdentityHashKey[int]
-var _ compare.HashKey[string, string] = compare.IdentityHashKey[string]
+// Ensure that OrderedComparator implements Comparator.
+var (
+	_ compare.HashKey[int, int]       = compare.IdentityHashKey[int]
+	_ compare.HashKey[string, string] = compare.IdentityHashKey[string]
+)
 
 func TestIdentityHashKey(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name     string
 		input    any
@@ -38,8 +42,11 @@ func TestIdentityHashKey(t *testing.T) {
 			expected: "foo",
 		},
 	}
-	for _, testCase := range tests {
+	for i := range tests {
+		testCase := tests[i]
 		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
 			assert.Equal(t, testCase.expected, compare.IdentityHashKey(testCase.input))
 		})
 	}

@@ -6,6 +6,7 @@ import (
 	"github.com/kaschnit/go-ds/pkg/containers/iterable"
 )
 
+//nolint:interfacebloat
 type List[T any] interface {
 	container.Container
 	enumerable.Enumerable[int, T]
